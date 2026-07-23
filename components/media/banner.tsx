@@ -10,7 +10,7 @@ import { getMediaTitle, getMediaHref } from '@/lib/utils/media-format';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
 import { useTranslation } from '@/hooks/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui';
 import type { MediaItem } from '@/types/media';
 
 export interface BannerProps {

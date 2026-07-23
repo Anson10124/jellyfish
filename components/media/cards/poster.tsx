@@ -6,7 +6,6 @@ import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
 import { getMediaHref } from '@/lib/utils/media-format';
 
-
 export interface PosterProps {
   id?: number | string;
   mediaType?: 'movie' | 'tv' | string;
@@ -43,7 +42,6 @@ export function Poster({
   const subtitle = [displayYear, displayLabel].filter(Boolean).join(' • ');
 
   const targetHref = href || getMediaHref(id, mediaType);
-
 
   const content = (
     <div className="group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none">

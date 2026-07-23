@@ -13,11 +13,10 @@ import {
   CAROUSEL_BREAKPOINTS,
 } from '@/constants/carousel';
 import type { CastMember, CrewMember } from '@/types/media';
+import { CastCard } from '@/components/media/cards';
 import { CarouselHeader } from './carousel-header';
-import { CastCard } from './cast-card';
 
 export type CastOrCrewMember = CastMember | CrewMember;
-
 
 interface CastCarouselProps {
   title?: string;
@@ -25,7 +24,7 @@ interface CastCarouselProps {
   cast: CastOrCrewMember[];
 }
 
-export default function CastCarousel({
+export function CastCarousel({
   title = 'Top Cast',
   subtitle,
   cast,
@@ -121,3 +120,5 @@ export default function CastCarousel({
     </div>
   );
 }
+
+export default CastCarousel;
