@@ -137,4 +137,13 @@ export const TmdbApi = {
       `/${mediaType}/${id}/images?include_image_language=${includeLanguage}`
     );
   },
+
+  // TV Season Details
+  getTvSeasonDetails: <T = Record<string, unknown>>(
+    tvId: number | string,
+    seasonNumber: number,
+    language = 'en-US'
+  ) => {
+    return tmdbFetch<T>(`/tv/${tvId}/season/${seasonNumber}?language=${language}`);
+  },
 };
