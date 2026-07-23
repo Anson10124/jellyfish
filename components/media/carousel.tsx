@@ -8,80 +8,41 @@ import type { Swiper as SwiperType } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 
+import {
+  PADDING_X_CLASSES,
+  SWIPER_PADDING_X_CLASSES,
+  SLIDE_WIDTH_CLASS,
+  SKELETON_WIDTH_CLASS,
+} from '@/constants/carousel';
 import { Poster } from '@/components/media/poster';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTmdbMedia } from '@/hooks/use-tmdb-media';
+import { useTmdbMedia, type UseTmdbMediaOptions } from '@/hooks/use-tmdb-media';
 import { getMediaTitle, getMediaYear, getMediaSubtitleLabel } from '@/lib/utils/media-format';
+import type { MediaItem } from '@/types/media';
+import { PrevButton, NextButton } from './carousel-buttons';
+import { CarouselHeader } from './carousel-header';
 
-export interface MediaItem {
-  id: number | string;
-  title?: string;
-  name?: string;
-  poster_path?: string;
-  backdrop_path?: string;
-  release_date?: string;
-  first_air_date?: string;
-  vote_average?: number;
-  media_type?: string;
-  genre_ids?: number[];
-  genres?: { id: number; name: string }[];
-  [key: string]: unknown;
-}
+export type { MediaItem };
+export { PrevButton, NextButton };
 
-export interface CarouselProps {
+export interface CarouselProps extends UseTmdbMediaOptions {
   title?: string;
   subtitle?: string;
-  type?: 'popular' | 'trending';
-  timeWindow?: 'day' | 'week';
-  mediaType?: 'movie' | 'tv' | 'all';
-  genreId?: number;
-  infinite?: boolean;
   items?: MediaItem[];
   renderItem?: (item: MediaItem, index: number) => React.ReactNode;
 }
 
-export const PrevButton: React.FC<React.ComponentPropsWithRef<'button'>> = ({
-  disabled,
-  className = '',
-  ...restProps
-}) => {
+function CarouselSkeletonList() {
   return (
-    <button
-      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/80 text-white border border-zinc-700/50 shadow-md backdrop-blur-md transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
-      type="button"
-      disabled={disabled}
-      aria-label="Previous slide"
-      {...restProps}
-    >
-      <svg className="h-4 w-4 fill-current" viewBox="0 0 532 532">
-        <path d="M355.66 11.354c13.793-13.805 36.208-13.805 50.001 0 13.785 13.804 13.785 36.238 0 50.034L201.22 266l204.442 204.61c13.785 13.805 13.785 36.239 0 50.044-13.793 13.796-36.208 13.796-50.002 0a5994246.277 5994246.277 0 0 0-229.332-229.454 35.065 35.065 0 0 1-10.326-25.126c0-9.2 3.393-18.26 10.326-25.2C172.192 194.973 332.731 34.31 355.66 11.354Z" />
-      </svg>
-    </button>
+    <div className={`flex gap-4 overflow-hidden pt-2 pb-7 ${PADDING_X_CLASSES}`}>
+      {Array.from({ length: 12 }).map((_, idx) => (
+        <div key={idx} className={SKELETON_WIDTH_CLASS}>
+          <Skeleton className="aspect-[2/3] w-full rounded-[14px]" />
+        </div>
+      ))}
+    </div>
   );
-};
-
-export const NextButton: React.FC<React.ComponentPropsWithRef<'button'>> = ({
-  disabled,
-  className = '',
-  ...restProps
-}) => {
-  return (
-    <button
-      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/80 text-white border border-zinc-700/50 shadow-md backdrop-blur-md transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
-      type="button"
-      disabled={disabled}
-      aria-label="Next slide"
-      {...restProps}
-    >
-      <svg className="h-4 w-4 fill-current" viewBox="0 0 532 532">
-        <path d="M176.34 520.646c-13.793 13.805-36.208 13.805-50.001 0-13.785-13.804-13.785-36.238 0-50.034L330.78 266 126.34 61.391c-13.785-13.805-13.785-36.239 0-50.044 13.793-13.796 36.208-13.796 50.002 0 22.928 22.947 206.395 206.507 229.332 229.454a35.065 35.065 0 0 1 10.326 25.126c0 9.2-3.393 18.26-10.326 25.2-45.865 45.901-206.404 206.564-229.332 229.52Z" />
-      </svg>
-    </button>
-  );
-};
-
-const PADDING_X_CLASSES = 'px-4 sm:px-8 md:px-12 lg:px-14 xl:px-16 2xl:px-20';
-const SWIPER_PADDING_X_CLASSES = '!px-4 sm:!px-8 md:!px-12 lg:!px-14 xl:!px-16 2xl:!px-20';
+}
 
 export default function Carousel({
   title,
@@ -115,33 +76,19 @@ export default function Carousel({
     swiperInstance?.slideNext();
   }, [swiperInstance]);
 
-  const slideWidthClass = "!w-[104px] sm:!w-[116px] md:!w-[128px] xl:!w-[148px] 2xl:!w-[170px] shrink-0";
-  const skeletonWidthClass = "w-[104px] sm:w-[116px] md:w-[128px] xl:w-[148px] 2xl:w-[170px] shrink-0";
-
   return (
     <div className="w-full overflow-x-clip">
-      {(title || subtitle) && (
-        <div className={`mb-4 flex items-center justify-between ${PADDING_X_CLASSES}`}>
-          <div>
-            {title && <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">{title}</h2>}
-            {subtitle && <p className="text-xs sm:text-sm text-zinc-400 mt-1">{subtitle}</p>}
-          </div>
-
-          <div className="hidden md:flex items-center space-x-2">
-            <PrevButton onClick={handlePrev} disabled={isBeginning} />
-            <NextButton onClick={handleNext} disabled={isEnd && !hasMoreToLoad} />
-          </div>
-        </div>
-      )}
+      <CarouselHeader
+        title={title}
+        subtitle={subtitle}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        isPrevDisabled={isBeginning}
+        isNextDisabled={isEnd && !hasMoreToLoad}
+      />
 
       {loading ? (
-        <div className={`flex gap-4 overflow-hidden pt-2 pb-7 ${PADDING_X_CLASSES}`}>
-          {Array.from({ length: 12 }).map((_, idx) => (
-            <div key={idx} className={skeletonWidthClass}>
-              <Skeleton className="aspect-[2/3] w-full rounded-[14px]" />
-            </div>
-          ))}
-        </div>
+        <CarouselSkeletonList />
       ) : (
         <div className="relative">
           <Swiper
@@ -186,7 +133,7 @@ export default function Carousel({
             className={`w-full !overflow-visible !pt-2 !pb-7 touch-pan-y ${SWIPER_PADDING_X_CLASSES}`}
           >
             {slides.map((item, index) => (
-              <SwiperSlide key={`${item.id}-${index}`} className={slideWidthClass}>
+              <SwiperSlide key={`${item.id}-${index}`} className={SLIDE_WIDTH_CLASS}>
                 {renderItem ? (
                   renderItem(item, index)
                 ) : (
@@ -203,7 +150,7 @@ export default function Carousel({
             {!initialItems && infinite && hasMoreToLoad && (
               <>
                 {Array.from({ length: 6 }).map((_, idx) => (
-                  <SwiperSlide key={`skeleton-${idx}`} className={slideWidthClass}>
+                  <SwiperSlide key={`skeleton-${idx}`} className={SLIDE_WIDTH_CLASS}>
                     <Skeleton className="aspect-[2/3] w-full rounded-[14px]" />
                   </SwiperSlide>
                 ))}

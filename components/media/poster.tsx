@@ -6,9 +6,17 @@ interface PosterProps {
   year?: number | string;
   label?: string;
   genre?: string;
+  showDetails?: boolean;
 }
 
-export function Poster({ title, posterPath, year, label, genre }: PosterProps) {
+export function Poster({
+  title,
+  posterPath,
+  year,
+  label,
+  genre,
+  showDetails = true,
+}: PosterProps) {
   const displayYear = year && year !== 0 ? year : null;
   const displayLabel = label || genre;
 
@@ -26,16 +34,18 @@ export function Poster({ title, posterPath, year, label, genre }: PosterProps) {
           className="object-cover w-full h-full pointer-events-none select-none"
         />
       </div>
-      <div className="mt-2 min-w-0">
-        <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-white sm:text-[13px] text-white/80">
-          {title}
-        </p>
-        {subtitle && (
-          <p className="mt-[3px] text-[11px] font-medium leading-none text-white/[0.60] drop-shadow-xl">
-            {subtitle}
+      {showDetails && (
+        <div className="mt-2 min-w-0">
+          <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-white sm:text-[13px] text-white/80">
+            {title}
           </p>
-        )}
-      </div>
+          {subtitle && (
+            <p className="mt-[3px] text-[11px] font-medium leading-none text-white/[0.60] drop-shadow-xl">
+              {subtitle}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
