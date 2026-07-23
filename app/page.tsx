@@ -1,17 +1,20 @@
 'use client';
 
+import Banner from '@/components/media/banner';
 import Carousel from '@/components/media/carousel';
 import Top10Carousel from '@/components/media/top-10-carousel';
 
 export default function HomePage() {
   return (
-    <main className="w-full max-w-full overflow-x-hidden py-6 space-y-10">
+    <main className="w-full max-w-full overflow-x-hidden pb-10 space-y-10">
+      <Banner type="trending" mediaType="all" />
+
       <Top10Carousel
         title="Top 10 Movies"
         type="top_rated"
         mediaType="movie"
       />
-      
+
       <Top10Carousel
         title="Top 10 TV Shows"
         type="top_rated"
