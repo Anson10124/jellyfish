@@ -61,4 +61,11 @@ export const TmdbApi = {
   searchMulti: <T = Record<string, unknown>>(query: string, page = 1) => {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/search/multi?query=${encodeURIComponent(query)}&page=${page}`);
   },
+
+  // Images (Logos, Backdrops)
+  getImages: (mediaType: 'movie' | 'tv', id: number | string) => {
+    return tmdbFetch<{ logos?: { file_path: string; iso_639_1?: string }[] }>(
+      `/${mediaType}/${id}/images?include_image_language=en,null`
+    );
+  },
 };
