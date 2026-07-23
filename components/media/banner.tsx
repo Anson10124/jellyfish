@@ -97,7 +97,7 @@ export function Banner({
 
   if (loading && !activeItem) {
     return (
-      <div className="w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] bg-white/5">
+      <div className="w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] bg-white/5 mb-1">
         <Skeleton className="h-full w-full rounded-none" />
       </div>
     );
@@ -114,7 +114,7 @@ export function Banner({
   const overview = activeItem.overview as string | undefined;
 
   return (
-    <div className="relative w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0">
+    <div className="relative w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
       <div className="absolute inset-0 select-none">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.img
@@ -204,7 +204,7 @@ export function Banner({
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
+                aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === currentIndex
                     ? 'w-7 bg-white'

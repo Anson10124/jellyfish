@@ -3,15 +3,22 @@
     "watchNow": "立即觀看",
     "moreInfo": "詳細資訊",
     "top10": "前 10 名",
-    "language": "語言"
+    "language": "語言",
+    "movie": "電影",
+    "tvShow": "電視影集",
+    "search": "搜尋"
+  },
+  "carousel": {
+    "previousSlide": "上一張",
+    "nextSlide": "下一張",
+    "goToSlide": "切換至"
   },
   "home": {
     "top10Movies": "熱門電影 Top 10",
     "top10TvShows": "熱門影集 Top 10",
-    "trendingToday": "今日發燒",
-    "actionBlockbusters": "動作強檔",
-    "actionAdventureTv": "動作冒險影集",
-    "comedyHits": "熱門喜劇",
+    "trendingToday": "今日熱門",
+    "actionTitle": "動作強檔",
+    "comedyTitle": "熱門喜劇",
     "popularMovies": "熱門電影"
   },
   "genres": {

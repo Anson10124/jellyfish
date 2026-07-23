@@ -1,10 +1,14 @@
-import { GENRE_MAP } from '@/constants/genres';
+import { getGenreName } from '@/constants/genres';
 
-export function getGenreNames(genreIds: number[] = [], limit = 2): string {
+export function getGenreNames(
+  genreIds: number[] = [],
+  limit = 2,
+  t?: (key: string, fallback?: string) => string
+): string {
   if (!genreIds.length) return '';
-  
+
   return genreIds
-    .map((id) => GENRE_MAP[id])
+    .map((id) => getGenreName(id, t))
     .filter(Boolean)
     .slice(0, limit)
     .join(' • ');

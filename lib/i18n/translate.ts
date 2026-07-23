@@ -1,9 +1,5 @@
 import { Locale, TRANSLATIONS, DEFAULT_LOCALE } from './config';
 
-/**
- * Pure translation lookup function supporting nested keys (e.g. 'home.top10Movies').
- * Automatically falls back to English if key is missing in target locale.
- */
 export function translateKey(locale: Locale, key: string, defaultText?: string): string {
   const keys = key.split('.');
   let current: any = TRANSLATIONS[locale];

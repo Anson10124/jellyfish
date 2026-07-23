@@ -17,6 +17,7 @@ import {
 import { Poster } from '@/components/media/poster';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTmdbMedia, type UseTmdbMediaOptions } from '@/hooks/use-tmdb-media';
+import { useTranslation } from '@/hooks/use-translation';
 import { getMediaTitle, getMediaYear, getMediaSubtitleLabel } from '@/lib/utils/media-format';
 import type { MediaItem } from '@/types/media';
 import { PrevButton, NextButton } from './carousel-buttons';
@@ -55,6 +56,7 @@ export default function Carousel({
   items: initialItems,
   renderItem,
 }: CarouselProps) {
+  const { t } = useTranslation();
   const { slides, loading, hasMoreToLoad, fetchMoreData } = useTmdbMedia({
     type,
     timeWindow,
@@ -166,7 +168,7 @@ export default function Carousel({
                     title={getMediaTitle(item)}
                     posterPath={item.poster_path || ''}
                     year={getMediaYear(item)}
-                    label={getMediaSubtitleLabel(item, { type, mediaType, genreId })}
+                    label={getMediaSubtitleLabel(item, { type, mediaType, genreId }, t)}
                   />
                 )}
               </SwiperSlide>
