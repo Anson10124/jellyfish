@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Carousel from '@/components/media/carousel';
-import Top10Carousel from '@/components/media/top-10-carousel';
-import GenreBar from '@/components/media/genre-bar';
-import Poster from '@/components/media/poster';
+import { Carousel, Top10Carousel, GenreBar, Poster } from '@/components/media';
 import { useTranslation } from '@/hooks/use-translation';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
 import { getMediaTitle, getMediaYear, getMediaSubtitleLabel } from '@/lib/utils/media-format';

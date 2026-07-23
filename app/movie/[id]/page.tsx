@@ -15,10 +15,9 @@ import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
-import { Skeleton } from '@/components/ui/skeleton';
-import CastCarousel from '@/components/media/cast-carousel';
-import Carousel from '@/components/media/carousel';
-import TrailerModal from '@/components/player/trailer-modal';
+import { Skeleton } from '@/components/ui';
+import { CastCarousel, Carousel } from '@/components/media';
+import { TrailerModal } from '@/components/player';
 import type { MovieDetails } from '@/types/media';
 
 interface MovieDetailPageProps {

@@ -2,7 +2,6 @@ import React from 'react';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { PrevButton, NextButton } from './carousel-buttons';
 
-
 export interface CarouselHeaderProps {
   title?: string;
   subtitle?: string;

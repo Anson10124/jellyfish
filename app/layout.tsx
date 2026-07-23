@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/context/i18n-context";
-import { LanguageSelector } from "@/components/ui/language-selector";
+import { LanguageSelector } from "@/components/common";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
 const geistSans = Geist({
