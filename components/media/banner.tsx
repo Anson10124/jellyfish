@@ -7,6 +7,7 @@ import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getMediaTitle } from '@/lib/utils/media-format';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
+import { useTranslation } from '@/hooks/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { MediaItem } from '@/types/media';
@@ -26,6 +27,7 @@ export function Banner({
   mediaType = 'all',
   autoPlayInterval = 9000,
 }: BannerProps) {
+  const { t, tmdbLanguage } = useTranslation();
   const { slides, loading } = useTmdbMedia({
     type,
     mediaType,
@@ -52,11 +54,12 @@ export function Banner({
     return () => clearInterval(interval);
   }, [bannerItems.length, autoPlayInterval]);
 
-  // Preload images
+  // Preload images & logos in active target language
   useEffect(() => {
     if (!bannerItems || bannerItems.length === 0) return;
 
     let isMounted = true;
+    const isoLang = tmdbLanguage.split('-')[0];
 
     bannerItems.forEach((item) => {
       const backdropPath = item.backdrop_path || item.poster_path;
@@ -66,13 +69,16 @@ export function Banner({
       }
 
       const itemType = (item.media_type as 'movie' | 'tv') || (mediaType !== 'all' ? mediaType : 'movie');
-      TmdbApi.getImages(itemType, item.id)
+      TmdbApi.getImages(itemType, item.id, tmdbLanguage)
         .then((res) => {
           if (!isMounted) return;
           if (res?.logos && res.logos.length > 0) {
-            const enLogo = res.logos.find((l) => l.iso_639_1 === 'en') || res.logos[0];
-            if (enLogo?.file_path) {
-              const url = getTmdbImage(enLogo.file_path, 'w500');
+            const matchedLogo =
+              res.logos.find((l) => l.iso_639_1 === isoLang) ||
+              res.logos.find((l) => l.iso_639_1 === 'en') ||
+              res.logos[0];
+            if (matchedLogo?.file_path) {
+              const url = getTmdbImage(matchedLogo.file_path, 'w500');
               const logoImg = new Image();
               logoImg.src = url;
               setLogosMap((prev) => ({ ...prev, [item.id]: url }));
@@ -85,7 +91,7 @@ export function Banner({
     return () => {
       isMounted = false;
     };
-  }, [bannerItems, mediaType]);
+  }, [bannerItems, mediaType, tmdbLanguage]);
 
   const activeItem = bannerItems[currentIndex] || initialItem;
 
@@ -179,14 +185,14 @@ export function Banner({
               className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
             >
               <Play className="h-4 w-4 fill-current" />
-              Watch now
+              {t('common.watchNow', 'Watch now')}
             </button>
             <button
               type="button"
               className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
             >
               <Info className="h-4 w-4" />
-              More info
+              {t('common.moreInfo', 'More info')}
             </button>
           </div>
         </div>

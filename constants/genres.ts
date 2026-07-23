@@ -54,6 +54,14 @@ export const GENRE_MAP: Record<number, string> = [...MOVIE_GENRES, ...TV_GENRES]
   {} as Record<number, string>
 );
 
+export function getGenreName(id: number, t?: (key: string, fallback?: string) => string): string {
+  const fallback = GENRE_MAP[id] || '';
+  if (t) {
+    return t(`genres.${id}`, fallback);
+  }
+  return fallback;
+}
+
 export const MOVIE_TO_TV_GENRE_MAP: Record<number, number> = {
   28: 10759,
   12: 10759,
