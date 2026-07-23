@@ -90,6 +90,46 @@ export const TmdbApi = {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/search/multi?query=${encodeURIComponent(query)}&page=${page}&language=${language}`);
   },
 
+  // Generic Media Details (Movie or TV)
+  getMediaDetails: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv', id: number | string, language = 'en-US') => {
+    return tmdbFetch<T>(
+      `/${mediaType}/${id}?append_to_response=credits,recommendations,similar,videos,images&include_image_language=${language.split('-')[0]},en,null&language=${language}`
+    );
+  },
+
+  // Generic Media Credits
+  getMediaCredits: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv', id: number | string, language = 'en-US') => {
+    return tmdbFetch<T>(`/${mediaType}/${id}/credits?language=${language}`);
+  },
+
+  // Generic Media Recommendations
+  getMediaRecommendations: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv', id: number | string, page = 1, language = 'en-US') => {
+    return tmdbFetch<TmdbPaginatedResponse<T>>(`/${mediaType}/${id}/recommendations?page=${page}&language=${language}`);
+  },
+
+  // Generic Media Similar
+  getMediaSimilar: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv', id: number | string, page = 1, language = 'en-US') => {
+    return tmdbFetch<TmdbPaginatedResponse<T>>(`/${mediaType}/${id}/similar?page=${page}&language=${language}`);
+  },
+
+  // Generic Media Videos
+  getMediaVideos: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv', id: number | string, language = 'en-US') => {
+    return tmdbFetch<T>(`/${mediaType}/${id}/videos?language=${language}`);
+  },
+
+  // Backwards compatibility aliases
+  getMovieDetails: <T = Record<string, unknown>>(id: number | string, language = 'en-US') =>
+    TmdbApi.getMediaDetails<T>('movie', id, language),
+  getMovieCredits: <T = Record<string, unknown>>(id: number | string, language = 'en-US') =>
+    TmdbApi.getMediaCredits<T>('movie', id, language),
+  getMovieRecommendations: <T = Record<string, unknown>>(id: number | string, page = 1, language = 'en-US') =>
+    TmdbApi.getMediaRecommendations<T>('movie', id, page, language),
+  getMovieSimilar: <T = Record<string, unknown>>(id: number | string, page = 1, language = 'en-US') =>
+    TmdbApi.getMediaSimilar<T>('movie', id, page, language),
+  getMovieVideos: <T = Record<string, unknown>>(id: number | string, language = 'en-US') =>
+    TmdbApi.getMediaVideos<T>('movie', id, language),
+
+
   // Images (Logos, Backdrops)
   getImages: (mediaType: 'movie' | 'tv', id: number | string, language = 'en-US') => {
     const includeLanguage = getImageLanguageParam(language);

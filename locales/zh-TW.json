@@ -5,8 +5,10 @@
     "top10": "前 10 名",
     "language": "語言",
     "movie": "電影",
-    "tvShow": "電視影集",
-    "search": "搜尋"
+    "tvShow": "影集",
+    "search": "搜尋",
+    "all": "全部",
+    "back": "返回"
   },
   "carousel": {
     "previousSlide": "上一張",
@@ -20,6 +22,35 @@
     "actionTitle": "動作強檔",
     "comedyTitle": "熱門喜劇",
     "popularMovies": "熱門電影"
+  },
+  "movies": {
+    "title": "電影",
+    "exploreMovies": "探索電影",
+    "top10": "熱門電影 Top 10",
+    "trendingThisWeek": "本週發燒電影",
+    "popular": "熱門電影",
+    "topRated": "高分電影",
+    "action": "動作強檔",
+    "sciFi": "科幻與奇幻",
+    "comedy": "熱門喜劇",
+    "horror": "恐怖與驚悚",
+    "drama": "經典劇情",
+    "castcrew": "演員與製作團隊",
+    "trailer": "預告片",
+    "officialTrailer": "官方預告片",
+    "watchTrailer": "觀看預告片",
+    "overview": "劇情簡介",
+    "details": "詳細資訊",
+    "status": "狀態",
+    "countryOfOrigin": "製作國家",
+    "releaseDate": "上映日期",
+    "runtime": "片長",
+    "budget": "製作預算",
+    "revenue": "全球票房",
+    "originalLanguage": "原始語言",
+    "production": "製作公司",
+    "similarMovies": "相似電影",
+    "recommendations": "為您推薦"
   },
   "genres": {
     "28": "動作",

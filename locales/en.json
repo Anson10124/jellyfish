@@ -6,7 +6,9 @@
     "language": "Language",
     "movie": "Movie",
     "tvShow": "TV Show",
-    "search": "Search"
+    "search": "Search",
+    "all": "All",
+    "back": "Back"
   },
   "carousel": {
     "previousSlide": "Previous slide",
@@ -20,6 +22,35 @@
     "actionTitle": "Action Blockbusters",
     "comedyTitle": "Laugh Out Loud Comedy",
     "popularMovies": "Popular Movies"
+  },
+  "movies": {
+    "title": "Movies",
+    "exploreMovies": "Explore Movies",
+    "top10": "Top 10 Movies",
+    "trendingThisWeek": "Trending Movies This Week",
+    "popular": "Popular Movies",
+    "topRated": "Top Rated Movies",
+    "action": "Action Blockbusters",
+    "sciFi": "Sci-Fi & Fantasy",
+    "comedy": "Comedy Hits",
+    "horror": "Horror & Thriller",
+    "drama": "Dramatic Masterpieces",
+    "castcrew": "Cast & Crew",
+    "trailer": "Trailer",
+    "officialTrailer": "Official Trailer",
+    "watchTrailer": "Watch Trailer",
+    "overview": "Overview",
+    "details": "Details",
+    "status": "Status",
+    "countryOfOrigin": "Country of Origin",
+    "releaseDate": "Release Date",
+    "runtime": "Runtime",
+    "budget": "Budget",
+    "revenue": "Revenue",
+    "originalLanguage": "Original Language",
+    "production": "Production Companies",
+    "similarMovies": "Similar Movies",
+    "recommendations": "Recommended for You"
   },
   "genres": {
     "28": "Action",

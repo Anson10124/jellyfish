@@ -172,6 +172,8 @@ export function Top10Carousel({
                     <TopRankNumber rank={index + 1} />
                     <div className="relative z-10 ml-[38px] w-[108px] sm:ml-[44px] sm:w-[122px] md:ml-[50px] md:w-[134px] xl:ml-[60px] xl:w-[154px] 2xl:ml-[68px] 2xl:w-[176px]">
                       <Poster
+                        id={item.id}
+                        mediaType={(item.media_type as 'movie' | 'tv') || mediaType}
                         title={itemTitle}
                         posterPath={item.poster_path || ''}
                         year={getMediaYear(item)}

@@ -165,6 +165,8 @@ export default function Carousel({
                   renderItem(item, index)
                 ) : (
                   <Poster
+                    id={item.id}
+                    mediaType={(item.media_type as 'movie' | 'tv') || mediaType}
                     title={getMediaTitle(item)}
                     posterPath={item.poster_path || ''}
                     year={getMediaYear(item)}
