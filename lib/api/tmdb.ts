@@ -1,16 +1,10 @@
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_READ_TOKEN = process.env.NEXT_PUBLIC_TMDB_READ_TOKEN;
+const API_BASE_URL = '/api/tmdb';
 
 export async function tmdbFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  if (!TMDB_READ_TOKEN) {
-    throw new Error('TMDb Read Token is not defined');
-  }
-
-  const response = await fetch(`${TMDB_BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${TMDB_READ_TOKEN}`,
       ...options.headers,
     },
   });

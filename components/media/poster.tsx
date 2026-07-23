@@ -22,7 +22,8 @@ export function Poster({ title, posterPath, year, label, genre }: PosterProps) {
           alt={title}
           loading="lazy"
           decoding="async"
-          className="object-cover w-full h-full"
+          draggable={false}
+          className="object-cover w-full h-full pointer-events-none select-none"
         />
       </div>
       <div className="mt-2 min-w-0">
