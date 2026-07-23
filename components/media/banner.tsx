@@ -142,10 +142,10 @@ export function Banner({
       {/* Bottom Overlay */}
       <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden">
         {/* Progressive Blur */}
-        <div className="absolute inset-0 backdrop-blur-[2px] [mask-image:linear-gradient(to_top,black_0%,transparent_40%)]" />
-        <div className="absolute inset-0 backdrop-blur-[4px] [mask-image:linear-gradient(to_top,black_0%,transparent_60%)]" />
-        <div className="absolute inset-0 backdrop-blur-[8px] [mask-image:linear-gradient(to_top,black_0%,transparent_80%)]" />
-        <div className="absolute inset-0 backdrop-blur-[16px] [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]" />
+        <div className="absolute inset-0 backdrop-blur-xs [mask-image:linear-gradient(to_top,black_0%,transparent_40%)]" />
+        <div className="absolute inset-0 backdrop-blur-sm [mask-image:linear-gradient(to_top,black_0%,transparent_60%)]" />
+        <div className="absolute inset-0 backdrop-blur-md [mask-image:linear-gradient(to_top,black_0%,transparent_80%)]" />
+        <div className="absolute inset-0 backdrop-blur-xl [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]" />
         {/* Color Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 via-40% to-transparent" />
       </div>
@@ -166,7 +166,7 @@ export function Banner({
                   <img
                     src={activeLogoUrl}
                     alt={title}
-                    className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]"
+                    className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-lg"
                     draggable={false}
                   />
                 ) : (
@@ -187,7 +187,7 @@ export function Banner({
             {href ? (
               <Link
                 href={href}
-                className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
               >
                 <Play className="h-4 w-4 fill-current" />
                 {t('common.watchNow', 'Watch now')}
@@ -195,7 +195,7 @@ export function Banner({
             ) : (
               <button
                 type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
               >
                 <Play className="h-4 w-4 fill-current" />
                 {t('common.watchNow', 'Watch now')}
@@ -204,7 +204,7 @@ export function Banner({
             {href ? (
               <Link
                 href={href}
-                className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
               >
                 <Info className="h-4 w-4" />
                 {t('common.moreInfo', 'More info')}
@@ -212,7 +212,7 @@ export function Banner({
             ) : (
               <button
                 type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
               >
                 <Info className="h-4 w-4" />
                 {t('common.moreInfo', 'More info')}

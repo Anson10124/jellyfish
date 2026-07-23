@@ -78,8 +78,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     movie.production_countries && movie.production_countries.length > 0
       ? movie.production_countries.map((c) => c.name).join(' & ')
       : movie.origin_country && movie.origin_country.length > 0
-      ? movie.origin_country.join(', ')
-      : null;
+        ? movie.origin_country.join(', ')
+        : null;
 
   const voteAverage = movie.vote_average ? movie.vote_average.toFixed(1) : null;
   const castList = processCastAndCrew(movie.credits, 16);
@@ -93,9 +93,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
-          className={`h-full w-full object-cover object-center ${
-            isPosterFallback ? 'blur-2xl opacity-35 scale-110' : ''
-          }`}
+          className={`h-full w-full object-cover object-center ${isPosterFallback ? 'blur-2xl opacity-35 scale-110' : ''
+            }`}
           draggable={false}
         />
         {/* Side Overlay */}
@@ -110,7 +109,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
                 <img
                   src={logoUrl}
                   alt={title}
-                  className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-[0_8px_18px_rgba(0,0,0,0.95)]"
+                  className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-lg"
                   draggable={false}
                 />
               ) : (
@@ -120,47 +119,45 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               )}
             </div>
 
-            {movie.tagline && (
-              <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
-                &ldquo;{movie.tagline}&rdquo;
-              </p>
-            )}
-
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-medium text-white/90">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
               {voteAverage && (
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30">
-                  <Star className="h-3.5 w-3.5 fill-current" />
+                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
+                  <Star className="h-4 w-4 text-white fill-white" />
                   <span>{voteAverage}</span>
                 </div>
               )}
 
               {releaseYear && (
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/10 ring-1 ring-white/15">
-                  <Calendar className="h-3.5 w-3.5 text-white/70" />
+                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
+                  <Calendar className="h-4 w-4 text-white/70" />
                   <span>{releaseYear}</span>
                 </div>
               )}
 
               {formattedRuntime && (
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/10 ring-1 ring-white/15">
-                  <Clock className="h-3.5 w-3.5 text-white/70" />
+                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
+                  <Clock className="h-4 w-4 text-white/70" />
                   <span>{formattedRuntime}</span>
                 </div>
               )}
 
               {movie.genres && movie.genres.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {movie.genres.map((g) => (
-                    <span
-                      key={g.id}
-                      className="px-2.5 py-1 rounded-md bg-white/10 text-white/80 ring-1 ring-white/10 text-xs"
-                    >
-                      {getGenreName(g.id, t) || g.name}
-                    </span>
-                  ))}
-                </div>
+                movie.genres.map((g) => (
+                  <span
+                    key={g.id}
+                    className="inline-flex h-9 items-center rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80"
+                  >
+                    {getGenreName(g.id, t) || g.name}
+                  </span>
+                ))
               )}
             </div>
+            
+            {movie.tagline && (
+              <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
+                &ldquo;{movie.tagline}&rdquo;
+              </p>
+            )}
 
             {movie.overview && (
               <p className="text-xs sm:text-sm md:text-base leading-relaxed text-white/75 line-clamp-2 md:line-clamp-3 max-w-xl drop-shadow">
@@ -171,7 +168,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
             <div className="pt-2 flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
               >
                 <Play className="h-4 w-4 fill-current" />
                 {t('common.watchNow', 'Watch Now')}
@@ -181,7 +178,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
                 <button
                   type="button"
                   onClick={() => setIsTrailerOpen(true)}
-                  className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
                 >
                   <Film className="h-4 w-4 text-red-400" />
                   {t('movies.watchTrailer', 'Watch Trailer')}
@@ -190,7 +187,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
 
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-[13px] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] hover:bg-white/[0.16] active:scale-[0.98] transition cursor-pointer"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 hover:bg-white/16 active:scale-[0.98] transition cursor-pointer"
                 aria-label="Add to watchlist"
               >
                 <Bookmark className="h-4 w-4" />
@@ -200,7 +197,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
         </div>
       </div>
 
-      <div className="relative z-20 w-full min-h-screen bg-[#121215]/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-white/10 rounded-tl-2xl rounded-tr-2xl">
+      <div className="relative z-20 w-full min-h-screen bg-[#121215]/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-white/10">
 
         {/* Cast */}
         {castList.length > 0 && (
