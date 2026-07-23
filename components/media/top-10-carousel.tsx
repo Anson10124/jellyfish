@@ -10,8 +10,8 @@ import 'swiper/css/free-mode';
 
 import {
   PADDING_X_CLASSES,
-  SWIPER_PADDING_X_CLASSES,
   TOP10_SLIDE_WIDTH_CLASS,
+  CAROUSEL_BREAKPOINTS,
 } from '@/constants/carousel';
 import { Poster } from '@/components/media/poster';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -117,13 +117,19 @@ export function Top10Carousel({
               momentumBounce: true,
               momentumBounceRatio: 1,
             }}
-            threshold={5}
+            threshold={1}
             grabCursor={true}
             speed={400}
             resistanceRatio={0.85}
-            touchAngle={45}
+            touchAngle={75}
+            touchEventsTarget="container"
+            touchReleaseOnEdges={true}
+            passiveListeners={true}
             slidesPerView="auto"
-            spaceBetween={16}
+            spaceBetween={0}
+            slidesOffsetBefore={16}
+            slidesOffsetAfter={16}
+            breakpoints={CAROUSEL_BREAKPOINTS}
             onSwiper={(swiper) => {
               setSwiperInstance(swiper);
               setIsBeginning(swiper.isBeginning);
@@ -153,8 +159,8 @@ export function Top10Carousel({
               setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
               setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
             }}
-            className="w-full !overflow-visible !pt-2 !pb-7 touch-pan-y select-none"
-            wrapperClass={`flex ${SWIPER_PADDING_X_CLASSES}`}
+            className="w-full !overflow-visible !pt-2 !pb-7 touch-pan-y select-none cursor-grab active:cursor-grabbing"
+            wrapperClass="flex touch-pan-y"
           >
             {displayedSlides.map((item: MediaItem, index: number) => {
               const itemTitle = getMediaTitle(item);
