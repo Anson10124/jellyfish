@@ -25,20 +25,38 @@ export async function GET(
   }
 
   try {
+    const isSearch = pathString.startsWith('search/');
+    // 10 minutes for search, 1 hour for other requests
+    const revalidateSeconds = isSearch ? 600 : 3600;
+
     const tmdbResponse = await fetch(targetUrl, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      next: {
+        revalidate: revalidateSeconds,
+      },
     });
 
     const data = await tmdbResponse.json();
-    return NextResponse.json(data, { status: tmdbResponse.status });
+
+    const headers: Record<string, string> = {};
+    if (tmdbResponse.ok) {
+      headers['Cache-Control'] = `public, max-age=${revalidateSeconds}, s-maxage=${revalidateSeconds}, stale-while-revalidate=86400`;
+    } else {
+      headers['Cache-Control'] = 'no-store';
+    }
+
+    return NextResponse.json(data, {
+      status: tmdbResponse.status,
+      headers,
+    });
   } catch (error) {
     console.error('TMDB API proxy fetch error:', error);
     return NextResponse.json(
       { error: 'Failed to communicate with TMDB API' },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }

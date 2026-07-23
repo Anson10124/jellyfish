@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TmdbApi, type TmdbPaginatedResponse } from '@/lib/api/tmdb';
-import type { MediaItem } from '@/components/media/carousel';
+import type { MediaItem } from '@/types/media';
 import { MOVIE_TO_TV_GENRE_MAP, TV_TO_MOVIE_GENRE_MAP } from '@/constants/genres';
 
 export interface UseTmdbMediaOptions {
-  type?: 'popular' | 'trending';
+  type?: 'popular' | 'trending' | 'top_rated';
   timeWindow?: 'day' | 'week';
   mediaType?: 'movie' | 'tv' | 'all';
   genreId?: number;
@@ -79,6 +79,42 @@ export function useTmdbMedia({
         }
       } else if (type === 'trending') {
         res = await TmdbApi.getTrending<MediaItem>(mediaType, timeWindow, page);
+      } else if (type === 'top_rated') {
+        if (mediaType === 'all') {
+          const [movieRes, tvRes] = await Promise.all([
+            TmdbApi.getTopRated<MediaItem>('movie', page).catch(() => ({
+              results: [],
+              page: 1,
+              total_pages: 1,
+              total_results: 0,
+            })),
+            TmdbApi.getTopRated<MediaItem>('tv', page).catch(() => ({
+              results: [],
+              page: 1,
+              total_pages: 1,
+              total_results: 0,
+            })),
+          ]);
+
+          const movies = (movieRes.results || []).map((m) => ({ ...m, media_type: 'movie' }));
+          const tvs = (tvRes.results || []).map((t) => ({ ...t, media_type: 'tv' }));
+
+          const combined: MediaItem[] = [];
+          const maxLen = Math.max(movies.length, tvs.length);
+          for (let i = 0; i < maxLen; i++) {
+            if (i < movies.length) combined.push(movies[i]);
+            if (i < tvs.length) combined.push(tvs[i]);
+          }
+
+          res = {
+            page,
+            results: combined,
+            total_pages: Math.max(movieRes.total_pages || 1, tvRes.total_pages || 1),
+            total_results: (movieRes.total_results || 0) + (tvRes.total_results || 0),
+          };
+        } else {
+          res = await TmdbApi.getTopRated<MediaItem>(mediaType, page);
+        }
       } else if (mediaType === 'tv') {
         res = await TmdbApi.getPopularTV<MediaItem>(page);
       } else {

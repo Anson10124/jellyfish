@@ -33,6 +33,11 @@ export const TmdbApi = {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/trending/${mediaType}/${timeWindow}?page=${page}`);
   },
 
+  // Top Rated
+  getTopRated: <T = Record<string, unknown>>(mediaType: 'movie' | 'tv' = 'movie', page = 1) => {
+    return tmdbFetch<TmdbPaginatedResponse<T>>(`/${mediaType}/top_rated?page=${page}`);
+  },
+
   // Popular Movies
   getPopularMovies: <T = Record<string, unknown>>(page = 1) => {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/movie/popular?page=${page}`);

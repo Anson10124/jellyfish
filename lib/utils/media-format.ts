@@ -1,5 +1,5 @@
 import { GENRE_MAP } from '@/constants/genres';
-import type { MediaItem } from '@/components/media/carousel';
+import type { MediaItem } from '@/types/media';
 
 export function getMediaTitle(item: MediaItem): string {
   return item.title || item.name || 'Untitled';
@@ -13,7 +13,7 @@ export function getMediaYear(item: MediaItem): number {
 }
 
 export interface GetMediaSubtitleLabelOptions {
-  type?: 'popular' | 'trending';
+  type?: 'popular' | 'trending' | 'top_rated';
   mediaType?: 'movie' | 'tv' | 'all';
   genreId?: number;
 }
