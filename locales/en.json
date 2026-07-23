@@ -52,6 +52,21 @@
     "similarMovies": "Similar Movies",
     "recommendations": "Recommended for You"
   },
+  "tv": {
+    "title": "TV Shows",
+    "seasons": "Seasons",
+    "season": "Season",
+    "episodes": "episodes",
+    "episode": "episode",
+    "firstAirDate": "First Air Date",
+    "lastAirDate": "Last Air Date",
+    "numberOfSeasons": "Seasons",
+    "numberOfEpisodes": "Total Episodes",
+    "networks": "Networks",
+    "similarTvShows": "Similar TV Shows",
+    "tvShowNotFound": "TV Show not found",
+    "backToTv": "Back to TV Shows"
+  },
   "genres": {
     "28": "Action",
     "12": "Adventure",

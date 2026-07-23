@@ -52,6 +52,21 @@
     "similarMovies": "相似電影",
     "recommendations": "為您推薦"
   },
+  "tv": {
+    "title": "影集",
+    "seasons": "季數",
+    "season": "季",
+    "episodes": "集",
+    "episode": "集",
+    "firstAirDate": "首播日期",
+    "lastAirDate": "最新播出",
+    "numberOfSeasons": "總季數",
+    "numberOfEpisodes": "總集數",
+    "networks": "播出平台",
+    "similarTvShows": "相似影集",
+    "tvShowNotFound": "找不到此影集",
+    "backToTv": "返回影集列表"
+  },
   "genres": {
     "28": "動作",
     "12": "冒險",

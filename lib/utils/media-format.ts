@@ -1,5 +1,5 @@
 import { GENRE_MAP, getGenreName } from '@/constants/genres';
-import type { MediaItem, CastMember, CrewMember, VideoItem } from '@/types/media';
+import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry } from '@/types/media';
 
 
 export function getMediaTitle(item: MediaItem): string {
@@ -103,5 +103,37 @@ export function processCastAndCrew(
   }
 
   return [...rawCast, ...uniqueCrew.slice(0, limit)];
+}
+
+export function formatCountryOfOrigin(item: {
+  production_countries?: ProductionCountry[];
+  origin_country?: string[];
+}): string | null {
+  if (item.production_countries && item.production_countries.length > 0) {
+    return item.production_countries.map((c) => c.name).join(' & ');
+  }
+  if (item.origin_country && item.origin_country.length > 0) {
+    return item.origin_country.join(', ');
+  }
+  return null;
+}
+
+export function formatAirYears(firstAirDate?: string, lastAirDate?: string): string | null {
+  const firstAirYear = firstAirDate ? new Date(firstAirDate).getFullYear() : null;
+  const lastAirYear = lastAirDate ? new Date(lastAirDate).getFullYear() : null;
+  if (!firstAirYear || isNaN(firstAirYear)) return null;
+  if (lastAirYear && !isNaN(lastAirYear) && lastAirYear !== firstAirYear) {
+    return `${firstAirYear} - ${lastAirYear}`;
+  }
+  return `${firstAirYear}`;
+}
+
+export function sortSeasons(seasons?: Season[]): Season[] {
+  if (!seasons || seasons.length === 0) return [];
+  const regular = seasons
+    .filter((s) => s.season_number > 0)
+    .sort((a, b) => a.season_number - b.season_number);
+  const specials = seasons.filter((s) => s.season_number <= 0);
+  return [...regular, ...specials];
 }
 

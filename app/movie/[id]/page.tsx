@@ -10,6 +10,7 @@ import {
   formatRuntime,
   formatCurrency,
   processCastAndCrew,
+  formatCountryOfOrigin,
 } from '@/lib/utils/media-format';
 import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
@@ -72,13 +73,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const formattedRuntime = formatRuntime(movie.runtime);
   const formattedBudget = formatCurrency(movie.budget);
   const formattedRevenue = formatCurrency(movie.revenue);
-
-  const countryOfOrigin =
-    movie.production_countries && movie.production_countries.length > 0
-      ? movie.production_countries.map((c) => c.name).join(' & ')
-      : movie.origin_country && movie.origin_country.length > 0
-        ? movie.origin_country.join(', ')
-        : null;
+  const countryOfOrigin = formatCountryOfOrigin(movie);
 
   const voteAverage = movie.vote_average ? movie.vote_average.toFixed(1) : null;
   const castList = processCastAndCrew(movie.credits, 16);
