@@ -16,6 +16,7 @@ import {
 import { Poster } from '@/components/media/poster';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTmdbMedia, type UseTmdbMediaOptions } from '@/hooks/use-tmdb-media';
+import { useTranslation } from '@/hooks/use-translation';
 import { getMediaSubtitleLabel, getMediaTitle, getMediaYear } from '@/lib/utils/media-format';
 import type { MediaItem } from '@/types/media';
 import { CarouselHeader } from './carousel-header';
@@ -54,13 +55,15 @@ function TopRankNumber({ rank }: { rank: number }) {
 }
 
 export function Top10Carousel({
-  title = 'Top 10',
+  title,
   subtitle,
   type = 'top_rated',
   mediaType = 'movie',
   limit = 10,
   initialItems,
 }: Top10CarouselProps) {
+  const { t } = useTranslation();
+  const carouselTitle = title ?? t('common.top10', 'Top 10');
   const { slides, loading } = useTmdbMedia({
     type,
     mediaType,
@@ -85,7 +88,7 @@ export function Top10Carousel({
   return (
     <div className="w-full overflow-x-clip">
       <CarouselHeader
-        title={title}
+        title={carouselTitle}
         subtitle={subtitle}
         onPrev={handlePrev}
         onNext={handleNext}
@@ -172,7 +175,7 @@ export function Top10Carousel({
                         title={itemTitle}
                         posterPath={item.poster_path || ''}
                         year={getMediaYear(item)}
-                        label={getMediaSubtitleLabel(item, { type, mediaType })}
+                        label={getMediaSubtitleLabel(item, { type, mediaType }, t)}
                         showDetails={false}
                       />
                     </div>

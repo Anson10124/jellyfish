@@ -1,11 +1,15 @@
+'use client';
+
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
+import { getGenreName } from '@/constants/genres';
+import { useTranslation } from '@/hooks/use-translation';
 
 interface PosterProps {
   title: string;
   posterPath: string;
   year?: number | string;
   label?: string;
-  genre?: string;
+  genre?: string | number;
   showDetails?: boolean;
 }
 
@@ -17,8 +21,15 @@ export function Poster({
   genre,
   showDetails = true,
 }: PosterProps) {
+  const { t } = useTranslation();
   const displayYear = year && year !== 0 ? year : null;
-  const displayLabel = label || genre;
+  const translatedGenre =
+    typeof genre === 'number'
+      ? getGenreName(genre, t)
+      : typeof genre === 'string' && !isNaN(Number(genre))
+      ? getGenreName(Number(genre), t)
+      : genre;
+  const displayLabel = label || translatedGenre;
 
   const subtitle = [displayYear, displayLabel].filter(Boolean).join(' • ');
 

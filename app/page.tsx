@@ -32,19 +32,13 @@ export default function HomePage() {
         infinite={true}
       />
       <Carousel
-        title={t('home.actionBlockbusters', 'Action Blockbusters')}
+        title={t('home.actionTitle', 'Big-Time Action')}
         genreId={28}
         mediaType="movie"
         infinite={true}
       />
       <Carousel
-        title={t('home.actionAdventureTv', 'Action & Adventure TV')}
-        genreId={28}
-        mediaType="tv"
-        infinite={true}
-      />
-      <Carousel
-        title={t('home.comedyHits', 'Comedy Hits')}
+        title={t('home.comedyTitle', 'Comedy Hits')}
         genreId={35}
         mediaType="all"
         infinite={true}
