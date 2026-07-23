@@ -128,15 +128,12 @@ export function useTmdbMedia({
 
   useEffect(() => {
     if (initialItems && initialItems.length > 0) {
-      setLoading(false);
       return;
     }
 
     let isMounted = true;
-    setLoading(true);
     pageRef.current = 1;
     hasMoreToLoadRef.current = infinite;
-    setHasMoreToLoad(infinite);
 
     const fetchInitialData = async () => {
       try {
@@ -144,8 +141,9 @@ export function useTmdbMedia({
 
         if (isMounted && res?.results) {
           setFetchedSlides(res.results);
-          if (res.page >= res.total_pages || res.results.length === 0) {
-            setHasMoreToLoad(false);
+          const noMore = res.page >= res.total_pages || res.results.length === 0;
+          setHasMoreToLoad(noMore ? false : infinite);
+          if (noMore) {
             hasMoreToLoadRef.current = false;
           }
         }

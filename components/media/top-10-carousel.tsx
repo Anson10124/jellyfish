@@ -112,10 +112,10 @@ export function Top10Carousel({
               enabled: true,
               sticky: false,
               momentum: true,
-              momentumRatio: 0.9,
-              momentumVelocityRatio: 0.9,
+              momentumRatio: 1,
+              momentumVelocityRatio: 1,
               momentumBounce: true,
-              momentumBounceRatio: 0.8,
+              momentumBounceRatio: 1,
             }}
             threshold={5}
             grabCursor={true}
@@ -130,20 +130,37 @@ export function Top10Carousel({
               setIsEnd(swiper.isEnd);
             }}
             onSlideChange={(swiper) => {
+              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
+              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
+            }}
+            onReachBeginning={() => {
+              setIsBeginning(true);
+              setIsEnd(false);
+            }}
+            onReachEnd={() => {
+              setIsBeginning(false);
+              setIsEnd(true);
+            }}
+            onFromEdge={(swiper) => {
               setIsBeginning(swiper.isBeginning);
               setIsEnd(swiper.isEnd);
             }}
-            onProgress={(swiper) => {
+            onToEdge={(swiper) => {
               setIsBeginning(swiper.isBeginning);
               setIsEnd(swiper.isEnd);
             }}
-            className={`w-full !overflow-visible !pt-2 !pb-7 touch-pan-y ${SWIPER_PADDING_X_CLASSES}`}
+            onUpdate={(swiper) => {
+              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
+              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
+            }}
+            className="w-full !overflow-visible !pt-2 !pb-7 touch-pan-y select-none"
+            wrapperClass={`flex ${SWIPER_PADDING_X_CLASSES}`}
           >
             {displayedSlides.map((item: MediaItem, index: number) => {
               const itemTitle = getMediaTitle(item);
               return (
                 <SwiperSlide key={`${item.id}-${index}`} className={TOP10_SLIDE_WIDTH_CLASS}>
-                  <div className="group relative w-full shrink-0 snap-start text-left select-none cursor-pointer">
+                  <div className="group relative w-full shrink-0 text-left select-none cursor-pointer">
                     <TopRankNumber rank={index + 1} />
                     <div className="relative z-10 ml-[38px] w-[108px] sm:ml-[44px] sm:w-[122px] md:ml-[50px] md:w-[134px] xl:ml-[60px] xl:w-[154px] 2xl:ml-[68px] 2xl:w-[176px]">
                       <Poster

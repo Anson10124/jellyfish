@@ -97,10 +97,10 @@ export default function Carousel({
               enabled: true,
               sticky: false,
               momentum: true,
-              momentumRatio: 0.9,
-              momentumVelocityRatio: 0.9,
+              momentumRatio: 1,
+              momentumVelocityRatio: 1,
               momentumBounce: true,
-              momentumBounceRatio: 0.8,
+              momentumBounceRatio: 1,
             }}
             threshold={5}
             grabCursor={true}
@@ -117,12 +117,31 @@ export default function Carousel({
             onSlideChange={(swiper) => {
               setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
               setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
-            }}
-            onProgress={(swiper) => {
-              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
-              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
               const remainingPixels = Math.abs(swiper.maxTranslate() - swiper.translate);
               if (swiper.isEnd || remainingPixels < 600) {
+                fetchMoreData();
+              }
+            }}
+            onReachBeginning={() => {
+              setIsBeginning(true);
+              setIsEnd(false);
+            }}
+            onReachEnd={() => {
+              setIsBeginning(false);
+              setIsEnd(true);
+              fetchMoreData();
+            }}
+            onFromEdge={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onToEdge={(swiper) => {
+              setIsBeginning(swiper.isBeginning);
+              setIsEnd(swiper.isEnd);
+            }}
+            onProgress={(swiper) => {
+              const remainingPixels = Math.abs(swiper.maxTranslate() - swiper.translate);
+              if (remainingPixels < 600) {
                 fetchMoreData();
               }
             }}
@@ -130,7 +149,8 @@ export default function Carousel({
               setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
               setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
             }}
-            className={`w-full !overflow-visible !pt-2 !pb-7 touch-pan-y ${SWIPER_PADDING_X_CLASSES}`}
+            className="w-full !overflow-visible !pt-2 !pb-7 touch-pan-y select-none"
+            wrapperClass={`flex ${SWIPER_PADDING_X_CLASSES}`}
           >
             {slides.map((item, index) => (
               <SwiperSlide key={`${item.id}-${index}`} className={SLIDE_WIDTH_CLASS}>

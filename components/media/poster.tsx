@@ -23,7 +23,7 @@ export function Poster({
   const subtitle = [displayYear, displayLabel].filter(Boolean).join(' • ');
 
   return (
-    <div className="group w-full shrink-0 snap-start text-left focus:outline-none cursor-pointer select-none">
+    <div className="group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none">
       <div className="relative aspect-[2/3] overflow-hidden rounded-[14px] bg-white/4 shadow-lg ring-1 ring-white/5 transition duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
         <img
           src={getTmdbImage(posterPath, 'w342')}
