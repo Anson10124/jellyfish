@@ -114,13 +114,12 @@ export function Top10Carousel({
               momentum: true,
               momentumRatio: 1,
               momentumVelocityRatio: 1,
-              momentumBounce: true,
-              momentumBounceRatio: 1,
+              momentumBounce: false,
             }}
             threshold={1}
             grabCursor={true}
             speed={400}
-            resistanceRatio={0.85}
+            resistanceRatio={0}
             touchAngle={75}
             touchEventsTarget="container"
             touchReleaseOnEdges={true}
