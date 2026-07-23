@@ -12,6 +12,14 @@ export default function HomePage() {
     <main className="w-full max-w-full overflow-x-hidden pb-10 space-y-10">
       <Banner type="trending" mediaType="all" />
 
+      <Carousel
+        title={t('home.trendingToday', 'Trending Today')}
+        type="trending"
+        mediaType="all"
+        timeWindow="day"
+        infinite={true}
+      />
+
       <Top10Carousel
         title={t('home.top10Movies', 'Top 10 Movies')}
         type="top_rated"
@@ -24,13 +32,6 @@ export default function HomePage() {
         mediaType="tv"
       />
 
-      <Carousel
-        title={t('home.trendingToday', 'Trending Today')}
-        type="trending"
-        mediaType="all"
-        timeWindow="day"
-        infinite={true}
-      />
       <Carousel
         title={t('home.actionTitle', 'Big-Time Action')}
         genreId={28}

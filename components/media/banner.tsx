@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Info } from 'lucide-react';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
-import { getMediaTitle } from '@/lib/utils/media-format';
+import { getMediaTitle, getMediaHref } from '@/lib/utils/media-format';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
 import { useTranslation } from '@/hooks/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
@@ -113,6 +114,9 @@ export function Banner({
   const activeLogoUrl = activeItem.id ? logosMap[activeItem.id] : null;
   const overview = activeItem.overview as string | undefined;
 
+  const itemType = (activeItem.media_type as 'movie' | 'tv') || (mediaType !== 'all' ? mediaType : 'movie');
+  const href = getMediaHref(activeItem.id, itemType);
+
   return (
     <div className="relative w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
       <div className="absolute inset-0 select-none">
@@ -180,20 +184,40 @@ export function Banner({
           </AnimatePresence>
 
           <div className="mt-5 flex items-center gap-2.5">
-            <button
-              type="button"
-              className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
-            >
-              <Play className="h-4 w-4 fill-current" />
-              {t('common.watchNow', 'Watch now')}
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
-            >
-              <Info className="h-4 w-4" />
-              {t('common.moreInfo', 'More info')}
-            </button>
+            {href ? (
+              <Link
+                href={href}
+                className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+              >
+                <Play className="h-4 w-4 fill-current" />
+                {t('common.watchNow', 'Watch now')}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="inline-flex h-9 items-center gap-2 rounded-[13px] bg-white/[0.92] px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+              >
+                <Play className="h-4 w-4 fill-current" />
+                {t('common.watchNow', 'Watch now')}
+              </button>
+            )}
+            {href ? (
+              <Link
+                href={href}
+                className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
+              >
+                <Info className="h-4 w-4" />
+                {t('common.moreInfo', 'More info')}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className="inline-flex h-9 items-center gap-2 rounded-[13px] px-4 text-[13px] font-medium transition hover:bg-white/[0.16] active:scale-[0.98] bg-white/[0.12] ring-1 ring-white/[0.08] backdrop-blur-[32px] text-white/[0.78] cursor-pointer"
+              >
+                <Info className="h-4 w-4" />
+                {t('common.moreInfo', 'More info')}
+              </button>
+            )}
           </div>
         </div>
 

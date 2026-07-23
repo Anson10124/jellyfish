@@ -1,5 +1,6 @@
 import { GENRE_MAP, getGenreName } from '@/constants/genres';
-import type { MediaItem } from '@/types/media';
+import type { MediaItem, CastMember, CrewMember, VideoItem } from '@/types/media';
+
 
 export function getMediaTitle(item: MediaItem): string {
   return item.title || item.name || 'Untitled';
@@ -51,3 +52,56 @@ export function getMediaSubtitleLabel(
 
   return undefined;
 }
+
+export function formatRuntime(minutes?: number): string | null {
+  if (!minutes || minutes <= 0) return null;
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours > 0 ? `${hours}h ` : ''}${mins}m`;
+}
+
+export function formatCurrency(amount?: number): string | null {
+  if (amount === undefined || amount <= 0) return null;
+  return `$${amount.toLocaleString()}`;
+}
+
+export function getMediaHref(id?: number | string, mediaType: string = 'movie'): string | undefined {
+  if (!id) return undefined;
+  return mediaType === 'tv' ? `/tv/${id}` : `/movie/${id}`;
+}
+
+export function getOfficialTrailerKey(videos?: VideoItem[]): string | null {
+  if (!videos || videos.length === 0) return null;
+  const trailer =
+    videos.find((v) => v.type === 'Trailer' && v.site === 'YouTube' && v.official) ||
+    videos.find((v) => v.type === 'Trailer' && v.site === 'YouTube') ||
+    videos[0];
+  return trailer?.key || null;
+}
+
+export function processCastAndCrew(
+  credits?: { cast?: CastMember[]; crew?: CrewMember[] },
+  limit = 16
+): (CastMember | CrewMember)[] {
+  if (!credits) return [];
+  const rawCast = credits.cast ? credits.cast.slice(0, limit) : [];
+  const rawCrew = credits.crew || [];
+
+  const uniqueCrew: CrewMember[] = [];
+  const seenCrewIds = new Set<number>();
+
+  for (const member of rawCrew) {
+    if (!seenCrewIds.has(member.id)) {
+      seenCrewIds.add(member.id);
+      uniqueCrew.push({ ...member });
+    } else {
+      const existing = uniqueCrew.find((c) => c.id === member.id);
+      if (existing && member.job && existing.job && !existing.job.includes(member.job)) {
+        existing.job = `${existing.job}, ${member.job}`;
+      }
+    }
+  }
+
+  return [...rawCast, ...uniqueCrew.slice(0, limit)];
+}
+
