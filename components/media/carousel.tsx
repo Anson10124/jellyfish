@@ -149,8 +149,17 @@ export default function Carousel({
             freeMode={{
               enabled: true,
               sticky: false,
-              momentumBounce: false,
+              momentum: true,
+              momentumRatio: 0.9,
+              momentumVelocityRatio: 0.9,
+              momentumBounce: true,
+              momentumBounceRatio: 0.8,
             }}
+            threshold={5}
+            grabCursor={true}
+            speed={400}
+            resistanceRatio={0.85}
+            touchAngle={45}
             slidesPerView="auto"
             spaceBetween={16}
             onSwiper={(swiper) => {
@@ -159,21 +168,22 @@ export default function Carousel({
               setIsEnd(swiper.isEnd);
             }}
             onSlideChange={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
+              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
+              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
             }}
             onProgress={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
-              if (swiper.progress >= 0.6) {
+              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
+              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
+              const remainingPixels = Math.abs(swiper.maxTranslate() - swiper.translate);
+              if (swiper.isEnd || remainingPixels < 600) {
                 fetchMoreData();
               }
             }}
             onUpdate={(swiper) => {
-              setIsBeginning(swiper.isBeginning);
-              setIsEnd(swiper.isEnd);
+              setIsBeginning((prev) => (prev !== swiper.isBeginning ? swiper.isBeginning : prev));
+              setIsEnd((prev) => (prev !== swiper.isEnd ? swiper.isEnd : prev));
             }}
-            className={`w-full !overflow-visible !pt-2 !pb-7 ${SWIPER_PADDING_X_CLASSES}`}
+            className={`w-full !overflow-visible !pt-2 !pb-7 touch-pan-y ${SWIPER_PADDING_X_CLASSES}`}
           >
             {slides.map((item, index) => (
               <SwiperSlide key={`${item.id}-${index}`} className={slideWidthClass}>
