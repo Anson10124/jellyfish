@@ -21,7 +21,7 @@ export default function MoviesPage() {
   });
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden pb-16 space-y-8">
+    <main className="w-full max-w-full overflow-x-hidden pt-20 pb-16 space-y-8">
       <div className="pt-2">
         <GenreBar
           selectedGenreId={selectedGenreId}
