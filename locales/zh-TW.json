@@ -2,7 +2,7 @@
   "common": {
     "watchNow": "立即觀看",
     "moreInfo": "詳細資訊",
-    "top10": "前 10 名",
+    "top10": "Top 10",
     "language": "語言",
     "movie": "電影",
     "tvShow": "影集",
@@ -13,11 +13,11 @@
   "carousel": {
     "previousSlide": "上一張",
     "nextSlide": "下一張",
-    "goToSlide": "切換至"
+    "goToSlide": "前往"
   },
   "home": {
-    "top10Movies": "熱門電影 Top 10",
-    "top10TvShows": "熱門影集 Top 10",
+    "top10Movies": "Top 10 電影",
+    "top10TvShows": "Top 10 影集",
     "trendingToday": "今日熱門",
     "actionTitle": "動作強檔",
     "comedyTitle": "熱門喜劇",
@@ -26,13 +26,13 @@
   "movies": {
     "title": "電影",
     "exploreMovies": "探索電影",
-    "top10": "熱門電影 Top 10",
+    "top10": "Top 10 電影",
     "trendingThisWeek": "本週發燒電影",
     "popular": "熱門電影",
     "topRated": "高分電影",
     "action": "動作強檔",
     "sciFi": "科幻與奇幻",
-    "comedy": "熱門喜劇",
+    "comedy": "爆笑喜劇",
     "horror": "恐怖與驚悚",
     "drama": "經典劇情",
     "castcrew": "演員與製作團隊",
@@ -42,7 +42,7 @@
     "overview": "劇情簡介",
     "details": "詳細資訊",
     "status": "狀態",
-    "countryOfOrigin": "製作國家",
+    "countryOfOrigin": "原產地",
     "releaseDate": "上映日期",
     "runtime": "片長",
     "budget": "製作預算",
@@ -54,12 +54,12 @@
   },
   "tv": {
     "title": "影集",
-    "seasons": "季數",
+    "seasons": "季",
     "season": "季",
     "episodes": "集",
     "episode": "集",
     "firstAirDate": "首播日期",
-    "lastAirDate": "最新播出",
+    "lastAirDate": "最後播出日期",
     "numberOfSeasons": "總季數",
     "numberOfEpisodes": "總集數",
     "networks": "播出平台",
