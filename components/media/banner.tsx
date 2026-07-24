@@ -136,17 +136,10 @@ export function Banner({
       </div>
 
       {/* Side Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#121215]/80 via-[#121215]/30 to-transparent w-full md:w-3/5 lg:w-1/2 z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#121215]/40 via-transparent to-transparent h-32 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#121215]/70 via-[#121215]/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
 
       {/* Bottom Overlay */}
       <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden">
-        {/* Progressive Blur */}
-        <div className="absolute inset-0 backdrop-blur-xs [mask-image:linear-gradient(to_top,black_0%,transparent_40%)]" />
-        <div className="absolute inset-0 backdrop-blur-sm [mask-image:linear-gradient(to_top,black_0%,transparent_60%)]" />
-        <div className="absolute inset-0 backdrop-blur-md [mask-image:linear-gradient(to_top,black_0%,transparent_80%)]" />
-        <div className="absolute inset-0 backdrop-blur-xl [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]" />
-        {/* Color Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 via-40% to-transparent" />
       </div>
 
