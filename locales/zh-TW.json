@@ -10,6 +10,16 @@
     "all": "全部",
     "back": "返回"
   },
+  "nav": {
+    "home": "首頁",
+    "live": "直播",
+    "movies": "電影",
+    "shows": "影集",
+    "anime": "動漫",
+    "library": "媒體庫",
+    "search": "搜尋",
+    "signIn": "登入"
+  },
   "carousel": {
     "previousSlide": "上一張",
     "nextSlide": "下一張",

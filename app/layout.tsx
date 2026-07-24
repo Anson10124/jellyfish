@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/context/i18n-context";
-import { LanguageSelector } from "@/components/common";
+import { Navbar } from "@/components/common";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
 const geistSans = Geist({
@@ -39,9 +39,7 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-foreground">
         <I18nProvider initialLocale={initialLocale}>
-          <header className="fixed top-0 right-0 z-50 p-4">
-            <LanguageSelector />
-          </header>
+          <Navbar />
           {children}
         </I18nProvider>
       </body>

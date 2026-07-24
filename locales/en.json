@@ -10,6 +10,16 @@
     "all": "All",
     "back": "Back"
   },
+  "nav": {
+    "home": "Home",
+    "live": "Live",
+    "movies": "Movies",
+    "shows": "Shows",
+    "anime": "Anime",
+    "library": "Library",
+    "search": "Search",
+    "signIn": "Sign in"
+  },
   "carousel": {
     "previousSlide": "Previous slide",
     "nextSlide": "Next slide",
