@@ -1,6 +1,7 @@
 import { GENRE_MAP, getGenreName } from '@/constants/genres';
 import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry } from '@/types/media';
 
+export { formatDate, type FormatDateOptions } from './date-format';
 
 export function getMediaTitle(item: MediaItem): string {
   return item.title || item.name || 'Untitled';

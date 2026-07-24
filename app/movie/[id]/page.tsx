@@ -27,7 +27,7 @@ interface MovieDetailPageProps {
 export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const resolvedParams = use(params);
   const movieId = resolvedParams.id;
-  const { t } = useTranslation();
+  const { t, formatDate } = useTranslation();
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
   const { media: movie, logoUrl, trailerKey, loading } = useMediaDetails<MovieDetails>(
@@ -185,7 +185,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
             {movie.release_date && (
               <div>
                 <p className="text-white/50 font-medium">{t('movies.releaseDate', 'Release Date')}</p>
-                <p className="text-white/90 font-semibold mt-1">{movie.release_date}</p>
+                <p className="text-white/90 font-semibold mt-1">{formatDate(movie.release_date)}</p>
               </div>
             )}
             {countryOfOrigin && (
