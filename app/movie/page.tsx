@@ -21,13 +21,11 @@ export default function MoviesPage() {
   });
 
   return (
-    <main className="w-full max-w-full overflow-x-hidden pt-20 pb-16 space-y-8">
-      <div className="pt-2">
-        <GenreBar
-          selectedGenreId={selectedGenreId}
-          onSelectGenre={(genreId) => setSelectedGenreId(genreId)}
-        />
-      </div>
+    <main className="w-full max-w-full overflow-x-clip pt-20 pb-16 space-y-8">
+      <GenreBar
+        selectedGenreId={selectedGenreId}
+        onSelectGenre={(genreId) => setSelectedGenreId(genreId)}
+      />
 
       {selectedGenreId !== null ? (
         <section className={`w-full space-y-6 ${PADDING_X_CLASSES}`}>
