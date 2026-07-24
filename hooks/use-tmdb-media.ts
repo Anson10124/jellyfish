@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { TmdbApi, type TmdbPaginatedResponse } from '@/lib/api/tmdb';
 import type { MediaItem } from '@/types/media';
 import { MOVIE_TO_TV_GENRE_MAP, TV_TO_MOVIE_GENRE_MAP } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
+import { interleaveMediaItems } from '@/lib/utils/media-format';
 
 export interface UseTmdbMediaOptions {
   type?: 'popular' | 'trending' | 'top_rated';
@@ -18,19 +19,13 @@ export function useTmdbMedia({
   timeWindow = 'day',
   mediaType = 'movie',
   genreId,
-  infinite = true,
   initialItems,
 }: UseTmdbMediaOptions) {
   const { tmdbLanguage } = useTranslation();
   const [fetchedSlides, setFetchedSlides] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(() => !initialItems || initialItems.length === 0);
-  const [hasMoreToLoad, setHasMoreToLoad] = useState(infinite);
 
   const slides = initialItems && initialItems.length > 0 ? initialItems : fetchedSlides;
-
-  const isFetchingRef = useRef(false);
-  const pageRef = useRef(1);
-  const hasMoreToLoadRef = useRef(infinite);
 
   const fetchData = useCallback(
     async (page: number) => {
@@ -59,16 +54,9 @@ export function useTmdbMedia({
           const movies = (movieRes.results || []).map((m) => ({ ...m, media_type: 'movie' }));
           const tvs = (tvRes.results || []).map((t) => ({ ...t, media_type: 'tv' }));
 
-          const combined: MediaItem[] = [];
-          const maxLen = Math.max(movies.length, tvs.length);
-          for (let i = 0; i < maxLen; i++) {
-            if (i < movies.length) combined.push(movies[i]);
-            if (i < tvs.length) combined.push(tvs[i]);
-          }
-
           res = {
             page,
-            results: combined,
+            results: interleaveMediaItems(movies, tvs),
             total_pages: Math.max(movieRes.total_pages || 1, tvRes.total_pages || 1),
             total_results: (movieRes.total_results || 0) + (tvRes.total_results || 0),
           };
@@ -101,16 +89,9 @@ export function useTmdbMedia({
           const movies = (movieRes.results || []).map((m) => ({ ...m, media_type: 'movie' }));
           const tvs = (tvRes.results || []).map((t) => ({ ...t, media_type: 'tv' }));
 
-          const combined: MediaItem[] = [];
-          const maxLen = Math.max(movies.length, tvs.length);
-          for (let i = 0; i < maxLen; i++) {
-            if (i < movies.length) combined.push(movies[i]);
-            if (i < tvs.length) combined.push(tvs[i]);
-          }
-
           res = {
             page,
-            results: combined,
+            results: interleaveMediaItems(movies, tvs),
             total_pages: Math.max(movieRes.total_pages || 1, tvRes.total_pages || 1),
             total_results: (movieRes.total_results || 0) + (tvRes.total_results || 0),
           };
@@ -134,8 +115,6 @@ export function useTmdbMedia({
     }
 
     let isMounted = true;
-    pageRef.current = 1;
-    hasMoreToLoadRef.current = infinite;
 
     const fetchInitialData = async () => {
       try {
@@ -143,11 +122,6 @@ export function useTmdbMedia({
 
         if (isMounted && res?.results) {
           setFetchedSlides(res.results);
-          const noMore = res.page >= res.total_pages || res.results.length === 0;
-          setHasMoreToLoad(noMore ? false : infinite);
-          if (noMore) {
-            hasMoreToLoadRef.current = false;
-          }
         }
       } catch (err) {
         console.error('Failed to fetch media items:', err);
@@ -161,45 +135,10 @@ export function useTmdbMedia({
     return () => {
       isMounted = false;
     };
-  }, [fetchData, initialItems, infinite]);
-
-  const fetchMoreData = useCallback(async () => {
-    if (isFetchingRef.current || !hasMoreToLoadRef.current || !infinite || initialItems) return;
-
-    isFetchingRef.current = true;
-    const nextPage = pageRef.current + 1;
-
-    try {
-      const res = await fetchData(nextPage);
-
-      if (res?.results && res.results.length > 0) {
-        pageRef.current = nextPage;
-        setFetchedSlides((prev) => {
-          const existingIds = new Set(prev.map((item) => item.id));
-          const uniqueNew = res.results.filter((item) => !existingIds.has(item.id));
-          return [...prev, ...uniqueNew];
-        });
-        if (res.page >= res.total_pages) {
-          setHasMoreToLoad(false);
-          hasMoreToLoadRef.current = false;
-        }
-      } else {
-        setHasMoreToLoad(false);
-        hasMoreToLoadRef.current = false;
-      }
-    } catch (err) {
-      console.error('Failed to load more media items:', err);
-      setHasMoreToLoad(false);
-      hasMoreToLoadRef.current = false;
-    } finally {
-      isFetchingRef.current = false;
-    }
-  }, [fetchData, infinite, initialItems]);
+  }, [fetchData, initialItems]);
 
   return {
     slides,
     loading,
-    hasMoreToLoad,
-    fetchMoreData,
   };
 }

@@ -1,24 +1,15 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
-
-import 'swiper/css';
-import 'swiper/css/free-mode';
-
-import {
-  EPISODE_SLIDE_WIDTH_CLASS,
-  CAROUSEL_BREAKPOINTS,
-} from '@/constants/carousel';
+import React from 'react';
+import { EPISODE_SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import type { Season } from '@/types/media';
 import { EpisodeCard } from '@/components/media/cards/episode-card';
 import { CarouselHeader } from './carousel-header';
 import { useTranslation } from '@/hooks/use-translation';
 import { useTvSeasonDetails } from '@/hooks/use-tv-season-details';
-import { useSwiperNavigation } from '@/hooks/use-swiper-navigation';
+import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
 import { Skeleton } from '@/components/ui';
+import { CarouselWrapper } from './carousel-wrapper';
 
 interface EpisodeCarouselProps {
   tvId: string | number;
@@ -33,16 +24,7 @@ export function EpisodeCarousel({
 }: EpisodeCarouselProps) {
   const { t } = useTranslation();
   const { episodes, loading } = useTvSeasonDetails(tvId, season?.season_number);
-  const {
-    isBeginning,
-    isEnd,
-    handlePrev,
-    handleNext,
-    onSwiperInit,
-    updateEdgeState,
-    setIsBeginning,
-    setIsEnd,
-  } = useSwiperNavigation();
+  const { emblaRef, isBeginning, isEnd, handlePrev, handleNext } = useEmblaNavigation();
 
   const carouselTitle = title || `${season.name} ${t('tv.episodes', 'Episodes')}`;
 
@@ -73,65 +55,21 @@ export function EpisodeCarousel({
   }
 
   return (
-    <div className="w-full overflow-x-clip">
-      <CarouselHeader
-        title={carouselTitle}
-        subtitle={`${episodes.length} ${t('tv.episodes', episodes.length === 1 ? 'episode' : 'episodes')}`}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        isPrevDisabled={isBeginning}
-        isNextDisabled={isEnd}
-      />
-
-      <div className="relative">
-        <Swiper
-          key={`season-${season.season_number}`}
-          modules={[FreeMode]}
-          freeMode={{
-            enabled: true,
-            sticky: false,
-            momentum: true,
-            momentumRatio: 1,
-            momentumVelocityRatio: 1,
-            momentumBounce: false,
-          }}
-          threshold={1}
-          grabCursor={true}
-          speed={400}
-          resistanceRatio={0}
-          touchAngle={75}
-          touchEventsTarget="container"
-          touchReleaseOnEdges={true}
-          passiveListeners={true}
-          slidesPerView="auto"
-          spaceBetween={0}
-          slidesOffsetBefore={16}
-          slidesOffsetAfter={16}
-          breakpoints={CAROUSEL_BREAKPOINTS}
-          onSwiper={onSwiperInit}
-          onSlideChange={updateEdgeState}
-          onReachBeginning={() => {
-            setIsBeginning(true);
-            setIsEnd(false);
-          }}
-          onReachEnd={() => {
-            setIsBeginning(false);
-            setIsEnd(true);
-          }}
-          onFromEdge={updateEdgeState}
-          onToEdge={updateEdgeState}
-          onUpdate={updateEdgeState}
-          className="w-full !overflow-visible !pt-2 !pb-7 touch-pan-y select-none cursor-grab active:cursor-grabbing"
-          wrapperClass="flex touch-pan-y"
-        >
-          {episodes.map((ep) => (
-            <SwiperSlide key={ep.id || ep.episode_number} className={EPISODE_SLIDE_WIDTH_CLASS}>
-              <EpisodeCard episode={ep} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-    </div>
+    <CarouselWrapper
+      title={carouselTitle}
+      subtitle={`${episodes.length} ${t('tv.episodes', episodes.length === 1 ? 'episode' : 'episodes')}`}
+      isBeginning={isBeginning}
+      isEnd={isEnd}
+      onPrev={handlePrev}
+      onNext={handleNext}
+      emblaRef={emblaRef}
+    >
+      {episodes.map((ep) => (
+        <div key={ep.id || ep.episode_number} className={EPISODE_SLIDE_WIDTH_CLASS}>
+          <EpisodeCard episode={ep} />
+        </div>
+      ))}
+    </CarouselWrapper>
   );
 }
 

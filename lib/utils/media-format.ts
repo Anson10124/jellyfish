@@ -27,12 +27,10 @@ export function getMediaSubtitleLabel(
 ): string | undefined {
   const { type, mediaType, genreId } = options;
 
-  // If genre = no label
   if (genreId) {
     return undefined;
   }
 
-  // If trending = show media type
   if (type === 'trending') {
     const rawType = (item.media_type as string) || (mediaType !== 'all' ? mediaType : undefined);
     if (rawType === 'movie') return t ? t('common.movie', 'Movie') : 'Movie';
@@ -40,7 +38,6 @@ export function getMediaSubtitleLabel(
     return undefined;
   }
 
-  // If popular = show genre
   if (item.genre_ids && item.genre_ids.length > 0) {
     const primaryGenreId = item.genre_ids[0];
     return getGenreName(primaryGenreId, t);
@@ -138,3 +135,12 @@ export function sortSeasons(seasons?: Season[]): Season[] {
   return [...regular, ...specials];
 }
 
+export function interleaveMediaItems(movies: MediaItem[] = [], tvs: MediaItem[] = []): MediaItem[] {
+  const combined: MediaItem[] = [];
+  const maxLen = Math.max(movies.length, tvs.length);
+  for (let i = 0; i < maxLen; i++) {
+    if (i < movies.length) combined.push(movies[i]);
+    if (i < tvs.length) combined.push(tvs[i]);
+  }
+  return combined;
+}
