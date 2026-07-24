@@ -14,7 +14,8 @@ import {
   Menu,
 } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/device/use-mobile';
+import { useIsIOS } from '@/hooks/device/use-ios';
 import { CSS_SPRING_EASING } from '@/constants';
 import ProgressiveBlur from '@/components/ProgressiveBlur';
 import { LanguageSelector } from './language-selector';
@@ -23,6 +24,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
+  const isIOS = useIsIOS();
 
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -104,7 +106,7 @@ export function Navbar() {
 
   return (
     <>
-      <ProgressiveBlur position="top" height="7rem" fade />
+      {!isIOS && <ProgressiveBlur position="top" height="7rem" fade />}
 
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
       <nav className="relative flex items-center justify-between rounded-full bg-[#121215]/65 backdrop-blur-2xl border border-white/10 px-3 py-2 shadow-2xl text-neutral-200">

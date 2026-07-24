@@ -112,7 +112,7 @@ export function Banner({
 
   if (loading && !activeItem) {
     return (
-      <div className="w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] bg-white/5 mb-1">
+      <div className="w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] bg-white/5 mb-1">
         <Skeleton className="h-full w-full rounded-none" />
       </div>
     );
@@ -150,7 +150,7 @@ export function Banner({
   const tvSeasons = (activeDetails as TVDetails)?.number_of_seasons ?? (activeItem as TVDetails)?.number_of_seasons;
 
   return (
-    <div className="relative w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
+    <div className="relative w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
       <div className="absolute inset-0 select-none">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.img
@@ -175,8 +175,8 @@ export function Banner({
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 via-40% to-transparent" />
       </div>
 
-      <div className={`relative z-30 flex h-full flex-col justify-end pb-12 sm:pb-16 md:pb-20 ${PADDING_X_CLASSES}`}>
-        <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl">
+      <div className={`relative z-30 flex h-full flex-col justify-end pt-24 pb-14 lg:pb-20 ${PADDING_X_CLASSES}`}>
+        <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto lg:mx-0">
           {/* Logo, Badges, Tagline, Overview & Buttons */}
           <AnimatePresence mode="wait">
             <motion.div
@@ -185,24 +185,24 @@ export function Banner({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-              className="space-y-3 sm:space-y-4 text-left"
+              className="space-y-3 sm:space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start pb-10 lg:pb-0"
             >
               <div>
                 {activeLogoUrl ? (
                   <img
                     src={activeLogoUrl}
                     alt={title}
-                    className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-lg"
+                    className="max-h-24 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[260px] sm:max-w-[400px] lg:max-w-[500px] object-contain mx-auto lg:mx-0 drop-shadow-lg"
                     draggable={false}
                   />
                 ) : (
-                  <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl line-clamp-2">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg line-clamp-2 text-center lg:text-left">
                     {title}
                   </h1>
                 )}
               </div>
 
-              {/* Metadata Badges */}
+              {/* Metadata Badges (Hidden on < lg) */}
               <MediaBadges
                 voteAverage={voteAverage}
                 releaseYear={releaseYear}
@@ -211,24 +211,25 @@ export function Banner({
                 genres={activeDetails?.genres || activeItem.genres}
                 genreIds={activeItem.genre_ids}
                 maxGenres={3}
+                className="hidden lg:flex"
               />
 
-              {/* Tagline */}
+              {/* Tagline (Hidden on < lg) */}
               {tagline && (
-                <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
+                <p className="hidden lg:block text-sm lg:text-base italic text-white/80 drop-shadow">
                   &ldquo;{tagline}&rdquo;
                 </p>
               )}
 
               {/* Overview */}
               {overview && (
-                <p className="text-xs sm:text-sm md:text-base leading-relaxed text-white/75 line-clamp-2 md:line-clamp-3 max-w-xl drop-shadow">
+                <p className="text-sm lg:text-base leading-relaxed text-white/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
                   {overview}
                 </p>
               )}
 
               {/* Action Buttons */}
-              <div className="pt-2 flex flex-wrap items-center gap-2.5">
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
                 {href ? (
                   <Link
                     href={href}
@@ -270,7 +271,7 @@ export function Banner({
 
           {/* Carousel Indicators */}
           {bannerItems.length > 1 && (
-            <div className="absolute bottom-6 right-6 sm:right-8 lg:right-14 z-30 flex items-center gap-2">
+            <div className="absolute bottom-3.5 inset-x-0 lg:inset-x-auto lg:bottom-6 lg:right-14 z-30 flex items-center justify-center lg:justify-start gap-2">
               {bannerItems.map((_, idx) => (
                 <button
                   key={idx}

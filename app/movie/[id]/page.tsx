@@ -38,7 +38,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-[#121215] text-white">
-        <div className="w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] bg-white/5">
+        <div className="w-full h-[80vh] min-h-[500px] sm:h-[80vh] sm:min-h-[560px] md:h-[82vh] lg:h-[88vh] bg-white/5">
           <Skeleton className="h-full w-full rounded-none" />
         </div>
       </div>
@@ -94,19 +94,19 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-[#121215]/70 via-[#121215]/20 to-transparent w-full md:w-3/5 lg:w-1/2" />
       </div>
 
-      <div className="relative z-10 w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh]">
-        <div className={`relative z-20 flex h-full flex-col justify-end pb-12 sm:pb-16 md:pb-20 ${PADDING_X_CLASSES}`}>
-          <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl text-left space-y-3 sm:space-y-4">
+      <div className="relative z-10 w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px]">
+        <div className={`relative z-20 flex h-full flex-col justify-end pt-24 pb-14 lg:pb-20 ${PADDING_X_CLASSES}`}>
+          <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl text-center lg:text-left space-y-3 sm:space-y-4 mx-auto lg:mx-0 flex flex-col items-center lg:items-start pb-10 lg:pb-0">
             <div>
               {logoUrl ? (
                 <img
                   src={logoUrl}
                   alt={title}
-                  className="max-h-28 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[290px] sm:max-w-[400px] md:max-w-[500px] object-contain object-left drop-shadow-lg"
+                  className="max-h-24 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[260px] sm:max-w-[400px] lg:max-w-[500px] object-contain mx-auto lg:mx-0 drop-shadow-lg"
                   draggable={false}
                 />
               ) : (
-                <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-5xl lg:text-6xl line-clamp-2">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg line-clamp-2 text-center lg:text-left">
                   {title}
                 </h1>
               )}
@@ -118,21 +118,22 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               runtime={formattedRuntime}
               genres={movie.genres}
               genreIds={movie.genre_ids}
+              className="hidden lg:flex"
             />
             
             {movie.tagline && (
-              <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
+              <p className="hidden lg:block text-sm lg:text-base italic text-white/80 drop-shadow text-center lg:text-left">
                 &ldquo;{movie.tagline}&rdquo;
               </p>
             )}
 
             {movie.overview && (
-              <p className="text-xs sm:text-sm md:text-base leading-relaxed text-white/75 line-clamp-2 md:line-clamp-3 max-w-xl drop-shadow">
+              <p className="text-sm lg:text-base leading-relaxed text-white/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
                 {movie.overview}
               </p>
             )}
 
-            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
               <button
                 type="button"
                 className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
