@@ -6,12 +6,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Play, Info } from 'lucide-react';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
-import { getMediaTitle, getMediaHref } from '@/lib/utils/media-format';
+import { getMediaTitle, getMediaHref, formatRuntime } from '@/lib/utils/media-format';
+import { MediaBadges } from './media-badges';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
 import { useTranslation } from '@/hooks/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { Skeleton } from '@/components/ui';
-import type { MediaItem } from '@/types/media';
+import type { MediaItem, MovieDetails, TVDetails } from '@/types/media';
 
 export interface BannerProps {
   item?: MediaItem;
@@ -46,6 +47,7 @@ export function Banner({
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [logosMap, setLogosMap] = useState<Record<string | number, string>>({});
+  const [detailsMap, setDetailsMap] = useState<Record<string | number, MovieDetails | TVDetails>>({});
 
   useEffect(() => {
     if (bannerItems.length <= 1) return;
@@ -55,7 +57,7 @@ export function Banner({
     return () => clearInterval(interval);
   }, [bannerItems.length, autoPlayInterval]);
 
-  // Preload images & logos in active target language
+  // Preload images, details & logos
   useEffect(() => {
     if (!bannerItems || bannerItems.length === 0) return;
 
@@ -70,6 +72,18 @@ export function Banner({
       }
 
       const itemType = (item.media_type as 'movie' | 'tv') || (mediaType !== 'all' ? mediaType : 'movie');
+      
+      // Preload metadata
+      TmdbApi.getMediaDetails<MovieDetails | TVDetails>(itemType, item.id, tmdbLanguage)
+        .then((details) => {
+          if (!isMounted) return;
+          if (details) {
+            setDetailsMap((prev) => ({ ...prev, [item.id]: details }));
+          }
+        })
+        .catch(() => {});
+
+      // Preload logos
       TmdbApi.getImages(itemType, item.id, tmdbLanguage)
         .then((res) => {
           if (!isMounted) return;
@@ -106,16 +120,34 @@ export function Banner({
 
   if (!activeItem) return null;
 
+  const activeDetails = activeItem.id ? detailsMap[activeItem.id] : null;
   const title = getMediaTitle(activeItem);
   const backdropUrl = getTmdbImage(
     activeItem.backdrop_path || activeItem.poster_path,
     'original'
   );
   const activeLogoUrl = activeItem.id ? logosMap[activeItem.id] : null;
-  const overview = activeItem.overview as string | undefined;
+  const overview = (activeDetails?.overview || activeItem.overview) as string | undefined;
+  const tagline = activeDetails?.tagline || activeItem.tagline;
 
   const itemType = (activeItem.media_type as 'movie' | 'tv') || (mediaType !== 'all' ? mediaType : 'movie');
   const href = getMediaHref(activeItem.id, itemType);
+
+  // Metadata badges
+  const rawVote = activeDetails?.vote_average ?? activeItem.vote_average;
+  const voteAverage = rawVote ? rawVote.toFixed(1) : null;
+
+  const releaseDateStr =
+    activeDetails?.release_date ||
+    activeItem.release_date ||
+    (activeDetails as TVDetails)?.first_air_date ||
+    activeItem.first_air_date;
+  const releaseYear = releaseDateStr ? new Date(releaseDateStr).getFullYear() : null;
+
+  const runtimeVal = activeDetails?.runtime ?? activeItem.runtime;
+  const formattedRuntime = runtimeVal ? formatRuntime(runtimeVal) : null;
+
+  const tvSeasons = (activeDetails as TVDetails)?.number_of_seasons ?? (activeItem as TVDetails)?.number_of_seasons;
 
   return (
     <div className="relative w-full h-[65vh] sm:h-[75vh] md:h-[82vh] lg:h-[88vh] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
@@ -145,7 +177,7 @@ export function Banner({
 
       <div className={`relative z-30 flex h-full flex-col justify-end pb-12 sm:pb-16 md:pb-20 ${PADDING_X_CLASSES}`}>
         <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl">
-          {/* Logo & Overview */}
+          {/* Logo, Badges, Tagline, Overview & Buttons */}
           <AnimatePresence mode="wait">
             <motion.div
               key={`content-${activeItem.id}`}
@@ -153,8 +185,9 @@ export function Banner({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+              className="space-y-3 sm:space-y-4 text-left"
             >
-              <div className="mb-4">
+              <div>
                 {activeLogoUrl ? (
                   <img
                     src={activeLogoUrl}
@@ -168,72 +201,95 @@ export function Banner({
                   </h1>
                 )}
               </div>
+
+              {/* Metadata Badges */}
+              <MediaBadges
+                voteAverage={voteAverage}
+                releaseYear={releaseYear}
+                runtime={formattedRuntime}
+                numberOfSeasons={tvSeasons}
+                genres={activeDetails?.genres || activeItem.genres}
+                genreIds={activeItem.genre_ids}
+                maxGenres={3}
+              />
+
+              {/* Tagline */}
+              {tagline && (
+                <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
+                  &ldquo;{tagline}&rdquo;
+                </p>
+              )}
+
+              {/* Overview */}
               {overview && (
                 <p className="text-xs sm:text-sm md:text-base leading-relaxed text-white/75 line-clamp-2 md:line-clamp-3 max-w-xl drop-shadow">
                   {overview}
                 </p>
               )}
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-2.5">
+                {href ? (
+                  <Link
+                    href={href}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    {t('common.watchNow', 'Watch Now')}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    {t('common.watchNow', 'Watch Now')}
+                  </button>
+                )}
+
+                {href ? (
+                  <Link
+                    href={href}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                  >
+                    <Info className="h-4 w-4" />
+                    {t('common.moreInfo', 'More Info')}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                  >
+                    <Info className="h-4 w-4" />
+                    {t('common.moreInfo', 'More Info')}
+                  </button>
+                )}
+              </div>
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-5 flex items-center gap-2.5">
-            {href ? (
-              <Link
-                href={href}
-                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
-              >
-                <Play className="h-4 w-4 fill-current" />
-                {t('common.watchNow', 'Watch now')}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
-              >
-                <Play className="h-4 w-4 fill-current" />
-                {t('common.watchNow', 'Watch now')}
-              </button>
-            )}
-            {href ? (
-              <Link
-                href={href}
-                className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
-              >
-                <Info className="h-4 w-4" />
-                {t('common.moreInfo', 'More info')}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
-              >
-                <Info className="h-4 w-4" />
-                {t('common.moreInfo', 'More info')}
-              </button>
-            )}
-          </div>
+          {/* Carousel Indicators */}
+          {bannerItems.length > 1 && (
+            <div className="absolute bottom-6 right-6 sm:right-8 lg:right-14 z-30 flex items-center gap-2">
+              {bannerItems.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    idx === currentIndex
+                      ? 'w-7 bg-white'
+                      : 'w-2 bg-white/40 hover:bg-white/70'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
-
-        {/* Carousel Indicators */}
-        {bannerItems.length > 1 && (
-          <div className="absolute bottom-6 right-6 sm:right-8 lg:right-14 z-30 flex items-center gap-2">
-            {bannerItems.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === currentIndex
-                    ? 'w-7 bg-white'
-                    : 'w-2 bg-white/40 hover:bg-white/70'
-                }`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
 }
 
 export default Banner;
+
