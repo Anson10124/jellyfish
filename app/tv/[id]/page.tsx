@@ -28,7 +28,7 @@ interface TvDetailPageProps {
 export default function TvDetailPage({ params }: TvDetailPageProps) {
   const resolvedParams = use(params);
   const tvId = resolvedParams.id;
-  const { t } = useTranslation();
+  const { t, formatDate } = useTranslation();
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number | null>(null);
 
@@ -231,13 +231,13 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             {tvShow.first_air_date && (
               <div>
                 <p className="text-white/50 font-medium">{t('tv.firstAirDate', 'First Air Date')}</p>
-                <p className="text-white/90 font-semibold mt-1">{tvShow.first_air_date}</p>
+                <p className="text-white/90 font-semibold mt-1">{formatDate(tvShow.first_air_date)}</p>
               </div>
             )}
             {tvShow.last_air_date && (
               <div>
                 <p className="text-white/50 font-medium">{t('tv.lastAirDate', 'Last Air Date')}</p>
-                <p className="text-white/90 font-semibold mt-1">{tvShow.last_air_date}</p>
+                <p className="text-white/90 font-semibold mt-1">{formatDate(tvShow.last_air_date)}</p>
               </div>
             )}
             {tvShow.number_of_seasons !== undefined && (

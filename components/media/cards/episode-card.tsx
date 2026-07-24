@@ -3,6 +3,7 @@
 import React from 'react';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { formatRuntime } from '@/lib/utils/media-format';
+import { useTranslation } from '@/hooks/use-translation';
 import type { Episode } from '@/types/media';
 import { Play, Film } from 'lucide-react';
 
@@ -12,12 +13,14 @@ export interface EpisodeCardProps {
 }
 
 export function EpisodeCard({ episode, className = '' }: EpisodeCardProps) {
+  const { formatDate } = useTranslation();
   const imageUrl = episode.still_path
     ? getTmdbImage(episode.still_path, 'w500')
     : null;
 
   const runtimeStr = formatRuntime(episode.runtime);
-  const subtitle = [episode.air_date, runtimeStr].filter(Boolean).join(' • ');
+  const formattedAirDate = formatDate(episode.air_date);
+  const subtitle = [formattedAirDate, runtimeStr].filter(Boolean).join(' • ');
 
   return (
     <div className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}>

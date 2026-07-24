@@ -9,6 +9,7 @@ import {
   getInitialLocale,
 } from '@/lib/i18n/config';
 import { translateKey } from '@/lib/i18n/translate';
+import { formatDate, FormatDateOptions } from '@/lib/utils/date-format';
 
 export type { Locale };
 
@@ -17,6 +18,7 @@ interface I18nContextType {
   setLocale: (locale: Locale) => void;
   tmdbLanguage: string;
   t: (key: string, defaultText?: string) => string;
+  formatDate: (dateInput?: string | number | Date | null, options?: FormatDateOptions) => string | null;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -54,14 +56,22 @@ export function I18nProvider({
     [locale]
   );
 
+  const formatDateBound = useCallback(
+    (dateInput?: string | number | Date | null, options?: FormatDateOptions): string | null => {
+      return formatDate(dateInput, locale, options);
+    },
+    [locale]
+  );
+
   const value = useMemo<I18nContextType>(
     () => ({
       locale,
       setLocale,
       tmdbLanguage: TMDB_LANGUAGE_MAP[locale] || TMDB_LANGUAGE_MAP[DEFAULT_LOCALE],
       t,
+      formatDate: formatDateBound,
     }),
-    [locale, setLocale, t]
+    [locale, setLocale, t, formatDateBound]
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
