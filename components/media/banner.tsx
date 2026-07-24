@@ -11,7 +11,6 @@ import { MediaBadges } from './media-badges';
 import { useTmdbMedia } from '@/hooks/use-tmdb-media';
 import { useTranslation } from '@/hooks/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
-import { Skeleton } from '@/components/ui';
 import type { MediaItem, MovieDetails, TVDetails } from '@/types/media';
 
 export interface BannerProps {
@@ -110,11 +109,15 @@ export function Banner({
 
   const activeItem = bannerItems[currentIndex] || initialItem;
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [activeItem?.id]);
+
   if (loading && !activeItem) {
     return (
-      <div className="w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] bg-white/5 mb-1">
-        <Skeleton className="h-full w-full rounded-none" />
-      </div>
+      <div className="w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] bg-[#0a0a0a] mb-1" />
     );
   }
 
@@ -150,15 +153,21 @@ export function Banner({
   const tvSeasons = (activeDetails as TVDetails)?.number_of_seasons ?? (activeItem as TVDetails)?.number_of_seasons;
 
   return (
-    <div className="relative w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] overflow-hidden bg-[#121215] border-none ring-0 rounded-none m-0 p-0 mb-1">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
+      className="relative w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] overflow-hidden bg-[#0a0a0a] border-none ring-0 rounded-none m-0 p-0 mb-1"
+    >
       <div className="absolute inset-0 select-none">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.img
             key={activeItem.id}
             src={backdropUrl}
             alt={title}
+            onLoad={() => setImageLoaded(true)}
             initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 1.04 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
             className="h-full w-full object-cover object-center"
@@ -168,7 +177,7 @@ export function Banner({
       </div>
 
       {/* Side Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#121215]/70 via-[#121215]/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/70 via-[#0a0a0a]/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
 
       {/* Bottom Overlay */}
       <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden">
@@ -288,7 +297,7 @@ export function Banner({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

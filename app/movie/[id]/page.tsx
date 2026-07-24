@@ -37,10 +37,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-[#121215] text-white">
-        <div className="w-full h-[80vh] min-h-[500px] sm:h-[80vh] sm:min-h-[560px] md:h-[82vh] lg:h-[88vh] bg-white/5">
-          <Skeleton className="h-full w-full rounded-none" />
-        </div>
+      <div className="w-full min-h-screen bg-[#0a0a0a] text-white">
+        <div className="w-full h-[80vh] min-h-[500px] sm:h-[80vh] sm:min-h-[560px] md:h-[82vh] lg:h-[88vh] bg-[#0a0a0a]" />
       </div>
     );
   }
