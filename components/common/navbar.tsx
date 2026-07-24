@@ -16,7 +16,7 @@ import {
 import { useTranslation } from '@/hooks/use-translation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CSS_SPRING_EASING } from '@/constants';
-import GradualBlur from '@/components/GradualBlur';
+import ProgressiveBlur from '@/components/ProgressiveBlur';
 import { LanguageSelector } from './language-selector';
 
 export function Navbar() {
@@ -104,9 +104,7 @@ export function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
-        <GradualBlur position="top" strength={1} target="parent" height="7rem" zIndex={40} />
-      </div>
+      <ProgressiveBlur position="top" height="7rem" fade />
 
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
       <nav className="relative flex items-center justify-between rounded-full bg-[#121215]/65 backdrop-blur-2xl border border-white/10 px-3 py-2 shadow-2xl text-neutral-200">
