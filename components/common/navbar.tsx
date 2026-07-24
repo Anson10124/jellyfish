@@ -16,6 +16,7 @@ import {
 import { useTranslation } from '@/hooks/use-translation';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CSS_SPRING_EASING } from '@/constants';
+import GradualBlur from '@/components/GradualBlur';
 import { LanguageSelector } from './language-selector';
 
 export function Navbar() {
@@ -23,6 +24,7 @@ export function Navbar() {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
+  const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,6 +32,15 @@ export function Navbar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [activePath, setActivePath] = useState(pathname);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     setActivePath(pathname);
@@ -92,7 +103,12 @@ export function Navbar() {
   }, [activeIndex]);
 
   return (
-    <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
+    <>
+      <div className="fixed top-0 left-0 right-0 z-40 pointer-events-none">
+        <GradualBlur position="top" strength={1} target="parent" height="7rem" zIndex={40} />
+      </div>
+
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
       <nav className="relative flex items-center justify-between rounded-full bg-[#121215]/65 backdrop-blur-2xl border border-white/10 px-3 py-2 shadow-2xl text-neutral-200">
         <div className="hidden md:flex items-center gap-1 relative">
           {pillStyle.ready && (
@@ -282,6 +298,7 @@ export function Navbar() {
           })}
         </div>
       )}
-    </header>
+      </header>
+    </>
   );
 }
