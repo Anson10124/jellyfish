@@ -24,11 +24,15 @@ export function useTmdbMedia({
   const { tmdbLanguage } = useTranslation();
   const [fetchedSlides, setFetchedSlides] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(() => !initialItems || initialItems.length === 0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const slides = initialItems && initialItems.length > 0 ? initialItems : fetchedSlides;
+  const hasMore = page < totalPages;
 
   const fetchData = useCallback(
-    async (page: number) => {
+    async (pageNumber: number) => {
       let res: TmdbPaginatedResponse<MediaItem>;
 
       if (genreId) {
@@ -37,13 +41,13 @@ export function useTmdbMedia({
           const tvGenreId = MOVIE_TO_TV_GENRE_MAP[genreId] || genreId;
 
           const [movieRes, tvRes] = await Promise.all([
-            TmdbApi.getByGenre<MediaItem>('movie', movieGenreId, page, tmdbLanguage).catch(() => ({
+            TmdbApi.getByGenre<MediaItem>('movie', movieGenreId, pageNumber, tmdbLanguage).catch(() => ({
               results: [],
               page: 1,
               total_pages: 1,
               total_results: 0,
             })),
-            TmdbApi.getByGenre<MediaItem>('tv', tvGenreId, page, tmdbLanguage).catch(() => ({
+            TmdbApi.getByGenre<MediaItem>('tv', tvGenreId, pageNumber, tmdbLanguage).catch(() => ({
               results: [],
               page: 1,
               total_pages: 1,
@@ -55,30 +59,30 @@ export function useTmdbMedia({
           const tvs = (tvRes.results || []).map((t) => ({ ...t, media_type: 'tv' }));
 
           res = {
-            page,
+            page: pageNumber,
             results: interleaveMediaItems(movies, tvs),
             total_pages: Math.max(movieRes.total_pages || 1, tvRes.total_pages || 1),
             total_results: (movieRes.total_results || 0) + (tvRes.total_results || 0),
           };
         } else if (mediaType === 'tv') {
           const tvGenreId = MOVIE_TO_TV_GENRE_MAP[genreId] || genreId;
-          res = await TmdbApi.getByGenre<MediaItem>('tv', tvGenreId, page, tmdbLanguage);
+          res = await TmdbApi.getByGenre<MediaItem>('tv', tvGenreId, pageNumber, tmdbLanguage);
         } else {
           const movieGenreId = TV_TO_MOVIE_GENRE_MAP[genreId] || genreId;
-          res = await TmdbApi.getByGenre<MediaItem>('movie', movieGenreId, page, tmdbLanguage);
+          res = await TmdbApi.getByGenre<MediaItem>('movie', movieGenreId, pageNumber, tmdbLanguage);
         }
       } else if (type === 'trending') {
-        res = await TmdbApi.getTrending<MediaItem>(mediaType, timeWindow, page, tmdbLanguage);
+        res = await TmdbApi.getTrending<MediaItem>(mediaType, timeWindow, pageNumber, tmdbLanguage);
       } else if (type === 'top_rated') {
         if (mediaType === 'all') {
           const [movieRes, tvRes] = await Promise.all([
-            TmdbApi.getTopRated<MediaItem>('movie', page, tmdbLanguage).catch(() => ({
+            TmdbApi.getTopRated<MediaItem>('movie', pageNumber, tmdbLanguage).catch(() => ({
               results: [],
               page: 1,
               total_pages: 1,
               total_results: 0,
             })),
-            TmdbApi.getTopRated<MediaItem>('tv', page, tmdbLanguage).catch(() => ({
+            TmdbApi.getTopRated<MediaItem>('tv', pageNumber, tmdbLanguage).catch(() => ({
               results: [],
               page: 1,
               total_pages: 1,
@@ -90,18 +94,18 @@ export function useTmdbMedia({
           const tvs = (tvRes.results || []).map((t) => ({ ...t, media_type: 'tv' }));
 
           res = {
-            page,
+            page: pageNumber,
             results: interleaveMediaItems(movies, tvs),
             total_pages: Math.max(movieRes.total_pages || 1, tvRes.total_pages || 1),
             total_results: (movieRes.total_results || 0) + (tvRes.total_results || 0),
           };
         } else {
-          res = await TmdbApi.getTopRated<MediaItem>(mediaType, page, tmdbLanguage);
+          res = await TmdbApi.getTopRated<MediaItem>(mediaType, pageNumber, tmdbLanguage);
         }
       } else if (mediaType === 'tv') {
-        res = await TmdbApi.getPopularTV<MediaItem>(page, tmdbLanguage);
+        res = await TmdbApi.getPopularTV<MediaItem>(pageNumber, tmdbLanguage);
       } else {
-        res = await TmdbApi.getPopularMovies<MediaItem>(page, tmdbLanguage);
+        res = await TmdbApi.getPopularMovies<MediaItem>(pageNumber, tmdbLanguage);
       }
 
       return res;
@@ -115,6 +119,9 @@ export function useTmdbMedia({
     }
 
     let isMounted = true;
+    setLoading(true);
+    setPage(1);
+    setTotalPages(1);
 
     const fetchInitialData = async () => {
       try {
@@ -122,6 +129,9 @@ export function useTmdbMedia({
 
         if (isMounted && res?.results) {
           setFetchedSlides(res.results);
+          if (res.total_pages) {
+            setTotalPages(res.total_pages);
+          }
         }
       } catch (err) {
         console.error('Failed to fetch media items:', err);
@@ -137,8 +147,38 @@ export function useTmdbMedia({
     };
   }, [fetchData, initialItems]);
 
+  const loadMore = useCallback(async () => {
+    if (loading || loadingMore || page >= totalPages) return;
+    setLoadingMore(true);
+
+    try {
+      const nextPage = page + 1;
+      const res = await fetchData(nextPage);
+
+      if (res?.results && res.results.length > 0) {
+        setFetchedSlides((prev) => {
+          const existingIds = new Set(prev.map((item) => item.id));
+          const newItems = res.results.filter((item) => !existingIds.has(item.id));
+          return [...prev, ...newItems];
+        });
+        setPage(nextPage);
+        if (res.total_pages) {
+          setTotalPages(res.total_pages);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load more media items:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [fetchData, loading, loadingMore, page, totalPages]);
+
   return {
     slides,
     loading,
+    loadingMore,
+    hasMore,
+    loadMore,
   };
 }
+
