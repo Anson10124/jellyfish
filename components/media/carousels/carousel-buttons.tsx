@@ -12,7 +12,7 @@ export const PrevButton: React.FC<React.ComponentPropsWithRef<'button'>> = ({
   const { t } = useTranslation();
   return (
     <button
-      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/80 text-white border border-zinc-700/50 shadow-md backdrop-blur-md transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
+      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/5 backdrop-blur-md transition-all hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
       type="button"
       disabled={disabled}
       aria-label={ariaLabel || t('carousel.previousSlide', 'Previous slide')}
@@ -34,7 +34,7 @@ export const NextButton: React.FC<React.ComponentPropsWithRef<'button'>> = ({
   const { t } = useTranslation();
   return (
     <button
-      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-zinc-900/80 text-white border border-zinc-700/50 shadow-md backdrop-blur-md transition-all hover:bg-zinc-800 hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
+      className={`relative z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/5 backdrop-blur-md transition-all hover:scale-105 active:scale-95 disabled:opacity-30 disabled:pointer-events-none ${className}`}
       type="button"
       disabled={disabled}
       aria-label={ariaLabel || t('carousel.nextSlide', 'Next slide')}
