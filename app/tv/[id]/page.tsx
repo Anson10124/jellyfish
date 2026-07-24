@@ -2,7 +2,7 @@
 
 import React, { useState, use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Star, Clock, Calendar, Bookmark, ArrowLeft, Tv } from 'lucide-react';
+import { Play, Film, Bookmark, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -13,12 +13,11 @@ import {
   formatAirYears,
   sortSeasons,
 } from '@/lib/utils/media-format';
-import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel } from '@/components/media';
+import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';
 import { TrailerModal } from '@/components/player';
 import type { TVDetails } from '@/types/media';
 
@@ -136,49 +135,14 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-              {voteAverage && (
-                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
-                  <Star className="h-4 w-4 text-white fill-white" />
-                  <span>{voteAverage}</span>
-                </div>
-              )}
-
-              {formattedAirYears && (
-                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
-                  <Calendar className="h-4 w-4 text-white/70" />
-                  <span>{formattedAirYears}</span>
-                </div>
-              )}
-
-              {tvShow.number_of_seasons !== undefined && (
-                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
-                  <Tv className="h-4 w-4 text-white/70" />
-                  <span>
-                    {tvShow.number_of_seasons}{' '}
-                    {tvShow.number_of_seasons === 1 ? t('tv.season', 'Season') : t('tv.seasons', 'Seasons')}
-                  </span>
-                </div>
-              )}
-
-              {episodeRuntime && (
-                <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80">
-                  <Clock className="h-4 w-4 text-white/70" />
-                  <span>{episodeRuntime}</span>
-                </div>
-              )}
-
-              {tvShow.genres && tvShow.genres.length > 0 && (
-                tvShow.genres.map((g) => (
-                  <span
-                    key={g.id}
-                    className="inline-flex h-9 items-center rounded-xl px-4 text-[13px] font-medium bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80"
-                  >
-                    {getGenreName(g.id, t) || g.name}
-                  </span>
-                ))
-              )}
-            </div>
+            <MediaBadges
+              voteAverage={voteAverage}
+              formattedAirYears={formattedAirYears}
+              numberOfSeasons={tvShow.number_of_seasons}
+              runtime={episodeRuntime}
+              genres={tvShow.genres}
+              genreIds={tvShow.genre_ids}
+            />
             
             {tvShow.tagline && (
               <p className="text-sm sm:text-base italic text-white/80 drop-shadow">
