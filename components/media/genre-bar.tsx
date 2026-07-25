@@ -3,22 +3,30 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
-import { MOVIE_GENRES, getGenreName } from '@/constants/genres';
+import { MOVIE_GENRES, TV_GENRES, getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
 
 interface GenreBarProps {
+  mediaType?: 'movie' | 'tv';
   selectedGenreId?: number | null;
   onSelectGenre?: (genreId: number | null) => void;
 }
 
-export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }: GenreBarProps) {
+export function GenreBar({
+  mediaType = 'movie',
+  selectedGenreId: propSelectedGenreId,
+  onSelectGenre,
+}: GenreBarProps) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const params = useParams();
   const pathname = usePathname();
+
+  const genres = mediaType === 'tv' ? TV_GENRES : MOVIE_GENRES;
+  const baseUrl = mediaType === 'tv' ? '/tv' : '/movie';
 
   const { emblaRef, emblaApi } = useEmblaNavigation({
     options: {
@@ -31,7 +39,7 @@ export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }
   let activeGenreId: number | null = null;
   if (propSelectedGenreId !== undefined) {
     activeGenreId = propSelectedGenreId;
-  } else if (params?.id && typeof params.id === 'string' && pathname?.includes('/movie/genre/')) {
+  } else if (params?.id && typeof params.id === 'string' && pathname?.includes(`${baseUrl}/genre/`)) {
     const parsed = parseInt(params.id, 10);
     activeGenreId = isNaN(parsed) ? null : parsed;
   }
@@ -41,12 +49,12 @@ export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }
     const activeIndex =
       activeGenreId === null
         ? 0
-        : MOVIE_GENRES.findIndex((g) => g.id === activeGenreId) + 1;
+        : genres.findIndex((g) => g.id === activeGenreId) + 1;
 
     if (activeIndex >= 0) {
       emblaApi.scrollTo(activeIndex, false);
     }
-  }, [emblaApi, isMobile, activeGenreId]);
+  }, [emblaApi, isMobile, activeGenreId, genres]);
 
   const renderGenreButtons = () => (
     <>
@@ -64,7 +72,7 @@ export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }
         </button>
       ) : (
         <Link
-          href="/movie"
+          href={baseUrl}
           className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl ${
             activeGenreId === null
               ? 'bg-white text-black shadow-md scale-[1.02]'
@@ -75,7 +83,7 @@ export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }
         </Link>
       )}
 
-      {MOVIE_GENRES.map((genre) => {
+      {genres.map((genre) => {
         const isSelected = activeGenreId === genre.id;
         const genreName = getGenreName(genre.id, t) || genre.name;
         const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer bg-[#121215]/65 backdrop-blur-xl ${
@@ -100,7 +108,7 @@ export function GenreBar({ selectedGenreId: propSelectedGenreId, onSelectGenre }
         return (
           <Link
             key={genre.id}
-            href={`/movie/genre/${genre.id}`}
+            href={`${baseUrl}/genre/${genre.id}`}
             className={buttonClasses}
           >
             {genreName}

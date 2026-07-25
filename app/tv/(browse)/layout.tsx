@@ -3,10 +3,10 @@
 import React from 'react';
 import { MediaBrowseLayout } from '@/components/media';
 
-export default function MovieBrowseLayout({
+export default function TvBrowseLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <MediaBrowseLayout mediaType="movie">{children}</MediaBrowseLayout>;
+  return <MediaBrowseLayout mediaType="tv">{children}</MediaBrowseLayout>;
 }

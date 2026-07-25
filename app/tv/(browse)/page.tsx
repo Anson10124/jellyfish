@@ -3,6 +3,6 @@
 import React from 'react';
 import { MediaBrowseView } from '@/components/media';
 
-export default function MoviesPage() {
-  return <MediaBrowseView mediaType="movie" />;
+export default function TvPage() {
+  return <MediaBrowseView mediaType="tv" />;
 }
