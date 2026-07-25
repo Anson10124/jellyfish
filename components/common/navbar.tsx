@@ -405,7 +405,7 @@ export function Navbar() {
               className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 text-neutral-300 hover:text-white`}
             >
               <Cable className="w-4 h-4" />
-              <span className="hidden lg:inline">Connect</span>
+              <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
             </button>
           </div>
         </nav>
