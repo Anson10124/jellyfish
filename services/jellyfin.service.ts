@@ -17,14 +17,21 @@ export const JellyfinService = {
     password?: string
   ): Promise<JellyfinAuthResult> {
     const deviceId = getStoredDeviceId();
-    return serverFetch<JellyfinAuthResult>(serverUrl, '/Users/AuthenticateByName', {
-      method: 'POST',
-      deviceId,
-      body: JSON.stringify({
-        Username: username,
-        Pw: password || '',
-      }),
-    });
+    try {
+      return await serverFetch<JellyfinAuthResult>(serverUrl, '/Users/AuthenticateByName', {
+        method: 'POST',
+        deviceId,
+        body: JSON.stringify({
+          Username: username,
+          Pw: password || '',
+        }),
+      });
+    } catch (err: any) {
+      if (err?.message?.includes('Server returned status 401')) {
+        throw new Error('AUTH_INVALID_CREDENTIALS');
+      }
+      throw err;
+    }
   },
 
   // Initiate Quick Connect session

@@ -149,6 +149,7 @@
       "couldNotConnect": "無法連接至 Jellyfin 伺服器。",
       "quickConnectFailed": "無法在伺服器上發起快速連接。",
       "enterUsername": "請輸入你的 Jellyfin 使用者名稱。",
+      "invalidCredentials": "使用者名稱或密碼錯誤",
       "loginFailed": "登入失敗，請檢查你的帳戶資訊。",
       "approveQuickConnect": "請先在你的 Jellyfin 伺服器上通過快速連接碼授權。",
       "quickConnectLoginFailed": "快速連接登入失敗。"

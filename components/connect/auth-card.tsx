@@ -41,7 +41,7 @@ export function AuthCard({
       {/* Username & Password Card */}
       <div
         onClick={() => onSelectMethod('credentials')}
-        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer"
+        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer min-h-[300px]"
       >
         <h2 className="text-xl font-bold text-white mb-2">
           {t('connect.credentialsTitle', 'Username and password')}
@@ -93,7 +93,7 @@ export function AuthCard({
       {/* Quick Connect Card */}
       <div
         onClick={() => onSelectMethod('quickconnect')}
-        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer"
+        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer min-h-[300px]"
       >
         <h2 className="text-xl font-bold text-white mb-2">
           {t('connect.quickConnectTitle', 'Quick Connect')}

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { JellyfinConfig, SeerrConfig, ServerConnectionState } from '@/types/server';
+import { useI18n } from '@/context/i18n-context';
 import {
   getStoredJellyfinConfig,
   setStoredJellyfinConfig,
@@ -28,6 +29,7 @@ interface ServerContextType {
 const ServerContext = createContext<ServerContextType | undefined>(undefined);
 
 export function ServerProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const [jellyfinConfig, setJellyfinConfig] = useState<JellyfinConfig | null>(null);
   const [seerrConfig, setSeerrConfig] = useState<SeerrConfig | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -114,7 +116,10 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
         return true;
       } catch (err: any) {
-        const errorMsg = err?.message || 'Authentication failed. Please check your username and password.';
+        const errorMsg =
+          err?.message === 'AUTH_INVALID_CREDENTIALS'
+            ? t('connect.errors.invalidCredentials', 'Incorrect username or password')
+            : err?.message || 'Authentication failed. Please check your username and password.';
         setConnectionState({
           status: 'error',
           error: errorMsg,

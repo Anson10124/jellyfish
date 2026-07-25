@@ -149,6 +149,7 @@
       "couldNotConnect": "Could not connect to Jellyfin server.",
       "quickConnectFailed": "Failed to initiate Quick Connect on server.",
       "enterUsername": "Please enter your Jellyfin username.",
+      "invalidCredentials": "Incorrect username or password",
       "loginFailed": "Login failed. Please check your credentials.",
       "approveQuickConnect": "Please approve the Quick Connect code on your Jellyfin server first.",
       "quickConnectLoginFailed": "Quick Connect login failed."

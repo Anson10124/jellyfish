@@ -120,7 +120,7 @@ export function AuthStep({
           ) : (
             <>
               <span>{t('connect.letsStart', "Let's start")}</span>
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="w-5 h-5" />
             </>
           )}
         </button>
