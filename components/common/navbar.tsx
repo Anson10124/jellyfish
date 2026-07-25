@@ -21,11 +21,51 @@ import { useTranslation } from '@/hooks/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useIsIOS } from '@/hooks/device/use-ios';
 import { useSearch } from '@/hooks/use-search';
+import { useServerContext } from '@/context/server-context';
+import { normalizeServerUrl } from '@/lib/api/fetch-client';
 import { CSS_SPRING_EASING } from '@/constants';
 import ProgressiveBlur from '@/components/ProgressiveBlur';
 import { LanguageSelector } from './language-selector';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
+
+function UserAvatar({
+  serverUrl,
+  userId,
+  tag,
+  username,
+}: {
+  serverUrl?: string;
+  userId?: string;
+  tag?: string;
+  username?: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [serverUrl, userId, tag]);
+
+  if (serverUrl && userId && !hasError) {
+    const base = normalizeServerUrl(serverUrl);
+    const avatarUrl = `${base}/Users/${userId}/Images/Primary${tag ? `?tag=${tag}` : ''}`;
+    return (
+      <img
+        src={avatarUrl}
+        alt={username || 'User'}
+        onError={() => setHasError(true)}
+        className="w-4 h-4 rounded-full object-cover shrink-0"
+      />
+    );
+  }
+
+  const initial = username ? username.charAt(0).toUpperCase() : '?';
+  return (
+    <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold text-white shrink-0 leading-none">
+      {initial}
+    </div>
+  );
+}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -33,6 +73,9 @@ export function Navbar() {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const isIOS = useIsIOS();
+  const { jellyfinConfig, isInitialized } = useServerContext();
+
+  const isConnected = isInitialized && Boolean(jellyfinConfig?.username);
 
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -157,8 +200,11 @@ export function Navbar() {
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, ready: false });
 
   const updatePill = () => {
-    const targetIdx = activeIndex !== -1 ? activeIndex : 0;
-    const currentTab = tabRefs.current[targetIdx];
+    if (activeIndex === -1) {
+      setPillStyle((prev) => ({ ...prev, ready: false }));
+      return;
+    }
+    const currentTab = tabRefs.current[activeIndex];
     if (currentTab) {
       setPillStyle({
         left: currentTab.offsetLeft,
@@ -264,7 +310,7 @@ export function Navbar() {
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <nav className="relative flex items-center justify-between rounded-full bg-[#121215]/65 backdrop-blur-2xl border border-white/10 px-3 py-2 shadow-2xl text-neutral-200">
           <div className="hidden md:flex items-center gap-1 relative">
-            {pillStyle.ready && (
+            {activeIndex !== -1 && pillStyle.ready && (
               <div
                 className="absolute top-0 bottom-0 my-auto h-full bg-white/15 rounded-full shadow-md z-0 pointer-events-none"
                 style={{
@@ -279,7 +325,7 @@ export function Navbar() {
 
             {navItems.map((item, index) => {
               const Icon = item.icon;
-              const isActive = (activeIndex === -1 && index === 0) || activeIndex === index;
+              const isActive = activeIndex === index;
 
               return (
                 <Link
@@ -310,7 +356,7 @@ export function Navbar() {
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <span className="text-sm font-semibold text-white px-2">
-              {navItems[activeIndex !== -1 ? activeIndex : 0]?.label || 'Home'}
+              {activeIndex !== -1 ? navItems[activeIndex]?.label : (pathname === '/connect' ? t('nav.connect', 'Connect') : '')}
             </span>
           </div>
 
@@ -401,12 +447,35 @@ export function Navbar() {
                 </button>
               )}
             </div>
-            <button
-              className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 text-neutral-300 hover:text-white`}
+            <Link
+              href="/connect"
+              className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 ${
+                pathname === '/connect'
+                  ? 'bg-white/15 text-white font-semibold shadow-md'
+                  : 'text-neutral-300 hover:text-white'
+              }`}
             >
-              <Cable className="w-4 h-4" />
-              <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
-            </button>
+              {isConnected && jellyfinConfig ? (
+                <>
+                  <UserAvatar
+                    serverUrl={jellyfinConfig.serverUrl}
+                    userId={jellyfinConfig.userId}
+                    tag={jellyfinConfig.userPrimaryImageTag}
+                    username={jellyfinConfig.username}
+                  />
+                  <span className="hidden lg:inline truncate">
+                    {jellyfinConfig.username.length > 8
+                      ? `${jellyfinConfig.username.slice(0, 8)}...`
+                      : jellyfinConfig.username}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Cable className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
+                </>
+              )}
+            </Link>
           </div>
         </nav>
 
@@ -501,7 +570,7 @@ export function Navbar() {
           <div className="md:hidden mt-3 rounded-2xl bg-[#121215]/85 backdrop-blur-2xl border border-white/15 p-3 shadow-2xl flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
             {navItems.map((item, index) => {
               const Icon = item.icon;
-              const isActive = (activeIndex === -1 && index === 0) || activeIndex === index;
+              const isActive = activeIndex === index;
 
               return (
                 <Link

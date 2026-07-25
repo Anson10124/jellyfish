@@ -8,7 +8,8 @@
     "tvShow": "影集",
     "search": "搜尋",
     "all": "全部",
-    "back": "返回"
+    "back": "返回",
+    "githubRepo": "檢視 Jellyfish GitHub 儲存庫"
   },
   "nav": {
     "home": "首頁",
@@ -60,7 +61,7 @@
     "originalLanguage": "原始語言",
     "production": "製作公司",
     "similarMovies": "相似電影",
-    "recommendations": "為您推薦"
+    "recommendations": "為你推薦"
   },
   "tv": {
     "title": "影集",
@@ -115,5 +116,42 @@
     "10766": "肥皂劇",
     "10767": "脫口秀",
     "10768": "戰爭與政治"
+  },
+  "connect": {
+    "title": "連接你的 Jellyfin 伺服器",
+    "subtitle": "Jellyfish 直接在你的瀏覽器中運行。你的伺服器位址與憑據皆安全地保留在你的本機裝置上。",
+    "serverUrlPlaceholder": "http://localhost:8096",
+    "testing": "測試中...",
+    "verified": "已驗證",
+    "checkServer": "檢查伺服器",
+    "connectedTo": "已連接至",
+    "continue": "繼續",
+    "changeServer": "更換伺服器",
+    "loginTitle": "你想如何登入？",
+    "loginSubtitle": "選擇你偏好的登入方式：",
+    "credentialsTitle": "使用者名稱與密碼",
+    "credentialsDesc": "使用你的 Jellyfin 帳號密碼直接登入。",
+    "usernamePlaceholder": "使用者名稱",
+    "passwordPlaceholder": "密碼（若未設定可留空）",
+    "quickConnectTitle": "快速連接",
+    "quickConnectDesc": "無需輸入使用者名稱與密碼即可登入。此方法需要在你的 Jellyfin 伺服器上進行授權。",
+    "generatingQc": "正在產生快速連接碼...",
+    "yourQcCode": "你的快速連接碼",
+    "qcAuthorized": "已授權！請點擊下方的「開始體驗」。",
+    "qcWaiting": "等待伺服器端授權中...",
+    "generateQcCode": "產生快速連接碼",
+    "connecting": "連接中...",
+    "letsStart": "開始體驗",
+    "defaultServerName": "Jellyfin 伺服器",
+    "latestVersion": "最新版本",
+    "errors": {
+      "enterServerAddress": "請輸入你的 Jellyfin 伺服器位址。",
+      "couldNotConnect": "無法連接至 Jellyfin 伺服器。",
+      "quickConnectFailed": "無法在伺服器上發起快速連接。",
+      "enterUsername": "請輸入你的 Jellyfin 使用者名稱。",
+      "loginFailed": "登入失敗，請檢查你的帳戶資訊。",
+      "approveQuickConnect": "請先在你的 Jellyfin 伺服器上通過快速連接碼授權。",
+      "quickConnectLoginFailed": "快速連接登入失敗。"
+    }
   }
 }

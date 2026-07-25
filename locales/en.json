@@ -8,7 +8,8 @@
     "tvShow": "TV Show",
     "search": "Search",
     "all": "All",
-    "back": "Back"
+    "back": "Back",
+    "githubRepo": "View the Jellyfish GitHub repository"
   },
   "nav": {
     "home": "Home",
@@ -115,5 +116,42 @@
     "10766": "Soap Opera",
     "10767": "Talk Show",
     "10768": "War & Politics"
+  },
+  "connect": {
+    "title": "Connect with your Jellyfin server to get started",
+    "subtitle": "Jellyfish runs in your browser. Your server address and credentials stay safely on your local device.",
+    "serverUrlPlaceholder": "http://localhost:8096",
+    "testing": "Testing...",
+    "verified": "Verified",
+    "checkServer": "Check Server",
+    "connectedTo": "Connected to",
+    "continue": "Continue",
+    "changeServer": "Change Server",
+    "loginTitle": "How would you like to log in?",
+    "loginSubtitle": "Choose your preferred login method for",
+    "credentialsTitle": "Username and password",
+    "credentialsDesc": "Log in directly using your standard Jellyfin account credentials.",
+    "usernamePlaceholder": "Username",
+    "passwordPlaceholder": "Password (optional if none set)",
+    "quickConnectTitle": "Quick Connect",
+    "quickConnectDesc": "Log in without entering your username and password. This method requires approval on your Jellyfin server.",
+    "generatingQc": "Generating Quick Connect Code...",
+    "yourQcCode": "Your Quick Connect Code",
+    "qcAuthorized": "Authorized! Click Let's start below.",
+    "qcWaiting": "Waiting for approval on server...",
+    "generateQcCode": "Generate Quick Connect Code",
+    "connecting": "Connecting...",
+    "letsStart": "Let's start",
+    "defaultServerName": "Jellyfin Server",
+    "latestVersion": "Latest",
+    "errors": {
+      "enterServerAddress": "Please enter your Jellyfin server address.",
+      "couldNotConnect": "Could not connect to Jellyfin server.",
+      "quickConnectFailed": "Failed to initiate Quick Connect on server.",
+      "enterUsername": "Please enter your Jellyfin username.",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "approveQuickConnect": "Please approve the Quick Connect code on your Jellyfin server first.",
+      "quickConnectLoginFailed": "Quick Connect login failed."
+    }
   }
 }

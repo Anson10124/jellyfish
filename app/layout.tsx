@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/context/i18n-context";
+import { ServerProvider } from "@/context/server-context";
 import { Navbar } from "@/components/common";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
@@ -39,8 +40,10 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-foreground">
         <I18nProvider initialLocale={initialLocale}>
-          <Navbar />
-          {children}
+          <ServerProvider>
+            <Navbar />
+            {children}
+          </ServerProvider>
         </I18nProvider>
       </body>
     </html>
