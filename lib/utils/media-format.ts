@@ -1,5 +1,6 @@
 import { GENRE_MAP, getGenreName } from '@/constants/genres';
 import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry } from '@/types/media';
+import { JellyfinService } from '@/services/jellyfin.service';
 
 export { formatDate, type FormatDateOptions } from './date-format';
 
@@ -144,3 +145,21 @@ export function interleaveMediaItems(movies: MediaItem[] = [], tvs: MediaItem[] 
   }
   return combined;
 }
+
+export function getJellyfinPosterInfo(item: { Id: string; Type: string; ProviderIds?: Record<string, string>; GenreItems?: Array<{ Name: string; Id: string }>; Genres?: string[] }, serverUrl?: string) {
+  const isTv = item.Type === 'Series' || item.Type === 'Season' || item.Type === 'Episode';
+  const mediaId = item.ProviderIds?.Tmdb || item.ProviderIds?.tmdb || item.Id;
+  const primaryGenre = item.GenreItems?.[0]?.Name || item.Genres?.[0];
+  const posterUrl =
+    serverUrl && item.Id
+      ? JellyfinService.getImageUrl(serverUrl, item.Id, { width: 400, type: 'Primary' })
+      : '';
+
+  return {
+    mediaId,
+    mediaType: (isTv ? 'tv' : 'movie') as 'tv' | 'movie',
+    primaryGenre,
+    posterUrl,
+  };
+}
+

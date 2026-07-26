@@ -1,5 +1,5 @@
 import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
-import { JellyfinAuthResult, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
+import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 
 export const JellyfinService = {
@@ -66,6 +66,40 @@ export const JellyfinService = {
     return res.Items || [];
   },
 
+  // Get items in a library
+  async getItems(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    options: {
+      parentId?: string;
+      startIndex?: number;
+      limit?: number;
+      recursive?: boolean;
+      sortBy?: string;
+      sortOrder?: 'Ascending' | 'Descending';
+      includeItemTypes?: string;
+    } = {}
+  ): Promise<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }> {
+    const params = new URLSearchParams();
+    if (options.parentId) params.set('ParentId', options.parentId);
+    if (options.recursive ?? true) params.set('Recursive', 'true');
+    if (options.startIndex !== undefined) params.set('StartIndex', options.startIndex.toString());
+    if (options.limit !== undefined) params.set('Limit', options.limit.toString());
+    if (options.sortBy) params.set('SortBy', options.sortBy);
+    if (options.sortOrder) params.set('SortOrder', options.sortOrder);
+    if (options.includeItemTypes) params.set('IncludeItemTypes', options.includeItemTypes);
+    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems');
+
+    const endpoint = `/Users/${userId}/Items?${params.toString()}`;
+    return serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(serverUrl, endpoint, { token });
+  },
+
+  // Get single item / library details by ID
+  async getItem(serverUrl: string, userId: string, token: string, itemId: string): Promise<JellyfinBaseItem> {
+    return serverFetch<JellyfinBaseItem>(serverUrl, `/Users/${userId}/Items/${itemId}`, { token });
+  },
+
   // Construct stream URL
   getStreamUrl(serverUrl: string, itemId: string, token: string): string {
     const base = normalizeServerUrl(serverUrl);
@@ -86,3 +120,4 @@ export const JellyfinService = {
     return query ? `${url}?${query}` : url;
   },
 };
+

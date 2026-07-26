@@ -6,3 +6,5 @@ export * from './carousels';
 export * from './media-browse-layout';
 export * from './media-browse-view';
 export * from './genre-browse-view';
+export * from './library-browse-view';
+export * from './poster-grid';

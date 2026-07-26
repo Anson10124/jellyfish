@@ -5,5 +5,9 @@ export function getTmdbImage(path: string | null | undefined, size: ImageSize = 
     return 'https://placehold.co/500x750?text=No+Image';
   }
 
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+
   return `https://image.tmdb.org/t/p/${size}${path}`;
 }

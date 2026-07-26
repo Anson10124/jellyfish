@@ -27,7 +27,11 @@ export function useJellyfinLibraries() {
         jellyfinConfig.userId,
         jellyfinConfig.accessToken
       );
-      setLibraries(views);
+      const filtered = views.filter((lib) => {
+        const type = lib.CollectionType?.toLowerCase();
+        return type === 'movies' || type === 'tvshows';
+      });
+      setLibraries(filtered);
     } catch (err: any) {
       console.error('Failed to fetch Jellyfin libraries:', err);
       setError(err?.message || 'Failed to load libraries');

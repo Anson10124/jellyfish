@@ -49,9 +49,14 @@ export interface JellyfinBaseItem {
   Name: string;
   ServerId?: string;
   Type: string;
+  IsFolder?: boolean;
+  MediaType?: string;
+  CollectionType?: string;
+  ProviderIds?: Record<string, string>;
   Overview?: string;
   Taglines?: string[];
   Genres?: string[];
+  GenreItems?: Array<{ Name: string; Id: string }>;
   RunTimeTicks?: number;
   ProductionYear?: number;
   PremiereDate?: string;
@@ -68,3 +73,4 @@ export interface JellyfinBaseItem {
   IndexNumber?: number;
   ParentIndexNumber?: number;
 }
+
