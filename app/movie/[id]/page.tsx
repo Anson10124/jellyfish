@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { use } from 'react';
 import { motion } from 'motion/react';
 import { Play, Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
@@ -11,13 +11,11 @@ import {
   formatCurrency,
   processCastAndCrew,
   formatCountryOfOrigin,
-  ticksToSeconds,
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
-import { useServerConfig } from '@/hooks/use-server-config';
-import { JellyfinService } from '@/services/jellyfin.service';
+import { usePlayer } from '@/hooks/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, MediaBadges } from '@/components/media';
@@ -31,10 +29,16 @@ interface MovieDetailPageProps {
 export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const resolvedParams = use(params);
   const movieId = resolvedParams.id;
-  const { jellyfinConfig } = useServerConfig();
   const { t, formatDate } = useTranslation();
-  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
-  const [isVideoPlayerOpen, setIsVideoPlayerOpen] = useState(false);
+
+  const {
+    activeVideo,
+    isTrailerOpen,
+    playMovie,
+    closeVideo,
+    playTrailer,
+    closeTrailer,
+  } = usePlayer();
 
   const { media: movie, logoUrl, trailerKey, loading } = useMediaDetails<MovieDetails>(
     movieId,
@@ -47,13 +51,6 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     year: movie?.release_date ? new Date(movie.release_date).getFullYear() : null,
     mediaType: 'movie',
   });
-
-  const streamUrl =
-    jellyfinConfig && jellyfinItem?.Id
-      ? JellyfinService.getStreamUrl(jellyfinConfig.serverUrl, jellyfinItem.Id, jellyfinConfig.accessToken, jellyfinItem)
-      : null;
-
-  const initialTimeInSeconds = ticksToSeconds(jellyfinItem?.UserData?.PlaybackPositionTicks);
 
   if (loading) {
     return (
@@ -94,6 +91,14 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
 
   const voteAverage = movie.vote_average ? movie.vote_average.toFixed(1) : null;
   const castList = processCastAndCrew(movie.credits, 16);
+
+  const handleWatchNow = () => {
+    playMovie({
+      jellyfinItem,
+      title,
+      posterUrl: backdropUrl,
+    });
+  };
 
   return (
     <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#121215] text-white">
@@ -157,7 +162,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               ) : isAvailable ? (
                 <button
                   type="button"
-                  onClick={() => setIsVideoPlayerOpen(true)}
+                  onClick={handleWatchNow}
                   className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
                 >
                   <Play className="h-4 w-4 fill-current" />
@@ -176,7 +181,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               {trailerKey && (
                 <button
                   type="button"
-                  onClick={() => setIsTrailerOpen(true)}
+                  onClick={playTrailer}
                   className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
                 >
                   <Film className="h-4 w-4 text-red-400" />
@@ -273,7 +278,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
       {trailerKey && (
         <TrailerModal
           isOpen={isTrailerOpen}
-          onClose={() => setIsTrailerOpen(false)}
+          onClose={closeTrailer}
           videoKey={trailerKey}
           title={title}
         />
@@ -281,13 +286,13 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
 
       {/* Video Player Modal */}
       <VideoPlayerModal
-        isOpen={isVideoPlayerOpen}
-        onClose={() => setIsVideoPlayerOpen(false)}
-        src={streamUrl}
-        title={title}
-        poster={backdropUrl}
-        initialTimeInSeconds={initialTimeInSeconds}
-        itemId={jellyfinItem?.Id}
+        isOpen={Boolean(activeVideo)}
+        onClose={closeVideo}
+        src={activeVideo?.src}
+        title={activeVideo?.title}
+        poster={activeVideo?.poster}
+        initialTimeInSeconds={activeVideo?.initialTimeInSeconds}
+        itemId={activeVideo?.itemId}
       />
     </main>
   );

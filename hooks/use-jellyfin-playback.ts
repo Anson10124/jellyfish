@@ -3,7 +3,7 @@ import { useServerConfig } from '@/hooks/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { secondsToTicks } from '@/lib/utils/media-format';
 
-interface UseJellyfinPlaybackOptions {
+export interface UseJellyfinPlaybackOptions {
   itemId?: string;
   isOpen: boolean;
 }
@@ -45,6 +45,15 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
     [canReport, serverUrl, accessToken, itemId]
   );
 
+  const handleStop = useCallback(() => {
+    if (isStartedRef.current && serverUrl && accessToken && itemId) {
+      const ticks = secondsToTicks(currentTimeRef.current);
+      JellyfinService.reportPlaybackStopped(serverUrl, accessToken, itemId, ticks);
+      isStartedRef.current = false;
+    }
+  }, [serverUrl, accessToken, itemId]);
+
+  // Periodic heartbeat reporting playback progress every 5s
   useEffect(() => {
     if (!canReport || !serverUrl || !accessToken || !itemId) {
       if (intervalRef.current) {
@@ -75,14 +84,7 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
     };
   }, [canReport, serverUrl, accessToken, itemId]);
 
-  const handleStop = useCallback(() => {
-    if (isStartedRef.current && serverUrl && accessToken && itemId) {
-      const ticks = secondsToTicks(currentTimeRef.current);
-      JellyfinService.reportPlaybackStopped(serverUrl, accessToken, itemId, ticks);
-      isStartedRef.current = false;
-    }
-  }, [serverUrl, accessToken, itemId]);
-
+  // Stop reporting on unmount if still active
   useEffect(() => {
     return () => {
       if (isStartedRef.current && serverUrl && accessToken && itemId) {

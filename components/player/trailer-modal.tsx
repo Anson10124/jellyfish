@@ -4,16 +4,14 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
-
-interface TrailerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  videoKey?: string;
-  title?: string;
-}
+import { useScrollLock } from '@/hooks/use-scroll-lock';
+import type { TrailerModalProps } from '@/types/player';
 
 export function TrailerModal({ isOpen, onClose, videoKey, title }: TrailerModalProps) {
   const { t } = useTranslation();
+
+  // Lock background scroll when trailer is active
+  useScrollLock(isOpen);
 
   if (!isOpen || !videoKey) return null;
 

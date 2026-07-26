@@ -8,18 +8,11 @@ import { createPlayer } from '@videojs/react';
 import { VideoSkin, Video, videoFeatures } from '@videojs/react/video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 import { useJellyfinPlayback } from '@/hooks/use-jellyfin-playback';
+import { useScrollLock } from '@/hooks/use-scroll-lock';
+import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
+import type { VideoPlayerModalProps } from '@/types/player';
 
 const Player = createPlayer({ features: videoFeatures });
-
-export interface VideoPlayerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  src?: string | null;
-  title?: string;
-  poster?: string;
-  initialTimeInSeconds?: number;
-  itemId?: string;
-}
 
 export function VideoPlayerModal({
   isOpen,
@@ -33,37 +26,24 @@ export function VideoPlayerModal({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  // Lock background scrolling while player is active
+  useScrollLock(isOpen);
+
   const { handleStart, handleTimeUpdate, handleStateChange, handleStop } = useJellyfinPlayback({
     itemId,
     isOpen,
   });
 
-  // Hide document scrollbar when player modal is open
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-    const originalHtmlOverflowY = document.documentElement.style.overflowY;
-    const originalBodyOverflow = document.body.style.overflow;
-
-    document.documentElement.style.overflow = 'hidden';
-    document.documentElement.style.overflowY = 'hidden';
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.documentElement.style.overflow = originalHtmlOverflow;
-      document.documentElement.style.overflowY = originalHtmlOverflowY;
-      document.body.style.overflow = originalBodyOverflow;
-    };
-  }, [isOpen]);
-
+  // Restore saved volume and mute preferences from localStorage
   useEffect(() => {
     if (!isOpen || !videoRef.current) return;
     const video = videoRef.current;
-    video.muted = false;
-    video.volume = 1.0;
+    const { volume, muted } = getStoredPlayerConfig();
+    video.volume = volume;
+    video.muted = muted;
   }, [isOpen, src]);
 
+  // Close player on Escape key press
   useEffect(() => {
     if (!isOpen) return;
 
@@ -80,11 +60,20 @@ export function VideoPlayerModal({
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
-    video.muted = false;
-    video.volume = 1.0;
+    const { volume, muted } = getStoredPlayerConfig();
+    video.volume = volume;
+    video.muted = muted;
     if (initialTimeInSeconds > 0 && initialTimeInSeconds < video.duration) {
       video.currentTime = initialTimeInSeconds;
     }
+  };
+
+  const handleVolumeChange = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    setStoredPlayerConfig({
+      volume: video.volume,
+      muted: video.muted,
+    });
   };
 
   const handlePlayEvent = (e: React.SyntheticEvent<HTMLVideoElement>) => {
@@ -122,6 +111,7 @@ export function VideoPlayerModal({
     playsInline: true,
     autoPlay: true,
     onLoadedMetadata: handleLoadedMetadata,
+    onVolumeChange: handleVolumeChange,
     onPlay: handlePlayEvent,
     onPause: handlePauseEvent,
     onEnded: handleEndedEvent,

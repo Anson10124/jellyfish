@@ -2,7 +2,7 @@
 
 import React, { useState, use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Bookmark, ArrowLeft, Plus, CloudDownload } from 'lucide-react';
+import { Play, Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -12,13 +12,11 @@ import {
   formatCountryOfOrigin,
   formatAirYears,
   sortSeasons,
-  ticksToSeconds,
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
-import { useServerConfig } from '@/hooks/use-server-config';
-import { JellyfinService } from '@/services/jellyfin.service';
+import { usePlayer } from '@/hooks/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';
@@ -33,16 +31,17 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   const resolvedParams = use(params);
   const tvId = resolvedParams.id;
   const { t, formatDate } = useTranslation();
-  const { jellyfinConfig } = useServerConfig();
-  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number | null>(null);
-  const [activeVideo, setActiveVideo] = useState<{
-    src: string;
-    title: string;
-    poster?: string;
-    initialTimeInSeconds?: number;
-    itemId?: string;
-  } | null>(null);
+
+  const {
+    activeVideo,
+    isTrailerOpen,
+    playMovie,
+    playEpisode,
+    closeVideo,
+    playTrailer,
+    closeTrailer,
+  } = usePlayer();
 
   const { media: tvShow, logoUrl, trailerKey, loading } = useMediaDetails<TVDetails>(
     tvId,
@@ -57,36 +56,19 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   });
 
   const handlePlaySeries = () => {
-    if (!jellyfinConfig || !jellyfinItem?.Id) return;
-    const src = JellyfinService.getStreamUrl(
-      jellyfinConfig.serverUrl,
-      jellyfinItem.Id,
-      jellyfinConfig.accessToken,
-      jellyfinItem
-    );
-    const initialTimeInSeconds = ticksToSeconds(jellyfinItem?.UserData?.PlaybackPositionTicks);
-    setActiveVideo({
-      src,
+    playMovie({
+      jellyfinItem,
       title: tvShow?.name || tvShow?.original_name || 'TV Show',
-      poster: getTmdbImage(tvShow?.backdrop_path || tvShow?.poster_path, 'original'),
-      initialTimeInSeconds,
-      itemId: jellyfinItem.Id,
+      posterUrl: getTmdbImage(tvShow?.backdrop_path || tvShow?.poster_path, 'original'),
     });
   };
 
   const handlePlayEpisode = (episode: Episode) => {
-    if (!jellyfinConfig || !jellyfinItem?.Id) return;
-    const src = JellyfinService.getStreamUrl(
-      jellyfinConfig.serverUrl,
-      jellyfinItem.Id,
-      jellyfinConfig.accessToken
-    );
-    setActiveVideo({
-      src,
-      title: `${tvShow?.name || 'TV Show'} - S${episode.season_number} E${episode.episode_number}: ${episode.name}`,
-      poster: getTmdbImage(episode.still_path || tvShow?.backdrop_path, 'original'),
-      initialTimeInSeconds: 0,
-      itemId: jellyfinItem.Id,
+    playEpisode({
+      jellyfinItem,
+      seriesTitle: tvShow?.name || 'TV Show',
+      episode,
+      posterUrl: tvShow?.backdrop_path,
     });
   };
 
@@ -253,7 +235,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
               {trailerKey && (
                 <button
                   type="button"
-                  onClick={() => setIsTrailerOpen(true)}
+                  onClick={playTrailer}
                   className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
                 >
                   <Film className="h-4 w-4 text-red-400" />
@@ -391,7 +373,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
       {trailerKey && (
         <TrailerModal
           isOpen={isTrailerOpen}
-          onClose={() => setIsTrailerOpen(false)}
+          onClose={closeTrailer}
           videoKey={trailerKey}
           title={title}
         />
@@ -400,7 +382,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
       {/* Video Player Modal */}
       <VideoPlayerModal
         isOpen={Boolean(activeVideo)}
-        onClose={() => setActiveVideo(null)}
+        onClose={closeVideo}
         src={activeVideo?.src}
         title={activeVideo?.title}
         poster={activeVideo?.poster}
