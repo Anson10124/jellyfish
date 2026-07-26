@@ -10,9 +10,10 @@ import { Play, Film } from 'lucide-react';
 export interface EpisodeCardProps {
   episode: Episode;
   className?: string;
+  onPlay?: (episode: Episode) => void;
 }
 
-export function EpisodeCard({ episode, className = '' }: EpisodeCardProps) {
+export function EpisodeCard({ episode, className = '', onPlay }: EpisodeCardProps) {
   const { formatDate } = useTranslation();
   const imageUrl = episode.still_path
     ? getTmdbImage(episode.still_path, 'w500')
@@ -23,7 +24,10 @@ export function EpisodeCard({ episode, className = '' }: EpisodeCardProps) {
   const subtitle = [formattedAirDate, runtimeStr].filter(Boolean).join(' • ');
 
   return (
-    <div className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}>
+    <div
+      onClick={() => onPlay?.(episode)}
+      className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
+    >
       <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-white/4 shadow-lg ring-1 ring-white/5 transition duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
         {imageUrl ? (
           <img

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { EPISODE_SLIDE_WIDTH_CLASS } from '@/constants/carousel';
-import type { Season } from '@/types/media';
+import type { Episode, Season } from '@/types/media';
 import { EpisodeCard } from '@/components/media/cards/episode-card';
 import { CarouselHeader } from './carousel-header';
 import { useTranslation } from '@/hooks/use-translation';
@@ -15,12 +15,14 @@ interface EpisodeCarouselProps {
   tvId: string | number;
   season: Season;
   title?: string;
+  onPlayEpisode?: (episode: Episode) => void;
 }
 
 export function EpisodeCarousel({
   tvId,
   season,
   title,
+  onPlayEpisode,
 }: EpisodeCarouselProps) {
   const { t } = useTranslation();
   const { episodes, loading } = useTvSeasonDetails(tvId, season?.season_number);
@@ -66,7 +68,7 @@ export function EpisodeCarousel({
     >
       {episodes.map((ep) => (
         <div key={ep.id || ep.episode_number} className={EPISODE_SLIDE_WIDTH_CLASS}>
-          <EpisodeCard episode={ep} />
+          <EpisodeCard episode={ep} onPlay={onPlayEpisode} />
         </div>
       ))}
     </CarouselWrapper>

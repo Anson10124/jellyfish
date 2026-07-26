@@ -12,15 +12,18 @@ import {
   formatCountryOfOrigin,
   formatAirYears,
   sortSeasons,
+  ticksToSeconds,
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
+import { useServerConfig } from '@/hooks/use-server-config';
+import { JellyfinService } from '@/services/jellyfin.service';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';
-import { TrailerModal } from '@/components/player';
-import type { TVDetails } from '@/types/media';
+import { TrailerModal, VideoPlayerModal } from '@/components/player';
+import type { Episode, TVDetails } from '@/types/media';
 
 interface TvDetailPageProps {
   params: Promise<{ id: string }>;
@@ -30,8 +33,16 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   const resolvedParams = use(params);
   const tvId = resolvedParams.id;
   const { t, formatDate } = useTranslation();
+  const { jellyfinConfig } = useServerConfig();
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number | null>(null);
+  const [activeVideo, setActiveVideo] = useState<{
+    src: string;
+    title: string;
+    poster?: string;
+    initialTimeInSeconds?: number;
+    itemId?: string;
+  } | null>(null);
 
   const { media: tvShow, logoUrl, trailerKey, loading } = useMediaDetails<TVDetails>(
     tvId,
@@ -44,6 +55,40 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
     year: tvShow?.first_air_date ? new Date(tvShow.first_air_date).getFullYear() : null,
     mediaType: 'tv',
   });
+
+  const handlePlaySeries = () => {
+    if (!jellyfinConfig || !jellyfinItem?.Id) return;
+    const src = JellyfinService.getStreamUrl(
+      jellyfinConfig.serverUrl,
+      jellyfinItem.Id,
+      jellyfinConfig.accessToken,
+      jellyfinItem
+    );
+    const initialTimeInSeconds = ticksToSeconds(jellyfinItem?.UserData?.PlaybackPositionTicks);
+    setActiveVideo({
+      src,
+      title: tvShow?.name || tvShow?.original_name || 'TV Show',
+      poster: getTmdbImage(tvShow?.backdrop_path || tvShow?.poster_path, 'original'),
+      initialTimeInSeconds,
+      itemId: jellyfinItem.Id,
+    });
+  };
+
+  const handlePlayEpisode = (episode: Episode) => {
+    if (!jellyfinConfig || !jellyfinItem?.Id) return;
+    const src = JellyfinService.getStreamUrl(
+      jellyfinConfig.serverUrl,
+      jellyfinItem.Id,
+      jellyfinConfig.accessToken
+    );
+    setActiveVideo({
+      src,
+      title: `${tvShow?.name || 'TV Show'} - S${episode.season_number} E${episode.episode_number}: ${episode.name}`,
+      poster: getTmdbImage(episode.still_path || tvShow?.backdrop_path, 'original'),
+      initialTimeInSeconds: 0,
+      itemId: jellyfinItem.Id,
+    });
+  };
 
   const hasMissingEpisodes = React.useMemo(() => {
     if (!isAvailable || !jellyfinItem || !tvShow) return true;
@@ -178,6 +223,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                 <>
                   <button
                     type="button"
+                    onClick={handlePlaySeries}
                     className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
                   >
                     <Play className="h-4 w-4 fill-current" />
@@ -245,6 +291,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                 <EpisodeCarousel
                   tvId={tvId}
                   season={selectedSeason}
+                  onPlayEpisode={handlePlayEpisode}
                 />
               </div>
             )}
@@ -349,6 +396,17 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
           title={title}
         />
       )}
+
+      {/* Video Player Modal */}
+      <VideoPlayerModal
+        isOpen={Boolean(activeVideo)}
+        onClose={() => setActiveVideo(null)}
+        src={activeVideo?.src}
+        title={activeVideo?.title}
+        poster={activeVideo?.poster}
+        initialTimeInSeconds={activeVideo?.initialTimeInSeconds}
+        itemId={activeVideo?.itemId}
+      />
     </main>
   );
 }

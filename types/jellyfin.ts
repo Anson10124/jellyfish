@@ -44,6 +44,48 @@ export interface JellyfinUserView {
   Locations?: string[];
 }
 
+export interface JellyfinUserData {
+  PlaybackPositionTicks?: number;
+  PlayCount?: number;
+  IsFavorite?: boolean;
+  Played?: boolean;
+  UnplayedItemCount?: number;
+}
+
+export interface JellyfinMediaStream {
+  Codec?: string;
+  CodecTag?: string;
+  Language?: string;
+  TimeBase?: string;
+  Title?: string;
+  DisplayTitle?: string;
+  IsInterlaced?: boolean;
+  ChannelLayout?: string;
+  Channels?: number;
+  BitRate?: number;
+  SampleRate?: number;
+  IsDefault?: boolean;
+  IsForced?: boolean;
+  Type?: 'Audio' | 'Video' | 'Subtitle';
+  Index?: number;
+}
+
+export interface JellyfinMediaSource {
+  Id?: string;
+  Path?: string;
+  Protocol?: string;
+  Container?: string;
+  Size?: number;
+  Name?: string;
+  IsRemote?: boolean;
+  ETag?: string;
+  RunTimeTicks?: number;
+  SupportsDirectPlay?: boolean;
+  SupportsDirectStream?: boolean;
+  SupportsTranscoding?: boolean;
+  MediaStreams?: JellyfinMediaStream[];
+}
+
 export interface JellyfinBaseItem {
   Id: string;
   Name: string;
@@ -54,6 +96,7 @@ export interface JellyfinBaseItem {
   CollectionType?: string;
   RecursiveItemCount?: number;
   ChildCount?: number;
+  UserData?: JellyfinUserData;
   ProviderIds?: Record<string, string>;
   Overview?: string;
   Taglines?: string[];
@@ -74,5 +117,7 @@ export interface JellyfinBaseItem {
   SeasonId?: string;
   IndexNumber?: number;
   ParentIndexNumber?: number;
+  MediaSources?: JellyfinMediaSource[];
+  MediaStreams?: JellyfinMediaStream[];
 }
 

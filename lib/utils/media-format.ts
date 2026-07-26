@@ -163,3 +163,13 @@ export function getJellyfinPosterInfo(item: { Id: string; Type: string; Provider
   };
 }
 
+export function secondsToTicks(seconds: number): number {
+  if (isNaN(seconds) || seconds < 0) return 0;
+  return Math.floor(seconds * 10000000);
+}
+
+export function ticksToSeconds(ticks?: number | null): number {
+  if (!ticks || isNaN(ticks) || ticks < 0) return 0;
+  return ticks / 10000000;
+}
+

@@ -2,6 +2,35 @@ import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
 import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 
+const JELLYFIN_DEFAULT_FIELDS =
+  'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount,UserData,MediaSources';
+
+function extractAudioStreamInfo(item?: JellyfinBaseItem | null) {
+  const primaryMediaSource = item?.MediaSources?.[0];
+  const mediaSourceId = primaryMediaSource?.Id || item?.Id;
+  const runTimeTicks = primaryMediaSource?.RunTimeTicks || item?.RunTimeTicks;
+  const container = (primaryMediaSource?.Container || '').toLowerCase();
+
+  const streams = primaryMediaSource?.MediaStreams || item?.MediaStreams;
+  let audioStreamIndex: number | undefined;
+  let audioCodec: string | undefined;
+
+  if (streams && streams.length > 0) {
+    const audioStreams = streams.filter((s) => s.Type === 'Audio');
+    if (audioStreams.length > 0) {
+      const defaultAudio = audioStreams.find((s) => s.IsDefault) || audioStreams[0];
+      if (defaultAudio.Index !== undefined) {
+        audioStreamIndex = defaultAudio.Index;
+      }
+      if (defaultAudio.Codec) {
+        audioCodec = defaultAudio.Codec.toLowerCase();
+      }
+    }
+  }
+
+  return { primaryMediaSource, mediaSourceId, runTimeTicks, container, audioStreamIndex, audioCodec };
+}
+
 export const JellyfinService = {
   // Test connection
   async testConnection(serverUrl: string): Promise<JellyfinPublicSystemInfo> {
@@ -89,7 +118,7 @@ export const JellyfinService = {
     if (options.sortBy) params.set('SortBy', options.sortBy);
     if (options.sortOrder) params.set('SortOrder', options.sortOrder);
     if (options.includeItemTypes) params.set('IncludeItemTypes', options.includeItemTypes);
-    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
+    params.set('Fields', JELLYFIN_DEFAULT_FIELDS);
 
     const endpoint = `/Users/${userId}/Items?${params.toString()}`;
     return serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(serverUrl, endpoint, { token });
@@ -97,7 +126,7 @@ export const JellyfinService = {
 
   // Get single item / library details by ID
   async getItem(serverUrl: string, userId: string, token: string, itemId: string): Promise<JellyfinBaseItem> {
-    return serverFetch<JellyfinBaseItem>(serverUrl, `/Users/${userId}/Items/${itemId}`, { token });
+    return serverFetch<JellyfinBaseItem>(serverUrl, `/Users/${userId}/Items/${itemId}?Fields=MediaSources`, { token });
   },
 
   // Search items by Provider ID and optional Title
@@ -118,7 +147,7 @@ export const JellyfinService = {
       searchParams.set('SearchTerm', title);
       searchParams.set('Recursive', 'true');
       if (includeItemTypes) searchParams.set('IncludeItemTypes', includeItemTypes);
-      searchParams.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
+      searchParams.set('Fields', JELLYFIN_DEFAULT_FIELDS);
 
       try {
         const searchRes = await serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(
@@ -150,7 +179,7 @@ export const JellyfinService = {
     params.set('AnyProviderIdEquals', `${provider}.${providerId}`);
     params.set('Recursive', 'true');
     if (includeItemTypes) params.set('IncludeItemTypes', includeItemTypes);
-    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
+    params.set('Fields', JELLYFIN_DEFAULT_FIELDS);
 
     const endpoint = `/Users/${userId}/Items?${params.toString()}`;
     const response = await serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(
@@ -170,10 +199,41 @@ export const JellyfinService = {
     };
   },
 
-  // Construct stream URL
-  getStreamUrl(serverUrl: string, itemId: string, token: string): string {
+  // Construct stream URL for browser playback
+  getStreamUrl(serverUrl: string, itemId: string, token: string, item?: JellyfinBaseItem | null): string {
     const base = normalizeServerUrl(serverUrl);
-    return `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`;
+    const deviceId = getStoredDeviceId();
+
+    const { primaryMediaSource, mediaSourceId, container, audioStreamIndex, audioCodec } = extractAudioStreamInfo(item);
+
+    const isBrowserDirectPlayAudio = audioCodec === 'aac' || audioCodec === 'mp3' || audioCodec === 'flac';
+    const isBrowserDirectPlayContainer = container === 'mp4' || container === 'm4v' || container === 'webm';
+
+    if (isBrowserDirectPlayAudio && isBrowserDirectPlayContainer && primaryMediaSource?.SupportsDirectPlay !== false) {
+      return `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`;
+    }
+
+    const audioIndex = audioStreamIndex !== undefined ? audioStreamIndex : 1;
+
+    const params = new URLSearchParams({
+      DeviceId: deviceId,
+      MediaSourceId: mediaSourceId || itemId,
+      VideoCodec: 'av1,hevc,h264,vp9',
+      AudioCodec: 'aac',
+      AudioStreamIndex: audioIndex.toString(),
+      VideoBitrate: '140000000',
+      AudioBitrate: '384000',
+      TranscodingMaxAudioChannels: '2',
+      MaxAudioChannels: '2',
+      RequireAvc: 'false',
+      EnableAudioVbrEncoding: 'true',
+      SegmentContainer: 'mp4',
+      MinSegments: '1',
+      BreakOnNonKeyFrames: 'false',
+      api_key: token,
+    });
+
+    return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;
   },
 
   // Construct primary image URL
@@ -188,6 +248,73 @@ export const JellyfinService = {
 
     const query = params.toString();
     return query ? `${url}?${query}` : url;
+  },
+
+  // Report playback start
+  async reportPlaybackStart(
+    serverUrl: string,
+    token: string,
+    itemId: string,
+    positionTicks: number = 0
+  ): Promise<void> {
+    try {
+      await serverFetch(serverUrl, '/Sessions/Playing', {
+        method: 'POST',
+        token,
+        body: JSON.stringify({
+          ItemId: itemId,
+          PlayMethod: 'DirectPlay',
+          PositionTicks: positionTicks,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to report playback start:', err);
+    }
+  },
+
+  // Report playback progress heartbeat
+  async reportPlaybackProgress(
+    serverUrl: string,
+    token: string,
+    itemId: string,
+    positionTicks: number = 0,
+    isPaused: boolean = false
+  ): Promise<void> {
+    try {
+      await serverFetch(serverUrl, '/Sessions/Playing/Progress', {
+        method: 'POST',
+        token,
+        body: JSON.stringify({
+          ItemId: itemId,
+          PlayMethod: 'DirectPlay',
+          PositionTicks: positionTicks,
+          IsPaused: isPaused,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to report playback progress:', err);
+    }
+  },
+
+  // Report playback stopped
+  async reportPlaybackStopped(
+    serverUrl: string,
+    token: string,
+    itemId: string,
+    positionTicks: number = 0
+  ): Promise<void> {
+    try {
+      await serverFetch(serverUrl, '/Sessions/Playing/Stopped', {
+        method: 'POST',
+        token,
+        body: JSON.stringify({
+          ItemId: itemId,
+          PositionTicks: positionTicks,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to report playback stopped:', err);
+    }
   },
 };
 
