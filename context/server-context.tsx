@@ -1,27 +1,38 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { JellyfinConfig, SeerrConfig, ServerConnectionState } from '@/types/server';
 import { useI18n } from '@/context/i18n-context';
 import {
-  getStoredJellyfinConfig,
-  setStoredJellyfinConfig,
+  getStoredServers,
+  setStoredServers,
+  addStoredServer,
+  removeStoredServer,
+  setActiveStoredServerId,
+  getStoredDeviceId,
   getStoredSeerrConfig,
   setStoredSeerrConfig,
-  getStoredDeviceId,
+  generateServerId,
 } from '@/lib/storage/server-storage';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { JellyfinPublicSystemInfo } from '@/types/jellyfin';
 import { normalizeServerUrl } from '@/lib/api/fetch-client';
 
 interface ServerContextType {
+  servers: JellyfinConfig[];
+  activeServerId: string | null;
+  activeServer: JellyfinConfig | null;
   jellyfinConfig: JellyfinConfig | null;
-  seerrConfig: SeerrConfig | null;
   connectionState: ServerConnectionState;
   isInitialized: boolean;
+
+  seerrConfig: SeerrConfig | null;
+
   verifyServerUrl: (url: string) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string }>;
   connectWithPassword: (serverUrl: string, username: string, password?: string) => Promise<boolean>;
   connectWithQuickConnect: (serverUrl: string, secret: string) => Promise<boolean>;
+  switchServer: (serverId: string) => void;
+  removeServer: (serverId: string) => void;
   disconnectJellyfin: () => void;
   saveSeerrConfig: (config: SeerrConfig) => void;
 }
@@ -30,24 +41,35 @@ const ServerContext = createContext<ServerContextType | undefined>(undefined);
 
 export function ServerProvider({ children }: { children: React.ReactNode }) {
   const { t } = useI18n();
-  const [jellyfinConfig, setJellyfinConfig] = useState<JellyfinConfig | null>(null);
+  const [servers, setServers] = useState<JellyfinConfig[]>([]);
+  const [activeServerId, setActiveServerId] = useState<string | null>(null);
   const [seerrConfig, setSeerrConfig] = useState<SeerrConfig | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [connectionState, setConnectionState] = useState<ServerConnectionState>({
     status: 'disconnected',
   });
 
+  const activeServer = useMemo(
+    () => servers.find((s) => s.id === activeServerId) ?? null,
+    [servers, activeServerId]
+  );
+
   useEffect(() => {
-    const storedJf = getStoredJellyfinConfig();
+    const store = getStoredServers();
     const storedSeerr = getStoredSeerrConfig();
 
-    if (storedJf) {
-      setJellyfinConfig(storedJf);
-      setConnectionState({
-        status: 'connected',
-        serverName: storedJf.serverName,
-        version: storedJf.version,
-      });
+    if (store.servers.length > 0) {
+      setServers(store.servers);
+      setActiveServerId(store.activeServerId);
+
+      const active = store.servers.find((s) => s.id === store.activeServerId);
+      if (active) {
+        setConnectionState({
+          status: 'connected',
+          serverName: active.serverName,
+          version: active.version,
+        });
+      }
     }
 
     if (storedSeerr) {
@@ -55,6 +77,12 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     }
 
     setIsInitialized(true);
+  }, []);
+
+  const persistState = useCallback((newServers: JellyfinConfig[], newActiveId: string | null) => {
+    setServers(newServers);
+    setActiveServerId(newActiveId);
+    setStoredServers({ servers: newServers, activeServerId: newActiveId });
   }, []);
 
   const verifyServerUrl = useCallback(async (url: string) => {
@@ -93,8 +121,12 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       try {
         const authResult = await JellyfinService.authenticateByName(normalized, username, password);
         const info = await JellyfinService.testConnection(normalized).catch(() => undefined);
+        const existingServer = servers.find(
+          (s) => s.serverUrl === normalized && s.userId === authResult.User.Id
+        );
 
         const newConfig: JellyfinConfig = {
+          id: existingServer?.id || generateServerId(),
           serverUrl: normalized,
           username: authResult.User.Name,
           accessToken: authResult.AccessToken,
@@ -105,8 +137,13 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
           userPrimaryImageTag: authResult.User.PrimaryImageTag,
         };
 
-        setStoredJellyfinConfig(newConfig);
-        setJellyfinConfig(newConfig);
+        const updatedServers = existingServer
+          ? servers.map((s) => (s.id === existingServer.id ? newConfig : s))
+          : [...servers, newConfig];
+
+        persistState(updatedServers, newConfig.id);
+        addStoredServer(newConfig);
+
         setConnectionState({
           status: 'connected',
           serverName: newConfig.serverName,
@@ -127,7 +164,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         throw new Error(errorMsg);
       }
     },
-    []
+    [servers, persistState, t]
   );
 
   const connectWithQuickConnect = useCallback(
@@ -141,12 +178,10 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
           throw new Error('Quick connect is not yet authorized on your Jellyfin server.');
         }
 
-        // Token is returned in Authentication or Secret after approval
         const token = check.Authentication;
         const info = await JellyfinService.testConnection(normalized).catch(() => undefined);
         const deviceId = getStoredDeviceId();
 
-        // Get user details using token
         const userRes = await fetch(`${normalized}/Users/Me`, {
           headers: {
             'X-Emby-Authorization': `MediaBrowser Client="Jellyfish", Device="Web", DeviceId="${deviceId}", Version="0.1.0", Token="${token}"`,
@@ -158,8 +193,12 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         }
 
         const userData = await userRes.json();
+        const existingServer = servers.find(
+          (s) => s.serverUrl === normalized && s.userId === userData.Id
+        );
 
         const newConfig: JellyfinConfig = {
+          id: existingServer?.id || generateServerId(),
           serverUrl: normalized,
           username: userData.Name,
           accessToken: token,
@@ -170,8 +209,13 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
           userPrimaryImageTag: userData.PrimaryImageTag,
         };
 
-        setStoredJellyfinConfig(newConfig);
-        setJellyfinConfig(newConfig);
+        const updatedServers = existingServer
+          ? servers.map((s) => (s.id === existingServer.id ? newConfig : s))
+          : [...servers, newConfig];
+
+        persistState(updatedServers, newConfig.id);
+        addStoredServer(newConfig);
+
         setConnectionState({
           status: 'connected',
           serverName: newConfig.serverName,
@@ -189,36 +233,103 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         throw new Error(errorMsg);
       }
     },
-    []
+    [servers, persistState]
+  );
+
+  const switchServer = useCallback(
+    (serverId: string) => {
+      const target = servers.find((s) => s.id === serverId);
+      if (!target) return;
+
+      setActiveServerId(serverId);
+      setActiveStoredServerId(serverId);
+      setConnectionState({
+        status: 'connected',
+        serverName: target.serverName,
+        version: target.version,
+        error: null,
+      });
+    },
+    [servers]
+  );
+
+  const removeServerHandler = useCallback(
+    (serverId: string) => {
+      const updatedServers = servers.filter((s) => s.id !== serverId);
+      const newActiveId =
+        activeServerId === serverId
+          ? updatedServers.length > 0
+            ? updatedServers[0].id
+            : null
+          : activeServerId;
+
+      persistState(updatedServers, newActiveId);
+      removeStoredServer(serverId);
+
+      if (newActiveId) {
+        const newActive = updatedServers.find((s) => s.id === newActiveId);
+        if (newActive) {
+          setConnectionState({
+            status: 'connected',
+            serverName: newActive.serverName,
+            version: newActive.version,
+            error: null,
+          });
+        }
+      } else {
+        setConnectionState({ status: 'disconnected' });
+      }
+    },
+    [servers, activeServerId, persistState]
   );
 
   const disconnectJellyfin = useCallback(() => {
-    setStoredJellyfinConfig(null);
-    setJellyfinConfig(null);
-    setConnectionState({
-      status: 'disconnected',
-    });
-  }, []);
+    if (activeServerId) {
+      removeServerHandler(activeServerId);
+    }
+  }, [activeServerId, removeServerHandler]);
 
   const saveSeerrConfig = useCallback((config: SeerrConfig) => {
     setStoredSeerrConfig(config);
     setSeerrConfig(config);
   }, []);
 
+  const value = useMemo<ServerContextType>(
+    () => ({
+      servers,
+      activeServerId,
+      activeServer,
+      jellyfinConfig: activeServer,
+      connectionState,
+      isInitialized,
+      seerrConfig,
+      verifyServerUrl,
+      connectWithPassword,
+      connectWithQuickConnect,
+      switchServer,
+      removeServer: removeServerHandler,
+      disconnectJellyfin,
+      saveSeerrConfig,
+    }),
+    [
+      servers,
+      activeServerId,
+      activeServer,
+      connectionState,
+      isInitialized,
+      seerrConfig,
+      verifyServerUrl,
+      connectWithPassword,
+      connectWithQuickConnect,
+      switchServer,
+      removeServerHandler,
+      disconnectJellyfin,
+      saveSeerrConfig,
+    ]
+  );
+
   return (
-    <ServerContext.Provider
-      value={{
-        jellyfinConfig,
-        seerrConfig,
-        connectionState,
-        isInitialized,
-        verifyServerUrl,
-        connectWithPassword,
-        connectWithQuickConnect,
-        disconnectJellyfin,
-        saveSeerrConfig,
-      }}
-    >
+    <ServerContext.Provider value={value}>
       {children}
     </ServerContext.Provider>
   );

@@ -1,6 +1,7 @@
 export type ConnectionStatus = 'disconnected' | 'testing' | 'connected' | 'error';
 
 export interface JellyfinConfig {
+  id: string;
   serverUrl: string;
   username: string;
   accessToken: string;
@@ -11,6 +12,11 @@ export interface JellyfinConfig {
   serverName?: string;
   version?: string;
   userPrimaryImageTag?: string;
+}
+
+export interface MultiServerStore {
+  servers: JellyfinConfig[];
+  activeServerId: string | null;
 }
 
 export interface SeerrConfig {

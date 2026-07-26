@@ -19,6 +19,7 @@ export function useConnectFlow() {
   const { t } = useTranslation();
   const {
     jellyfinConfig,
+    servers,
     connectWithPassword,
     connectWithQuickConnect,
     verifyServerUrl,
@@ -50,8 +51,10 @@ export function useConnectFlow() {
 
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Only pre-fill the server URL when there are no servers yet (reconnecting).
+  // When adding a new server (servers.length > 0), start with a fresh form.
   useEffect(() => {
-    if (jellyfinConfig?.serverUrl) {
+    if (servers.length === 0 && jellyfinConfig?.serverUrl) {
       setServerUrl(jellyfinConfig.serverUrl);
       handleCheckServer(jellyfinConfig.serverUrl);
     }

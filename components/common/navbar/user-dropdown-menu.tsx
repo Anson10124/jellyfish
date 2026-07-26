@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Server, LogOut, ChevronLeft, Plus, Check } from 'lucide-react';
 import { JellyfinConfig } from '@/types/server';
+import { useServerConfig } from '@/hooks/use-server-config';
 
 interface UserDropdownMenuProps {
   userDropdownOpen: boolean;
@@ -24,11 +26,11 @@ export function UserDropdownMenu({
   setUserDropdownOpen,
   t,
 }: UserDropdownMenuProps) {
+  const router = useRouter();
+  const { servers, activeServerId, switchServer, removeServer } = useServerConfig();
   const [view, setView] = useState<'main' | 'servers'>('main');
   const [direction, setDirection] = useState<number>(1);
-  const [activeServerId, setActiveServerId] = useState<string>('server-1');
 
-  // Reset view state when dropdown closes
   useEffect(() => {
     if (!userDropdownOpen) {
       setView('main');
@@ -38,18 +40,27 @@ export function UserDropdownMenu({
 
   if (!userDropdownOpen || !isConnected || !jellyfinConfig) return null;
 
-  const servers = [
-    {
-      id: 'server-1',
-      name: 'Server 1',
-      url: jellyfinConfig.serverUrl || 'http://localhost:8096',
-    },
-    {
-      id: 'server-2',
-      name: 'Server 2',
-      url: 'http://192.168.1.100:8096',
-    },
-  ];
+  const handleSwitchServer = (serverId: string) => {
+    if (serverId === activeServerId) return;
+    switchServer(serverId);
+    setUserDropdownOpen(false);
+  };
+
+  const handleAddServer = () => {
+    setUserDropdownOpen(false);
+    router.push('/connect');
+  };
+
+  const handleSignOut = () => {
+    if (activeServerId) {
+      removeServer(activeServerId);
+    }
+    setUserDropdownOpen(false);
+    // If no servers remain, redirect to connect page
+    if (servers.length <= 1) {
+      router.push('/connect');
+    }
+  };
 
   const contentVariants = {
     enter: (dir: number) => ({
@@ -84,15 +95,13 @@ export function UserDropdownMenu({
           right: userDropdownPos.right !== undefined ? `${userDropdownPos.right}px` : '12px',
         }}
       >
-        {/* User Header */}
         <div className="px-3 py-2 border-b border-white/10 mb-1">
           <p className="text-xs font-semibold text-white truncate">{jellyfinConfig.username}</p>
-          {jellyfinConfig.serverUrl && (
-            <p className="text-[11px] text-neutral-400 truncate">{jellyfinConfig.serverUrl}</p>
+          {jellyfinConfig.serverName && (
+            <p className="text-[11px] text-neutral-400 truncate">{jellyfinConfig.serverName}</p>
           )}
         </div>
 
-        {/* Sub-content*/}
         <motion.div layout className="relative overflow-hidden">
           <AnimatePresence mode="wait" custom={direction} initial={false}>
             {view === 'main' ? (
@@ -119,13 +128,18 @@ export function UserDropdownMenu({
                     <Server className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors duration-150 shrink-0" />
                     <span className="truncate">{t('nav.changeServer', 'Change Server')}</span>
                   </div>
-                  <ChevronLeft className="w-3.5 h-3.5 text-neutral-500 rotate-180 transition-all duration-150 shrink-0" />
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {servers.length > 1 && (
+                      <span className="text-[10px] text-neutral-500 tabular-nums">{servers.length}</span>
+                    )}
+                    <ChevronLeft className="w-3.5 h-3.5 text-neutral-500 rotate-180 transition-all duration-150 shrink-0" />
+                  </div>
                 </motion.button>
 
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
-                  onClick={() => setUserDropdownOpen(false)}
+                  onClick={handleSignOut}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <LogOut className="w-4 h-4 text-rose-400 shrink-0 group-hover:scale-105 transition-transform duration-150" />
@@ -143,7 +157,6 @@ export function UserDropdownMenu({
                 transition={slideTransition}
                 className="space-y-0.5"
               >
-                {/* Back Option */}
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
@@ -157,7 +170,6 @@ export function UserDropdownMenu({
                   <span>{t('nav.back', 'Back')}</span>
                 </motion.button>
 
-                {/* Server List */}
                 <div className="space-y-0.5">
                   {servers.map((server) => {
                     const isActive = activeServerId === server.id;
@@ -166,20 +178,35 @@ export function UserDropdownMenu({
                         key={server.id}
                         whileTap={{ scale: 0.98 }}
                         type="button"
-                        onClick={() => setActiveServerId(server.id)}
+                        onClick={() => handleSwitchServer(server.id)}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 ease-out cursor-pointer group ${
                           isActive
                             ? 'bg-white/10 text-white shadow-sm'
                             : 'text-neutral-300 hover:text-white hover:bg-white/[0.08]'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2.5 min-w-0 text-left">
                           <Server
                             className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
                               isActive ? 'text-white' : 'text-neutral-400 group-hover:text-white'
                             }`}
                           />
-                          <span className="truncate">{server.name}</span>
+                          <div className="min-w-0 flex-1 text-left">
+                            <span
+                              className={`block truncate text-xs font-semibold leading-tight ${
+                                isActive ? 'text-white' : 'text-neutral-200 group-hover:text-white'
+                              }`}
+                            >
+                              {server.serverName || server.serverUrl}
+                            </span>
+                            <span
+                              className={`block truncate text-[11px] leading-tight mt-0.5 ${
+                                isActive ? 'text-white/70' : 'text-neutral-400 group-hover:text-neutral-300'
+                              }`}
+                            >
+                              {server.username}
+                            </span>
+                          </div>
                         </div>
                         {isActive && (
                           <div className="flex items-center gap-1 shrink-0">
@@ -191,16 +218,12 @@ export function UserDropdownMenu({
                   })}
                 </div>
 
-                {/* Divider */}
                 <div className="border-t border-white/10 my-1" />
 
-                {/* Add Server Option */}
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
-                  onClick={() => {
-                    // UI only action
-                  }}
+                  onClick={handleAddServer}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <div className="w-4 h-4 rounded-md bg-white/10 group-hover:bg-white/20 flex items-center justify-center transition-colors duration-150 shrink-0">
@@ -216,5 +239,3 @@ export function UserDropdownMenu({
     </AnimatePresence>
   );
 }
-
-
