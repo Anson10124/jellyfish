@@ -30,13 +30,30 @@ export function UserDropdownMenu({
   const { servers, activeServerId, switchServer, removeServer } = useServerConfig();
   const [view, setView] = useState<'main' | 'servers'>('main');
   const [direction, setDirection] = useState<number>(1);
+  const [contentHeight, setContentHeight] = useState<number | 'auto'>('auto');
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!userDropdownOpen) {
       setView('main');
       setDirection(1);
+      setContentHeight('auto');
     }
   }, [userDropdownOpen]);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const h = entry.contentRect.height;
+        if (h > 0) {
+          setContentHeight(h);
+        }
+      }
+    });
+    observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, [view, userDropdownOpen]);
 
   if (!userDropdownOpen || !isConnected || !jellyfinConfig) return null;
 
@@ -102,19 +119,24 @@ export function UserDropdownMenu({
           )}
         </div>
 
-        <motion.div layout className="relative overflow-hidden">
-          <AnimatePresence mode="wait" custom={direction} initial={false}>
-            {view === 'main' ? (
-              <motion.div
-                key="main"
-                custom={direction}
-                variants={contentVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="space-y-0.5"
-              >
+        <motion.div
+          animate={{ height: contentHeight }}
+          transition={slideTransition}
+          className="relative overflow-hidden"
+        >
+          <div ref={contentRef} className="relative w-full">
+            <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+              {view === 'main' ? (
+                <motion.div
+                  key="main"
+                  custom={direction}
+                  variants={contentVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={slideTransition}
+                  className="space-y-0.5 w-full"
+                >
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
@@ -155,7 +177,7 @@ export function UserDropdownMenu({
                 animate="center"
                 exit="exit"
                 transition={slideTransition}
-                className="space-y-0.5"
+                className="space-y-0.5 w-full"
               >
                 <motion.button
                   whileTap={{ scale: 0.98 }}
@@ -234,8 +256,9 @@ export function UserDropdownMenu({
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </motion.div>
-    </AnimatePresence>
+    </motion.div>
+  </AnimatePresence>
   );
 }
