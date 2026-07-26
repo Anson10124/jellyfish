@@ -240,7 +240,7 @@ export function Navbar() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -8, scale: 0.97 }}
           transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-          className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl bg-[#121215]/80 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50 z-[100]"
+          className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl bg-[#121215]/65 backdrop-blur-2xl border border-white/10 shadow-2xl z-[100]"
           style={{
             left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
             scrollbarWidth: 'thin',

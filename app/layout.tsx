@@ -37,6 +37,11 @@ export default async function RootLayout({
       lang={initialLocale}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      style={{
+        overflowY: 'scroll',
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(255,255,255,0.3) transparent',
+      }}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-foreground">
         <I18nProvider initialLocale={initialLocale}>

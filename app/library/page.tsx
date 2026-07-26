@@ -11,7 +11,7 @@ export default function LibraryPage() {
   const { isConnected, isInitialized } = useServerConfig();
 
   return (
-    <main className={`min-h-screen w-full pb-16 ${!isConnected && isInitialized ? 'flex items-center justify-center' : 'pt-28'}`}>
+    <main className={`min-h-screen w-full pb-16 pt-28 ${!isConnected && isInitialized ? 'flex items-center justify-center' : ''}`}>
       <div className="w-full space-y-8">
         {!isInitialized ? null : !isConnected ? (
           <div className="w-full px-6 py-8 rounded-2xl text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-6">
