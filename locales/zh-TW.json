@@ -19,7 +19,9 @@
     "anime": "動漫",
     "library": "媒體庫",
     "search": "搜尋",
-    "connect": "連接"
+    "connect": "連接",
+    "changeServer": "更換伺服器",
+    "signOut": "登出"
   },
   "carousel": {
     "previousSlide": "上一張",

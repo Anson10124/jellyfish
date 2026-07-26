@@ -19,7 +19,9 @@
     "anime": "Anime",
     "library": "Library",
     "search": "Search",
-    "connect": "Connect"
+    "connect": "Connect",
+    "changeServer": "Change Server",
+    "signOut": "Sign Out"
   },
   "carousel": {
     "previousSlide": "Previous slide",
