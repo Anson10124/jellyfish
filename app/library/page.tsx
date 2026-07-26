@@ -14,10 +14,7 @@ export default function LibraryPage() {
     <main className={`min-h-screen w-full pb-16 ${!isConnected && isInitialized ? 'flex items-center justify-center' : 'pt-28'}`}>
       <div className="w-full space-y-8">
         {!isInitialized ? null : !isConnected ? (
-          <div className="w-full px-6 py-8 rounded-2xl bg-white/5 border border-white/10 text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-4">
-            <div className="p-3 rounded-full bg-white/5 border border-white/10">
-              <Cable className="w-6 h-6" />
-            </div>
+          <div className="w-full px-6 py-8 rounded-2xl text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-6">
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-white">
                 {t('library.connectPromptTitle', 'Connect Your Jellyfin Server')}

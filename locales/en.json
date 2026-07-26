@@ -154,5 +154,14 @@
       "approveQuickConnect": "Please approve the Quick Connect code on your Jellyfin server first.",
       "quickConnectLoginFailed": "Quick Connect login failed."
     }
+  },
+  "library": {
+    "title": "Library",
+    "mediaLibraries": "Media Libraries",
+    "noLibraries": "No media libraries found on your Jellyfin server.",
+    "libraryCount": "library",
+    "librariesCount": "libraries",
+    "connectPromptTitle": "Connect Your Jellyfin Server",
+    "connectPromptDesc": "Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly."
   }
 }

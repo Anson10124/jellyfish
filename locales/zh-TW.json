@@ -154,5 +154,14 @@
       "approveQuickConnect": "請先在你的 Jellyfin 伺服器上通過快速連接碼授權。",
       "quickConnectLoginFailed": "快速連接登入失敗。"
     }
+  },
+  "library": {
+    "title": "媒體庫",
+    "mediaLibraries": "媒體庫",
+    "noLibraries": "在你的 Jellyfin 伺服器上未找到任何媒體庫。",
+    "libraryCount": "個媒體庫",
+    "librariesCount": "個媒體庫",
+    "connectPromptTitle": "連接你的 Jellyfin 伺服器",
+    "connectPromptDesc": "連接你的 Jellyfin 伺服器，直接存取你的個人電影、影集與音樂媒體庫。"
   }
 }

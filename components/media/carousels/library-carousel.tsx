@@ -59,7 +59,7 @@ export function LibraryCarousel({ title }: LibraryCarouselProps) {
   return (
     <CarouselWrapper
       title={carouselTitle}
-      subtitle={`${libraries.length} ${t('library.librariesCount', libraries.length === 1 ? 'library' : 'libraries')}`}
+      subtitle={`${libraries.length} ${libraries.length === 1 ? t('library.libraryCount', 'library') : t('library.librariesCount', 'libraries')}`}
       isBeginning={isBeginning}
       isEnd={isEnd}
       onPrev={handlePrev}
