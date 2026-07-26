@@ -51,7 +51,7 @@ export function useJellyfinAvailability({
         }
       }
 
-      // 2. Search Jellyfin items by TMDB ProviderId
+      // 2. Search Jellyfin items by TMDB ProviderId & Title
       try {
         const providerRes = await JellyfinService.searchByProviderId(
           serverUrl,
@@ -59,7 +59,8 @@ export function useJellyfinAvailability({
           accessToken,
           'tmdb',
           id,
-          includeType
+          includeType,
+          title
         );
 
         if (providerRes?.Items && providerRes.Items.length > 0 && isMounted) {

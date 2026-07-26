@@ -100,21 +100,56 @@ export const JellyfinService = {
     return serverFetch<JellyfinBaseItem>(serverUrl, `/Users/${userId}/Items/${itemId}`, { token });
   },
 
-  // Search items by Provider ID
+  // Search items by Provider ID and optional Title
   async searchByProviderId(
     serverUrl: string,
     userId: string,
     token: string,
     provider: 'tmdb' | 'imdb' | 'tvdb',
     providerId: string,
-    includeItemTypes?: string
+    includeItemTypes?: string,
+    title?: string
   ): Promise<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }> {
-    const params = new URLSearchParams();
+    const pidLower = String(providerId).toLowerCase();
 
+    // 1. Try SearchTerm query first if title is provided
+    if (title) {
+      const searchParams = new URLSearchParams();
+      searchParams.set('SearchTerm', title);
+      searchParams.set('Recursive', 'true');
+      if (includeItemTypes) searchParams.set('IncludeItemTypes', includeItemTypes);
+      searchParams.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
+
+      try {
+        const searchRes = await serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(
+          serverUrl,
+          `/Users/${userId}/Items?${searchParams.toString()}`,
+          { token }
+        );
+
+        const searchItems = searchRes.Items || [];
+
+        // Match by Provider ID or exact Title
+        const matches = searchItems.filter((item) => {
+          const tmdbId = item.ProviderIds?.Tmdb || item.ProviderIds?.tmdb || item.ProviderIds?.[provider];
+          if (tmdbId && String(tmdbId).toLowerCase() === pidLower) return true;
+          if (item.Name && item.Name.toLowerCase().trim() === title.toLowerCase().trim()) return true;
+          return false;
+        });
+
+        if (matches.length > 0) {
+          return { Items: matches, TotalRecordCount: matches.length };
+        }
+      } catch (err) {
+        console.warn('SearchTerm query failed, falling back to AnyProviderIdEquals:', err);
+      }
+    }
+
+    // 2. Fallback to AnyProviderIdEquals
+    const params = new URLSearchParams();
     params.set('AnyProviderIdEquals', `${provider}.${providerId}`);
     params.set('Recursive', 'true');
     if (includeItemTypes) params.set('IncludeItemTypes', includeItemTypes);
-
     params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
 
     const endpoint = `/Users/${userId}/Items?${params.toString()}`;
@@ -125,8 +160,8 @@ export const JellyfinService = {
     );
 
     const matchedItems = (response.Items || []).filter((item) => {
-      const itemProviderId = item.ProviderIds?.[provider];
-      return itemProviderId && String(itemProviderId).toLowerCase() === String(providerId).toLowerCase();
+      const itemProviderId = item.ProviderIds?.[provider] || item.ProviderIds?.Tmdb || item.ProviderIds?.tmdb;
+      return itemProviderId && String(itemProviderId).toLowerCase() === pidLower;
     });
 
     return {
