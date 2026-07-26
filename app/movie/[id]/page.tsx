@@ -2,7 +2,7 @@
 
 import React, { useState, use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Bookmark, ArrowLeft } from 'lucide-react';
+import { Play, Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -14,6 +14,7 @@ import {
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
+import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, MediaBadges } from '@/components/media';
@@ -34,6 +35,13 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     movieId,
     'movie'
   );
+
+  const { isAvailable, isChecking } = useJellyfinAvailability({
+    id: movieId,
+    title: movie?.title || movie?.name,
+    year: movie?.release_date ? new Date(movie.release_date).getFullYear() : null,
+    mediaType: 'movie',
+  });
 
   if (loading) {
     return (
@@ -132,13 +140,25 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
             )}
 
             <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
-              >
-                <Play className="h-4 w-4 fill-current" />
-                {t('common.watchNow', 'Watch Now')}
-              </button>
+              {isChecking ? (
+                <Skeleton className="h-9 w-28 rounded-xl bg-white/10" />
+              ) : isAvailable ? (
+                <button
+                  type="button"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                >
+                  <Play className="h-4 w-4 fill-current" />
+                  {t('common.watchNow', 'Watch Now')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                >
+                  <CloudDownload className="h-4 w-4" />
+                  {t('common.request', 'Request')}
+                </button>
+              )}
 
               {trailerKey && (
                 <button

@@ -2,7 +2,7 @@
 
 import React, { useState, use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Bookmark, ArrowLeft } from 'lucide-react';
+import { Play, Film, Bookmark, ArrowLeft, Plus, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/use-translation';
 import { useMediaDetails } from '@/hooks/use-media-details';
+import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';
@@ -36,6 +37,21 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
     tvId,
     'tv'
   );
+
+  const { isAvailable, isChecking, jellyfinItem } = useJellyfinAvailability({
+    id: tvId,
+    title: tvShow?.name || tvShow?.original_name,
+    year: tvShow?.first_air_date ? new Date(tvShow.first_air_date).getFullYear() : null,
+    mediaType: 'tv',
+  });
+
+  const hasMissingEpisodes = React.useMemo(() => {
+    if (!isAvailable || !jellyfinItem || !tvShow) return true;
+    if (jellyfinItem.RecursiveItemCount !== undefined && tvShow.number_of_episodes !== undefined) {
+      return jellyfinItem.RecursiveItemCount < tvShow.number_of_episodes;
+    }
+    return false;
+  }, [isAvailable, jellyfinItem, tvShow]);
 
   const seasons = React.useMemo(() => {
     return sortSeasons(tvShow?.seasons);
@@ -156,13 +172,37 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             )}
 
             <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
-              >
-                <Play className="h-4 w-4 fill-current" />
-                {t('common.watchNow', 'Watch Now')}
-              </button>
+              {isChecking ? (
+                <Skeleton className="h-9 w-28 rounded-xl bg-white/10" />
+              ) : isAvailable ? (
+                <>
+                  <button
+                    type="button"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                  >
+                    <Play className="h-4 w-4 fill-current" />
+                    {t('common.watchNow', 'Watch Now')}
+                  </button>
+
+                  {hasMissingEpisodes && (
+                    <button
+                      type="button"
+                      className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                    >
+                      <CloudDownload className="h-4 w-4 text-white" />
+                      {t('common.requestMore', 'Request More')}
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                >
+                  <CloudDownload className="h-4 w-4" />
+                  {t('common.request', 'Request')}
+                </button>
+              )}
 
               {trailerKey && (
                 <button

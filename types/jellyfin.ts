@@ -52,6 +52,8 @@ export interface JellyfinBaseItem {
   IsFolder?: boolean;
   MediaType?: string;
   CollectionType?: string;
+  RecursiveItemCount?: number;
+  ChildCount?: number;
   ProviderIds?: Record<string, string>;
   Overview?: string;
   Taglines?: string[];

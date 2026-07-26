@@ -9,7 +9,11 @@
     "search": "搜尋",
     "all": "全部",
     "back": "返回",
-    "githubRepo": "檢視 Jellyfish GitHub 儲存庫"
+    "githubRepo": "檢視 Jellyfish GitHub 儲存庫",
+    "request": "請求",
+    "requestMore": "請求更多",
+    "searching": "搜尋中",
+    "noResults": "未找到結果"
   },
   "nav": {
     "home": "首頁",
@@ -83,6 +87,7 @@
     "season": "季",
     "episodes": "集",
     "episode": "集",
+    "noEpisodes": "此季度暫無可用的集數。",
     "firstAirDate": "首播日期",
     "lastAirDate": "最後播出日期",
     "numberOfSeasons": "總季數",
@@ -163,6 +168,7 @@
     "title": "媒體庫",
     "mediaLibraries": "媒體庫",
     "noLibraries": "在你的 Jellyfin 伺服器上未找到任何媒體庫。",
+    "noItems": "在此媒體庫中未找到任何媒體項目。",
     "libraryCount": "個媒體庫",
     "librariesCount": "個媒體庫",
     "connectPromptTitle": "連接你的 Jellyfin 伺服器",

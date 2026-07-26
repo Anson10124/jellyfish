@@ -89,7 +89,7 @@ export const JellyfinService = {
     if (options.sortBy) params.set('SortBy', options.sortBy);
     if (options.sortOrder) params.set('SortOrder', options.sortOrder);
     if (options.includeItemTypes) params.set('IncludeItemTypes', options.includeItemTypes);
-    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems');
+    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
 
     const endpoint = `/Users/${userId}/Items?${params.toString()}`;
     return serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(serverUrl, endpoint, { token });
@@ -98,6 +98,41 @@ export const JellyfinService = {
   // Get single item / library details by ID
   async getItem(serverUrl: string, userId: string, token: string, itemId: string): Promise<JellyfinBaseItem> {
     return serverFetch<JellyfinBaseItem>(serverUrl, `/Users/${userId}/Items/${itemId}`, { token });
+  },
+
+  // Search items by Provider ID
+  async searchByProviderId(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    provider: 'tmdb' | 'imdb' | 'tvdb',
+    providerId: string,
+    includeItemTypes?: string
+  ): Promise<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }> {
+    const params = new URLSearchParams();
+
+    params.set('AnyProviderIdEquals', `${provider}.${providerId}`);
+    params.set('Recursive', 'true');
+    if (includeItemTypes) params.set('IncludeItemTypes', includeItemTypes);
+
+    params.set('Fields', 'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount');
+
+    const endpoint = `/Users/${userId}/Items?${params.toString()}`;
+    const response = await serverFetch<{ Items: JellyfinBaseItem[]; TotalRecordCount: number }>(
+      serverUrl,
+      endpoint,
+      { token }
+    );
+
+    const matchedItems = (response.Items || []).filter((item) => {
+      const itemProviderId = item.ProviderIds?.[provider];
+      return itemProviderId && String(itemProviderId).toLowerCase() === String(providerId).toLowerCase();
+    });
+
+    return {
+      Items: matchedItems,
+      TotalRecordCount: matchedItems.length,
+    };
   },
 
   // Construct stream URL
@@ -115,7 +150,7 @@ export const JellyfinService = {
     if (options.width) params.set('fillWidth', options.width.toString());
     if (options.height) params.set('fillHeight', options.height.toString());
     if (options.tag) params.set('tag', options.tag);
-    
+
     const query = params.toString();
     return query ? `${url}?${query}` : url;
   },

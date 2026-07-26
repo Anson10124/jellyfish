@@ -9,7 +9,11 @@
     "search": "Search",
     "all": "All",
     "back": "Back",
-    "githubRepo": "View the Jellyfish GitHub repository"
+    "githubRepo": "View the Jellyfish GitHub repository",
+    "request": "Request",
+    "requestMore": "Request More",
+    "searching": "Searching",
+    "noResults": "No results found"
   },
   "nav": {
     "home": "Home",
@@ -83,6 +87,7 @@
     "season": "Season",
     "episodes": "episodes",
     "episode": "episode",
+    "noEpisodes": "No episodes available for this season.",
     "firstAirDate": "First Air Date",
     "lastAirDate": "Last Air Date",
     "numberOfSeasons": "Seasons",
@@ -163,6 +168,7 @@
     "title": "Library",
     "mediaLibraries": "Media Libraries",
     "noLibraries": "No media libraries found on your Jellyfin server.",
+    "noItems": "No media items found in this library.",
     "libraryCount": "library",
     "librariesCount": "libraries",
     "connectPromptTitle": "Connect Your Jellyfin Server",
