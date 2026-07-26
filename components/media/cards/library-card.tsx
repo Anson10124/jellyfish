@@ -25,7 +25,7 @@ export function LibraryCard({ library, serverUrl, className = '' }: LibraryCardP
 
   return (
     <div className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}>
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-[#141419] shadow-lg ring-1 ring-white/10 transition-all duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 transition-all duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
         {imageUrl ? (
           <img
             src={imageUrl}
