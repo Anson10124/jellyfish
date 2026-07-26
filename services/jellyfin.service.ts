@@ -1,5 +1,5 @@
 import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
-import { JellyfinAuthResult, JellyfinPublicSystemInfo, JellyfinQuickConnectResult } from '@/types/jellyfin';
+import { JellyfinAuthResult, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 
 export const JellyfinService = {
@@ -56,6 +56,16 @@ export const JellyfinService = {
     );
   },
 
+  // Get User Libraries/Views
+  async getUserViews(serverUrl: string, userId: string, token: string): Promise<JellyfinUserView[]> {
+    const res = await serverFetch<{ Items: JellyfinUserView[]; TotalRecordCount: number }>(
+      serverUrl,
+      `/Users/${userId}/Views`,
+      { token }
+    );
+    return res.Items || [];
+  },
+
   // Construct stream URL
   getStreamUrl(serverUrl: string, itemId: string, token: string): string {
     const base = normalizeServerUrl(serverUrl);
@@ -63,9 +73,10 @@ export const JellyfinService = {
   },
 
   // Construct primary image URL
-  getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string } = {}): string {
+  getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string; type?: 'Primary' | 'Backdrop' | 'Thumb' } = {}): string {
     const base = normalizeServerUrl(serverUrl);
-    let url = `${base}/Items/${itemId}/Images/Primary`;
+    const imgType = options.type || 'Primary';
+    let url = `${base}/Items/${itemId}/Images/${imgType}`;
     const params = new URLSearchParams();
     if (options.width) params.set('fillWidth', options.width.toString());
     if (options.height) params.set('fillHeight', options.height.toString());

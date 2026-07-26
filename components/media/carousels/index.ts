@@ -3,6 +3,7 @@ export * from './top-10-carousel';
 export * from './cast-carousel';
 export * from './season-carousel';
 export * from './episode-carousel';
+export * from './library-carousel';
 export * from './carousel-buttons';
 export * from './carousel-header';
 export * from './carousel-wrapper';

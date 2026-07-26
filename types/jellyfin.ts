@@ -40,6 +40,8 @@ export interface JellyfinUserView {
   ServerId?: string;
   CollectionType?: string; // 'movies', 'tvshows', 'music', etc.
   Type?: string;
+  Path?: string;
+  Locations?: string[];
 }
 
 export interface JellyfinBaseItem {
