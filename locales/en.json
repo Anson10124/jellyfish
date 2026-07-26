@@ -21,7 +21,9 @@
     "search": "Search",
     "connect": "Connect",
     "changeServer": "Change Server",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "back": "Back",
+    "addServer": "Add Server"
   },
   "carousel": {
     "previousSlide": "Previous slide",

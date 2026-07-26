@@ -21,7 +21,9 @@
     "search": "搜尋",
     "connect": "連接",
     "changeServer": "更換伺服器",
-    "signOut": "登出"
+    "signOut": "登出",
+    "back": "返回",
+    "addServer": "新增伺服器"
   },
   "carousel": {
     "previousSlide": "上一張",
