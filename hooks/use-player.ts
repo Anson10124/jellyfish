@@ -5,6 +5,7 @@ import { useServerConfig } from '@/hooks/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { ticksToSeconds } from '@/lib/utils/media-format';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
+import type { JellyfinBaseItem } from '@/types/jellyfin';
 import type { ActiveVideo, PlayMovieOptions, PlayEpisodeOptions } from '@/types/player';
 
 export function usePlayer() {
@@ -28,52 +29,72 @@ export function usePlayer() {
     setIsTrailerOpen(false);
   }, []);
 
-  const playMovie = useCallback(
-    ({ jellyfinItem, title, posterUrl }: PlayMovieOptions) => {
-      if (!jellyfinConfig || !jellyfinItem?.Id) return;
+  const resolveAndPlayMedia = useCallback(
+    async (
+      jellyfinItem: JellyfinBaseItem,
+      title: string,
+      poster?: string,
+      initialTimeInSeconds: number = 0
+    ) => {
+      if (!jellyfinConfig || !jellyfinItem.Id) return;
 
-      const src = JellyfinService.getStreamUrl(
-        jellyfinConfig.serverUrl,
-        jellyfinItem.Id,
-        jellyfinConfig.accessToken,
-        jellyfinItem
-      );
-      const initialTimeInSeconds = ticksToSeconds(jellyfinItem?.UserData?.PlaybackPositionTicks);
+      try {
+        const source = await JellyfinService.getPlaybackSource(
+          jellyfinConfig.serverUrl,
+          jellyfinItem.Id,
+          jellyfinConfig.accessToken,
+          jellyfinConfig.userId
+        );
 
-      setActiveVideo({
-        src,
-        title,
-        poster: posterUrl,
-        initialTimeInSeconds,
-        itemId: jellyfinItem.Id,
-      });
+        setActiveVideo({
+          src: source.url,
+          title,
+          poster,
+          initialTimeInSeconds,
+          itemId: jellyfinItem.Id,
+          playMethod: source.playMethod,
+          mediaSourceId: source.mediaSourceId,
+          isHls: source.isHls,
+          subtitles: source.subtitles,
+        });
+      } catch (err) {
+        console.warn('Failed to fetch PlaybackInfo, falling back to direct stream:', err);
+        const fallbackUrl = JellyfinService.getStreamUrl(
+          jellyfinConfig.serverUrl,
+          jellyfinItem.Id,
+          jellyfinConfig.accessToken,
+          jellyfinItem
+        );
+        setActiveVideo({
+          src: fallbackUrl,
+          title,
+          poster,
+          initialTimeInSeconds,
+          itemId: jellyfinItem.Id,
+          playMethod: 'DirectPlay',
+        });
+      }
     },
     [jellyfinConfig]
   );
 
+  const playMovie = useCallback(
+    async ({ jellyfinItem, title, posterUrl }: PlayMovieOptions) => {
+      if (!jellyfinItem?.Id) return;
+      const initialTime = ticksToSeconds(jellyfinItem.UserData?.PlaybackPositionTicks);
+      await resolveAndPlayMedia(jellyfinItem, title, posterUrl, initialTime);
+    },
+    [resolveAndPlayMedia]
+  );
+
   const playEpisode = useCallback(
-    ({ jellyfinItem, seriesTitle, episode, posterUrl }: PlayEpisodeOptions) => {
-      if (!jellyfinConfig || !jellyfinItem?.Id) return;
-
-      const src = JellyfinService.getStreamUrl(
-        jellyfinConfig.serverUrl,
-        jellyfinItem.Id,
-        jellyfinConfig.accessToken,
-        jellyfinItem
-      );
-
+    async ({ jellyfinItem, seriesTitle, episode, posterUrl }: PlayEpisodeOptions) => {
+      if (!jellyfinItem?.Id) return;
       const title = `${seriesTitle} - S${episode.season_number} E${episode.episode_number}: ${episode.name}`;
       const poster = getTmdbImage(episode.still_path || posterUrl, 'original');
-
-      setActiveVideo({
-        src,
-        title,
-        poster,
-        initialTimeInSeconds: 0,
-        itemId: jellyfinItem.Id,
-      });
+      await resolveAndPlayMedia(jellyfinItem, title, poster, 0);
     },
-    [jellyfinConfig]
+    [resolveAndPlayMedia]
   );
 
   return {

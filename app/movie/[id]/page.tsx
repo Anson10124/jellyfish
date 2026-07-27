@@ -285,15 +285,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
       )}
 
       {/* Video Player Modal */}
-      <VideoPlayerModal
-        isOpen={Boolean(activeVideo)}
-        onClose={closeVideo}
-        src={activeVideo?.src}
-        title={activeVideo?.title}
-        poster={activeVideo?.poster}
-        initialTimeInSeconds={activeVideo?.initialTimeInSeconds}
-        itemId={activeVideo?.itemId}
-      />
+      <VideoPlayerModal activeVideo={activeVideo} onClose={closeVideo} />
     </main>
   );
 }

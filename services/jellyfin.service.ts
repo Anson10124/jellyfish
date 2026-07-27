@@ -1,6 +1,9 @@
 import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
 import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
+import { createWebDeviceProfile } from '@/lib/jellyfin/device-profile';
+import type { SubtitleTrack, PlaybackSourceResult } from '@/types/player';
+export type { PlaybackSourceResult };
 
 const JELLYFIN_DEFAULT_FIELDS =
   'Overview,Genres,PrimaryImageAspectRatio,ProductionYear,PremiereDate,ProviderIds,GenreItems,RecursiveItemCount,ChildCount,UserData,MediaSources';
@@ -30,6 +33,8 @@ function extractAudioStreamInfo(item?: JellyfinBaseItem | null) {
 
   return { primaryMediaSource, mediaSourceId, runTimeTicks, container, audioStreamIndex, audioCodec };
 }
+
+
 
 export const JellyfinService = {
   // Test connection
@@ -199,7 +204,78 @@ export const JellyfinService = {
     };
   },
 
-  // Construct stream URL for browser playback
+  // Query Jellyfin /Items/{itemId}/PlaybackInfo with web browser DeviceProfile
+  async getPlaybackSource(
+    serverUrl: string,
+    itemId: string,
+    token: string,
+    userId?: string
+  ): Promise<PlaybackSourceResult> {
+    const base = normalizeServerUrl(serverUrl);
+    const deviceProfile = createWebDeviceProfile();
+
+    const endpoint = userId ? `/Items/${itemId}/PlaybackInfo?UserId=${userId}` : `/Items/${itemId}/PlaybackInfo`;
+
+    try {
+      const res = await serverFetch<any>(serverUrl, endpoint, {
+        method: 'POST',
+        token,
+        body: JSON.stringify({ DeviceProfile: deviceProfile }),
+      });
+
+      const mediaSource = res.MediaSources?.[0];
+      const mediaSourceId = mediaSource?.Id || itemId;
+
+      const subtitleStreams = (mediaSource?.MediaStreams || []).filter(
+        (s: any) => s.Type === 'Subtitle' && s.Index !== undefined
+      );
+
+      const subtitles: SubtitleTrack[] = subtitleStreams.map((s: any) => ({
+        index: s.Index,
+        language: s.Language || 'und',
+        title: s.DisplayTitle || s.Title || s.Language || `Subtitle ${s.Index}`,
+        isDefault: Boolean(s.IsDefault),
+        vttUrl: `${base}/Videos/${itemId}/${mediaSourceId}/Subtitles/${s.Index}/0/Stream.vtt?api_key=${token}`,
+      }));
+
+      if (mediaSource?.SupportsDirectPlay) {
+        return {
+          url: `${base}/Videos/${itemId}/stream?static=true&MediaSourceId=${mediaSourceId}&api_key=${token}`,
+          isHls: false,
+          playMethod: 'DirectPlay',
+          mediaSourceId,
+          subtitles,
+        };
+      }
+
+      if (mediaSource?.TranscodingUrl) {
+        return {
+          url: `${base}${mediaSource.TranscodingUrl}`,
+          isHls: true,
+          playMethod: 'Transcode',
+          mediaSourceId,
+          subtitles,
+        };
+      }
+
+      return {
+        url: `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`,
+        isHls: false,
+        playMethod: 'DirectPlay',
+        mediaSourceId,
+        subtitles,
+      };
+    } catch (err) {
+      console.warn('Failed to fetch PlaybackInfo, falling back to direct stream:', err);
+      return {
+        url: `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`,
+        isHls: false,
+        playMethod: 'DirectPlay',
+      };
+    }
+  },
+
+  // Construct stream URL for browser playback (synchronous fallback)
   getStreamUrl(serverUrl: string, itemId: string, token: string, item?: JellyfinBaseItem | null): string {
     const base = normalizeServerUrl(serverUrl);
     const deviceId = getStoredDeviceId();
@@ -256,7 +332,8 @@ export const JellyfinService = {
     serverUrl: string,
     token: string,
     itemId: string,
-    positionTicks: number = 0
+    positionTicks: number = 0,
+    playMethod: 'DirectPlay' | 'Transcode' | 'DirectStream' = 'DirectPlay'
   ): Promise<void> {
     try {
       await serverFetch(serverUrl, '/Sessions/Playing', {
@@ -264,7 +341,7 @@ export const JellyfinService = {
         token,
         body: JSON.stringify({
           ItemId: itemId,
-          PlayMethod: 'DirectPlay',
+          PlayMethod: playMethod,
           PositionTicks: positionTicks,
         }),
       });
@@ -279,7 +356,8 @@ export const JellyfinService = {
     token: string,
     itemId: string,
     positionTicks: number = 0,
-    isPaused: boolean = false
+    isPaused: boolean = false,
+    playMethod: 'DirectPlay' | 'Transcode' | 'DirectStream' = 'DirectPlay'
   ): Promise<void> {
     try {
       await serverFetch(serverUrl, '/Sessions/Playing/Progress', {
@@ -287,7 +365,7 @@ export const JellyfinService = {
         token,
         body: JSON.stringify({
           ItemId: itemId,
-          PlayMethod: 'DirectPlay',
+          PlayMethod: playMethod,
           PositionTicks: positionTicks,
           IsPaused: isPaused,
         }),

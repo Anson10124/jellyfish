@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 import '@videojs/react/video/skin.css';
@@ -17,35 +17,92 @@ const Player = createPlayer({ features: videoFeatures });
 export function VideoPlayerModal({
   isOpen,
   onClose,
-  src,
-  title,
-  poster,
-  initialTimeInSeconds = 0,
-  itemId,
+  activeVideo,
+  src: propSrc,
+  title: propTitle,
+  poster: propPoster,
+  initialTimeInSeconds: propInitialTime = 0,
+  itemId: propItemId,
+  playMethod: propPlayMethod,
+  subtitles: propSubtitles,
+  onFallbackTranscode,
 }: VideoPlayerModalProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Lock background scrolling while player is active
-  useScrollLock(isOpen);
+  const isPlayerOpen = isOpen ?? Boolean(activeVideo);
+  const src = activeVideo?.src ?? propSrc;
+  const title = activeVideo?.title ?? propTitle;
+  const poster = activeVideo?.poster ?? propPoster;
+  const initialTimeInSeconds = activeVideo?.initialTimeInSeconds ?? propInitialTime;
+  const itemId = activeVideo?.itemId ?? propItemId;
+  const playMethod = activeVideo?.playMethod ?? propPlayMethod;
+  const subtitles = activeVideo?.subtitles ?? propSubtitles;
+
+  const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState<number | null>(() => {
+    const defaultSub = subtitles?.find((s) => s.isDefault);
+    return defaultSub ? defaultSub.index : null;
+  });
+
+  useScrollLock(isPlayerOpen);
 
   const { handleStart, handleTimeUpdate, handleStateChange, handleStop } = useJellyfinPlayback({
     itemId,
-    isOpen,
+    isOpen: isPlayerOpen,
+    playMethod,
   });
 
-  // Restore saved volume and mute preferences from localStorage
   useEffect(() => {
-    if (!isOpen || !videoRef.current) return;
+    if (subtitles && subtitles.length > 0) {
+      const defaultSub = subtitles.find((s) => s.isDefault);
+      setSelectedSubtitleIndex(defaultSub ? defaultSub.index : null);
+    } else {
+      setSelectedSubtitleIndex(null);
+    }
+  }, [subtitles, src]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !subtitles || subtitles.length === 0) return;
+
+    const textTracks = video.textTracks;
+    if (!textTracks) return;
+
+    const handleTrackChange = () => {
+      for (let i = 0; i < textTracks.length; i++) {
+        const track = textTracks[i];
+        if (track.mode === 'showing') {
+          const subByIndex = subtitles[i];
+          if (subByIndex) {
+            setSelectedSubtitleIndex((prev: number | null) => (prev !== subByIndex.index ? subByIndex.index : prev));
+            return;
+          }
+          const matchedByTitle = subtitles.find((s) => s.title === track.label);
+          if (matchedByTitle) {
+            setSelectedSubtitleIndex((prev: number | null) => (prev !== matchedByTitle.index ? matchedByTitle.index : prev));
+            return;
+          }
+        }
+      }
+      setSelectedSubtitleIndex((prev: number | null) => (prev !== null ? null : prev));
+    };
+
+    textTracks.addEventListener('change', handleTrackChange);
+    return () => {
+      textTracks.removeEventListener('change', handleTrackChange);
+    };
+  }, [subtitles]);
+
+  useEffect(() => {
+    if (!isPlayerOpen || !videoRef.current) return;
     const video = videoRef.current;
     const { volume, muted } = getStoredPlayerConfig();
     video.volume = volume;
     video.muted = muted;
-  }, [isOpen, src]);
+  }, [isPlayerOpen, src]);
 
-  // Close player on Escape key press
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isPlayerOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -56,7 +113,7 @@ export function VideoPlayerModal({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, handleStop]);
+  }, [isPlayerOpen, onClose, handleStop]);
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
@@ -90,6 +147,13 @@ export function VideoPlayerModal({
     handleStop();
   };
 
+  const handleErrorEvent = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    console.error('Video player error event:', e.currentTarget.error);
+    if (onFallbackTranscode) {
+      onFallbackTranscode();
+    }
+  };
+
   const handleClose = () => {
     handleStop();
     if (typeof document !== 'undefined' && document.fullscreenElement) {
@@ -98,7 +162,7 @@ export function VideoPlayerModal({
     onClose();
   };
 
-  if (!isOpen || !src) return null;
+  if (!isPlayerOpen || !src) return null;
 
   const isHls = Boolean(src && src.includes('.m3u8'));
   const VideoComponent = (isHls ? HlsJsVideo : Video) as React.ElementType;
@@ -115,6 +179,7 @@ export function VideoPlayerModal({
     onPlay: handlePlayEvent,
     onPause: handlePauseEvent,
     onEnded: handleEndedEvent,
+    onError: handleErrorEvent,
     onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>) =>
       handleTimeUpdate(e.currentTarget.currentTime),
     className: 'w-full h-full object-contain bg-black',
@@ -130,6 +195,7 @@ export function VideoPlayerModal({
           <h2 className="text-base sm:text-lg font-semibold text-white truncate max-w-2xl drop-shadow-md">
             {title}
           </h2>
+
           <button
             onClick={handleClose}
             className="flex items-center justify-center h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer backdrop-blur-md"
@@ -138,6 +204,7 @@ export function VideoPlayerModal({
             <X className="h-5 w-5" />
           </button>
         </div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -147,7 +214,21 @@ export function VideoPlayerModal({
         >
           <Player.Provider>
             <VideoSkin className="w-full h-full border-none rounded-none bg-black">
-              <VideoComponent {...sharedVideoProps} />
+              <VideoComponent {...sharedVideoProps}>
+                {subtitles?.map((sub) => {
+                  const isSelected = selectedSubtitleIndex === sub.index;
+                  return (
+                    <track
+                      key={sub.index}
+                      kind="subtitles"
+                      src={isSelected ? sub.vttUrl : undefined}
+                      srcLang={sub.language}
+                      label={sub.title}
+                      default={sub.isDefault}
+                    />
+                  );
+                })}
+              </VideoComponent>
             </VideoSkin>
           </Player.Provider>
         </motion.div>

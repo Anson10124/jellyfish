@@ -1,22 +1,46 @@
 import type { JellyfinBaseItem } from './jellyfin';
 import type { Episode } from './media';
 
+export interface SubtitleTrack {
+  index: number;
+  language: string;
+  title: string;
+  isDefault: boolean;
+  vttUrl: string;
+}
+
+export interface PlaybackSourceResult {
+  url: string;
+  isHls: boolean;
+  playMethod: 'DirectPlay' | 'Transcode' | 'DirectStream';
+  mediaSourceId?: string;
+  subtitles?: SubtitleTrack[];
+}
+
 export interface ActiveVideo {
   src: string;
   title: string;
   poster?: string;
   initialTimeInSeconds?: number;
   itemId?: string;
+  playMethod?: 'DirectPlay' | 'Transcode' | 'DirectStream';
+  mediaSourceId?: string;
+  isHls?: boolean;
+  subtitles?: SubtitleTrack[];
 }
 
 export interface VideoPlayerModalProps {
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
+  activeVideo?: ActiveVideo | null;
   src?: string | null;
   title?: string;
   poster?: string;
   initialTimeInSeconds?: number;
   itemId?: string;
+  playMethod?: 'DirectPlay' | 'Transcode' | 'DirectStream';
+  subtitles?: SubtitleTrack[];
+  onFallbackTranscode?: () => void;
 }
 
 export interface TrailerModalProps {

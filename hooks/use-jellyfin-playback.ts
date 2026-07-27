@@ -6,9 +6,10 @@ import { secondsToTicks } from '@/lib/utils/media-format';
 export interface UseJellyfinPlaybackOptions {
   itemId?: string;
   isOpen: boolean;
+  playMethod?: 'DirectPlay' | 'Transcode' | 'DirectStream';
 }
 
-export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptions) {
+export function useJellyfinPlayback({ itemId, isOpen, playMethod = 'DirectPlay' }: UseJellyfinPlaybackOptions) {
   const { jellyfinConfig, isConnected } = useServerConfig();
   const currentTimeRef = useRef<number>(0);
   const isPausedRef = useRef<boolean>(false);
@@ -25,9 +26,9 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
       isStartedRef.current = true;
 
       const ticks = secondsToTicks(initialTimeInSeconds);
-      JellyfinService.reportPlaybackStart(serverUrl, accessToken, itemId, ticks);
+      JellyfinService.reportPlaybackStart(serverUrl, accessToken, itemId, ticks, playMethod);
     },
-    [canReport, serverUrl, accessToken, itemId]
+    [canReport, serverUrl, accessToken, itemId, playMethod]
   );
 
   const handleTimeUpdate = useCallback((seconds: number) => {
@@ -39,10 +40,10 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
       isPausedRef.current = isPaused;
       if (canReport && serverUrl && accessToken && itemId && isStartedRef.current) {
         const ticks = secondsToTicks(currentTimeRef.current);
-        JellyfinService.reportPlaybackProgress(serverUrl, accessToken, itemId, ticks, isPaused);
+        JellyfinService.reportPlaybackProgress(serverUrl, accessToken, itemId, ticks, isPaused, playMethod);
       }
     },
-    [canReport, serverUrl, accessToken, itemId]
+    [canReport, serverUrl, accessToken, itemId, playMethod]
   );
 
   const handleStop = useCallback(() => {
@@ -71,7 +72,8 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
           accessToken,
           itemId,
           ticks,
-          isPausedRef.current
+          isPausedRef.current,
+          playMethod
         );
       }
     }, 5000);
@@ -82,7 +84,7 @@ export function useJellyfinPlayback({ itemId, isOpen }: UseJellyfinPlaybackOptio
         intervalRef.current = null;
       }
     };
-  }, [canReport, serverUrl, accessToken, itemId]);
+  }, [canReport, serverUrl, accessToken, itemId, playMethod]);
 
   // Stop reporting on unmount if still active
   useEffect(() => {
