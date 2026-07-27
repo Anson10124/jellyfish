@@ -1,14 +1,39 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { Cable } from 'lucide-react';
-import { LibraryCarousel } from '@/components/media/carousels';
+import { LibraryCarousel, ContinueWatchingCarousel, NextUpCarousel } from '@/components/media/carousels';
+import { VideoPlayerModal } from '@/components/player';
 import { useTranslation } from '@/hooks/use-translation';
 import { useServerConfig } from '@/hooks/use-server-config';
+import { usePlayer } from '@/hooks/use-player';
+import { JellyfinService } from '@/services/jellyfin.service';
+import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export default function LibraryPage() {
   const { t } = useTranslation();
-  const { isConnected, isInitialized } = useServerConfig();
+  const { isConnected, isInitialized, jellyfinConfig } = useServerConfig();
+  const { activeVideo, playMovie, closeVideo } = usePlayer();
+
+  const handlePlayResumeItem = (item: JellyfinBaseItem) => {
+    const isEpisode = item.Type === 'Episode';
+    const title = isEpisode && item.SeriesName
+      ? `${item.SeriesName} - S${item.ParentIndexNumber ?? 1}E${item.IndexNumber ?? 1}: ${item.Name}`
+      : item.Name;
+
+    const posterUrl = jellyfinConfig?.serverUrl
+      ? JellyfinService.getImageUrl(jellyfinConfig.serverUrl, item.Id, {
+          width: 500,
+          type: item.BackdropImageTags && item.BackdropImageTags.length > 0 ? 'Backdrop' : 'Primary',
+        })
+      : undefined;
+
+    playMovie({
+      jellyfinItem: item,
+      title,
+      posterUrl,
+    });
+  };
 
   return (
     <main className={`min-h-screen w-full pb-16 pt-28 ${!isConnected && isInitialized ? 'flex items-center justify-center' : ''}`}>
@@ -31,12 +56,16 @@ export default function LibraryPage() {
             </Link>
           </div>
         ) : (
-          <div className="w-full">
+          <div className="w-full space-y-10">
+            <ContinueWatchingCarousel onPlayItem={handlePlayResumeItem} />
+            <NextUpCarousel onPlayItem={handlePlayResumeItem} />
             <LibraryCarousel />
           </div>
         )}
       </div>
+
+      {/* Video Player Modal */}
+      <VideoPlayerModal activeVideo={activeVideo} onClose={closeVideo} />
     </main>
   );
 }
-

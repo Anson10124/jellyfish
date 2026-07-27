@@ -166,6 +166,10 @@
   },
   "library": {
     "title": "Library",
+    "continueWatching": "Continue Watching",
+    "continueWatchingSubtitle": "Pick up where you left off",
+    "nextUp": "Next Up",
+    "nextUpSubtitle": "Next episodes in your series",
     "mediaLibraries": "Media Libraries",
     "noLibraries": "No media libraries found on your Jellyfin server.",
     "noItems": "No media items found in this library.",
@@ -175,3 +179,5 @@
     "connectPromptDesc": "Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly."
   }
 }
+
+

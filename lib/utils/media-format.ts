@@ -173,3 +173,22 @@ export function ticksToSeconds(ticks?: number | null): number {
   return ticks / 10000000;
 }
 
+export function formatTimeLeft(positionTicks?: number, totalTicks?: number): string | null {
+  if (!totalTicks || totalTicks <= 0) return null;
+  const pos = positionTicks || 0;
+  if (pos >= totalTicks) return null;
+
+  const remainingTicks = totalTicks - pos;
+  const remainingSeconds = ticksToSeconds(remainingTicks);
+  const remainingMinutes = Math.max(1, Math.ceil(remainingSeconds / 60));
+
+  const hours = Math.floor(remainingMinutes / 60);
+  const mins = remainingMinutes % 60;
+
+  if (hours > 0) {
+    return mins > 0 ? `${hours}h ${mins}m left` : `${hours}h left`;
+  }
+  return `${mins}m left`;
+}
+
+

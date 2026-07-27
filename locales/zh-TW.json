@@ -166,6 +166,10 @@
   },
   "library": {
     "title": "媒體庫",
+    "continueWatching": "繼續觀看",
+    "continueWatchingSubtitle": "從上次中斷的地方繼續觀看",
+    "nextUp": "接下來觀看",
+    "nextUpSubtitle": "追劇清單的下一集",
     "mediaLibraries": "媒體庫",
     "noLibraries": "在你的 Jellyfin 伺服器上未找到任何媒體庫。",
     "noItems": "在此媒體庫中未找到任何媒體項目。",

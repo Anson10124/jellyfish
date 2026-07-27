@@ -100,6 +100,51 @@ export const JellyfinService = {
     return res.Items || [];
   },
 
+  // Get continue watching / resume items
+  async getResumeItems(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    options: { limit?: number } = {}
+  ): Promise<JellyfinBaseItem[]> {
+    const limit = options.limit ?? 12;
+    const params = new URLSearchParams({
+      Limit: limit.toString(),
+      Recursive: 'true',
+      Fields: 'PrimaryImageAspectRatio,Overview,UserData,SeriesName,SeasonName,MediaSources',
+      ImageTypeLimit: '1',
+      EnableImageTypes: 'Primary,Backdrop,Thumb,Logo',
+      EnableTotalRecordCount: 'false',
+      MediaTypes: 'Video',
+    });
+
+    const endpoint = `/Users/${userId}/Items/Resume?${params.toString()}`;
+    const res = await serverFetch<{ Items: JellyfinBaseItem[] }>(serverUrl, endpoint, { token });
+    return res.Items || [];
+  },
+
+  // Get next up items (unwatched next episodes in series user is watching)
+  async getNextUpItems(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    options: { limit?: number } = {}
+  ): Promise<JellyfinBaseItem[]> {
+    const limit = options.limit ?? 12;
+    const params = new URLSearchParams({
+      UserId: userId,
+      Limit: limit.toString(),
+      Fields: 'PrimaryImageAspectRatio,Overview,UserData,SeriesName,SeasonName,MediaSources',
+      ImageTypeLimit: '1',
+      EnableImageTypes: 'Primary,Backdrop,Thumb,Logo',
+      EnableTotalRecordCount: 'false',
+    });
+
+    const endpoint = `/Shows/NextUp?${params.toString()}`;
+    const res = await serverFetch<{ Items: JellyfinBaseItem[] }>(serverUrl, endpoint, { token });
+    return res.Items || [];
+  },
+
   // Get items in a library
   async getItems(
     serverUrl: string,
@@ -314,7 +359,7 @@ export const JellyfinService = {
   },
 
   // Construct primary image URL
-  getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string; type?: 'Primary' | 'Backdrop' | 'Thumb' } = {}): string {
+  getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string; type?: 'Primary' | 'Backdrop' | 'Thumb' | 'Logo' } = {}): string {
     const base = normalizeServerUrl(serverUrl);
     const imgType = options.type || 'Primary';
     let url = `${base}/Items/${itemId}/Images/${imgType}`;
