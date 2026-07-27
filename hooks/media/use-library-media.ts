@@ -1,7 +1,7 @@
 import { use, useEffect, useRef, useState, useCallback } from 'react';
-import { useServerConfig } from '@/hooks/use-server-config';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useInfiniteScroll } from '@/hooks/ui/use-infinite-scroll';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export interface UseLibraryMediaParams {

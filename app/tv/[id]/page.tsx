@@ -13,10 +13,10 @@ import {
   formatAirYears,
   sortSeasons,
 } from '@/lib/utils/media-format';
-import { useTranslation } from '@/hooks/use-translation';
-import { useMediaDetails } from '@/hooks/use-media-details';
-import { useJellyfinAvailability } from '@/hooks/use-jellyfin-availability';
-import { usePlayer } from '@/hooks/use-player';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useMediaDetails } from '@/hooks/media/use-media-details';
+import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
+import { usePlayer } from '@/hooks/player/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';

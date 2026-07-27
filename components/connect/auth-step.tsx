@@ -3,10 +3,10 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
-import { AuthMethod, QuickConnectStatus, ServerInfo } from '@/hooks/use-connect-flow';
+import { AuthMethod, QuickConnectStatus, ServerInfo } from '@/hooks/connect/use-connect-flow';
 import { slideVariants } from './server-step';
 import { AuthCard } from './auth-card';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 interface AuthStepProps {
   direction: number;

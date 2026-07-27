@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useServerConfig } from '@/hooks/use-server-config';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { secondsToTicks } from '@/lib/utils/media-format';
 

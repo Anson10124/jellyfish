@@ -1,7 +1,7 @@
 'use client';
 
 import { Banner, Carousel, Top10Carousel } from '@/components/media';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export default function HomePage() {
   const { t } = useTranslation();

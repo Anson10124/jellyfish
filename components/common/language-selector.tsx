@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check, ChevronDown } from 'lucide-react';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n/config';
 
 export function LanguageSelector() {

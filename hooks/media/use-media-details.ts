@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getOfficialTrailerKey } from '@/lib/utils/media-format';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import type { MovieDetails, VideoItem } from '@/types/media';
 
 export interface UseMediaDetailsReturn<T = MovieDetails> {

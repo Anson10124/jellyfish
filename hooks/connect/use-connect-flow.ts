@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useServerConfig } from '@/hooks/use-server-config';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export type AuthMethod = 'credentials' | 'quickconnect';
 export type QuickConnectStatus = 'idle' | 'waiting' | 'authorized' | 'error';

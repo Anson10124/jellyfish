@@ -5,9 +5,9 @@ import { EPISODE_SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import type { Episode, Season } from '@/types/media';
 import { EpisodeCard } from '@/components/media/cards/episode-card';
 import { CarouselHeader } from './carousel-header';
-import { useTranslation } from '@/hooks/use-translation';
-import { useTvSeasonDetails } from '@/hooks/use-tv-season-details';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useTvSeasonDetails } from '@/hooks/media/use-tv-season-details';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { Skeleton } from '@/components/ui';
 import { CarouselWrapper } from './carousel-wrapper';
 

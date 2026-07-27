@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getGenreName } from '@/constants/genres';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { getMediaHref } from '@/lib/utils/media-format';
 
 export interface PosterProps {

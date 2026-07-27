@@ -4,10 +4,10 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname } from 'next/navigation';
 import { MOVIE_GENRES, TV_GENRES, getGenreName } from '@/constants/genres';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 
 interface GenreBarProps {
   mediaType?: 'movie' | 'tv';

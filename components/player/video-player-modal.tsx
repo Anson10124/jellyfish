@@ -7,8 +7,8 @@ import '@videojs/react/video/skin.css';
 import { createPlayer } from '@videojs/react';
 import { VideoSkin, Video, videoFeatures } from '@videojs/react/video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
-import { useJellyfinPlayback } from '@/hooks/use-jellyfin-playback';
-import { useScrollLock } from '@/hooks/use-scroll-lock';
+import { useJellyfinPlayback } from '@/hooks/media/use-jellyfin-playback';
+import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import type { VideoPlayerModalProps } from '@/types/player';
 

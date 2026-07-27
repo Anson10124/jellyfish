@@ -5,10 +5,10 @@ import { EPISODE_SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import { LibraryCard } from '@/components/media/cards/library-card';
 import { CarouselHeader } from './carousel-header';
 import { CarouselWrapper } from './carousel-wrapper';
-import { useJellyfinLibraries } from '@/hooks/use-jellyfin-libraries';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useJellyfinLibraries } from '@/hooks/media/use-jellyfin-libraries';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { Skeleton } from '@/components/ui';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { FolderOpen } from 'lucide-react';
 
 export interface LibraryCarouselProps {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Carousel } from './carousels';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import {
   getMovieBrowseCategories,
   getTvBrowseCategories,

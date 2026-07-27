@@ -3,8 +3,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
-import { useTranslation } from '@/hooks/use-translation';
-import { useScrollLock } from '@/hooks/use-scroll-lock';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import type { TrailerModalProps } from '@/types/player';
 
 export function TrailerModal({ isOpen, onClose, videoKey, title }: TrailerModalProps) {

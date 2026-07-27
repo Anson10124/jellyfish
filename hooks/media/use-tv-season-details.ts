@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import type { Episode, TvSeasonDetails } from '@/types/media';
 
 export interface UseTvSeasonDetailsReturn {

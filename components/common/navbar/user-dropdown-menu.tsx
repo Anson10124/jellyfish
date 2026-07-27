@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Server, LogOut, ChevronLeft, Plus, Check } from 'lucide-react';
 import { JellyfinConfig } from '@/types/server';
-import { useServerConfig } from '@/hooks/use-server-config';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
 
 interface UserDropdownMenuProps {
   userDropdownOpen: boolean;

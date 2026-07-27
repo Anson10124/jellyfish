@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { MediaLandscapeCarousel } from './media-landscape-carousel';
-import { useContinueWatching } from '@/hooks/use-continue-watching';
-import { useTranslation } from '@/hooks/use-translation';
+import { useContinueWatching } from '@/hooks/media/use-continue-watching';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export interface ContinueWatchingCarouselProps {

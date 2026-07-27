@@ -3,8 +3,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Globe, Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
-import { ServerInfo } from '@/hooks/use-connect-flow';
-import { useTranslation } from '@/hooks/use-translation';
+import { ServerInfo } from '@/hooks/connect/use-connect-flow';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export const slideVariants = {
   enter: (dir: number) => ({

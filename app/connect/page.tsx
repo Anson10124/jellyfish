@@ -1,9 +1,9 @@
 'use client';
 
 import { AnimatePresence } from 'motion/react';
-import { useConnectFlow } from '@/hooks/use-connect-flow';
+import { useConnectFlow } from '@/hooks/connect/use-connect-flow';
 import { ServerStep, AuthStep } from '@/components/connect';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export default function ConnectPage() {
   const flow = useConnectFlow();

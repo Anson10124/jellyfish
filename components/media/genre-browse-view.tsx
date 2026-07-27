@@ -3,8 +3,8 @@
 import React from 'react';
 import { Poster } from './cards';
 import { PosterGrid } from './poster-grid';
-import { useTranslation } from '@/hooks/use-translation';
-import { useGenreMedia } from '@/hooks/use-genre-media';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useGenreMedia } from '@/hooks/media/use-genre-media';
 import { getMediaTitle, getMediaYear, getMediaSubtitleLabel } from '@/lib/utils/media-format';
 
 interface GenreBrowseViewProps {

@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { MediaLandscapeCarousel } from './media-landscape-carousel';
-import { useNextUp } from '@/hooks/use-next-up';
-import { useTranslation } from '@/hooks/use-translation';
+import { useNextUp } from '@/hooks/media/use-next-up';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export interface NextUpCarouselProps {

@@ -3,7 +3,7 @@
 import React from 'react';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { formatRuntime } from '@/lib/utils/media-format';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import type { Episode } from '@/types/media';
 import { Play, Film } from 'lucide-react';
 

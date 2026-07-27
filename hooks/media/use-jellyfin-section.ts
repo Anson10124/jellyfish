@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useServerConfig } from '@/hooks/use-server-config';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export type JellyfinSectionFetcher = (

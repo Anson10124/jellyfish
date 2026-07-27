@@ -4,9 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { LibraryCarousel, ContinueWatchingCarousel, NextUpCarousel } from '@/components/media/carousels';
 import { VideoPlayerModal } from '@/components/player';
-import { useTranslation } from '@/hooks/use-translation';
-import { useServerConfig } from '@/hooks/use-server-config';
-import { usePlayer } from '@/hooks/use-player';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { usePlayer } from '@/hooks/player/use-player';
 import { JellyfinService } from '@/services/jellyfin.service';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 

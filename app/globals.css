@@ -107,3 +107,7 @@
   --media-border-radius: 0px;
   --media-border-color: #00000000 !important;
 }
+
+.media-overlay {
+  display: none !important;
+}

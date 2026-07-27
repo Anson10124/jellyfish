@@ -4,7 +4,7 @@ import React from 'react';
 import { SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import type { CastMember, CrewMember } from '@/types/media';
 import { CastCard } from '@/components/media/cards';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { CarouselWrapper } from './carousel-wrapper';
 
 export type CastOrCrewMember = CastMember | CrewMember;

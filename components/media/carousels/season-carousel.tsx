@@ -4,7 +4,7 @@ import React from 'react';
 import { SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import type { Season } from '@/types/media';
 import { SeasonCard } from '@/components/media/cards/season-card';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { CarouselWrapper } from './carousel-wrapper';
 
 interface SeasonCarouselProps {

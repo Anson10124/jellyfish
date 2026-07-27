@@ -4,19 +4,19 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable } from 'lucide-react';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useIsIOS } from '@/hooks/device/use-ios';
-import { useSearch } from '@/hooks/use-search';
+import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
-import ProgressiveBlur from '@/components/ProgressiveBlur';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 
-import { UserAvatar } from './navbar/user-avatar';
-import { NavItems } from './navbar/nav-items';
-import { SearchBar } from './navbar/search-bar';
-import { SearchDropdown } from './navbar/search-dropdown';
-import { UserDropdownMenu } from './navbar/user-dropdown-menu';
-import { MobileNav } from './navbar/mobile-nav';
+import { UserAvatar } from './user-avatar';
+import { NavItems } from './nav-items';
+import { SearchBar } from './search-bar';
+import { SearchDropdown } from './search-dropdown';
+import { UserDropdownMenu } from './user-dropdown-menu';
+import { MobileNav } from './mobile-nav';
 
 export function Navbar() {
   const pathname = usePathname();

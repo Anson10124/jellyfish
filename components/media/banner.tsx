@@ -8,8 +8,8 @@ import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getMediaTitle, getMediaHref, formatRuntime } from '@/lib/utils/media-format';
 import { MediaBadges } from './media-badges';
-import { useTmdbMedia } from '@/hooks/use-tmdb-media';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTmdbMedia } from '@/hooks/media/use-tmdb-media';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { TmdbApi } from '@/lib/api/tmdb';
 import type { MediaItem, MovieDetails, TVDetails } from '@/types/media';
 

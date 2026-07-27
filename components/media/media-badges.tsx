@@ -3,7 +3,7 @@
 import React from 'react';
 import { Star, Calendar, Clock, Tv } from 'lucide-react';
 import { getGenreName } from '@/constants/genres';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export interface MediaBadgesProps {
   voteAverage?: string | number | null;

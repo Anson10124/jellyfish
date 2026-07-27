@@ -1,7 +1,7 @@
 import { use } from 'react';
-import { useTranslation } from '@/hooks/use-translation';
-import { useTmdbMedia } from '@/hooks/use-tmdb-media';
-import { useInfiniteScroll } from '@/hooks/use-infinite-scroll';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useTmdbMedia } from '@/hooks/media/use-tmdb-media';
+import { useInfiniteScroll } from '@/hooks/ui/use-infinite-scroll';
 import { getGenreName } from '@/constants/genres';
 
 export interface UseGenreMediaParams {

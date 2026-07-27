@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Search, X, Film, Tv, Loader2 } from 'lucide-react';
-import { SearchResult } from '@/hooks/use-search';
+import { SearchResult } from '@/hooks/media/use-search';
 import { NavItemDef } from './nav-items';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';

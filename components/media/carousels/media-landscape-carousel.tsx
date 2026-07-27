@@ -5,7 +5,7 @@ import { EPISODE_SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import { LandscapeMediaCard } from '@/components/media/cards/landscape-media-card';
 import { CarouselHeader } from './carousel-header';
 import { CarouselWrapper } from './carousel-wrapper';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { Skeleton } from '@/components/ui';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 

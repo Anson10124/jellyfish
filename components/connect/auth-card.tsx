@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { User, Lock, Zap, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
-import { AuthMethod, QuickConnectStatus } from '@/hooks/use-connect-flow';
-import { useTranslation } from '@/hooks/use-translation';
+import { AuthMethod, QuickConnectStatus } from '@/hooks/connect/use-connect-flow';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 interface AuthCardProps {
   selectedMethod: AuthMethod;

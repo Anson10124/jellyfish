@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export const PrevButton: React.FC<React.ComponentPropsWithRef<'button'>> = ({
   disabled,

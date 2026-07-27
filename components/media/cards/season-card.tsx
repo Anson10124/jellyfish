@@ -3,7 +3,7 @@
 import React from 'react';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import type { Season } from '@/types/media';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { Layers } from 'lucide-react';
 
 export interface SeasonCardProps {

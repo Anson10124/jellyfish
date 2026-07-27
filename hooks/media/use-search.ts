@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import type { MediaItem } from '@/types/media';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 
 export interface SearchResult {
   id: number;

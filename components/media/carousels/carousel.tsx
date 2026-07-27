@@ -3,9 +3,9 @@
 import React from 'react';
 import { SLIDE_WIDTH_CLASS } from '@/constants/carousel';
 import { Poster } from '@/components/media/cards';
-import { useTmdbMedia, type UseTmdbMediaOptions } from '@/hooks/use-tmdb-media';
-import { useTranslation } from '@/hooks/use-translation';
-import { useEmblaNavigation } from '@/hooks/use-embla-navigation';
+import { useTmdbMedia, type UseTmdbMediaOptions } from '@/hooks/media/use-tmdb-media';
+import { useTranslation } from '@/hooks/ui/use-translation';
+import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
 import { getMediaTitle, getMediaYear, getMediaSubtitleLabel } from '@/lib/utils/media-format';
 import type { MediaItem } from '@/types/media';
 import { PrevButton, NextButton } from './carousel-buttons';

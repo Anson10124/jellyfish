@@ -115,5 +115,5 @@ const ProgressiveBlur: React.FC<ProgressiveBlurProps> = ({
   );
 };
 
+export { ProgressiveBlur };
 export default React.memo(ProgressiveBlur);
-

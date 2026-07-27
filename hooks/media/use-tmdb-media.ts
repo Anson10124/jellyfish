@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { TmdbApi, type TmdbPaginatedResponse } from '@/lib/api/tmdb';
 import type { MediaItem } from '@/types/media';
 import { MOVIE_TO_TV_GENRE_MAP, TV_TO_MOVIE_GENRE_MAP } from '@/constants/genres';
-import { useTranslation } from '@/hooks/use-translation';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { interleaveMediaItems } from '@/lib/utils/media-format';
 
 export interface UseTmdbMediaOptions {

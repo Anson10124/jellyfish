@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Film, Tv, Loader2 } from 'lucide-react';
-import { SearchResult } from '@/hooks/use-search';
+import { SearchResult } from '@/hooks/media/use-search';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
