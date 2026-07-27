@@ -213,14 +213,11 @@ export const JellyfinService = {
       return `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`;
     }
 
-    const audioIndex = audioStreamIndex !== undefined ? audioStreamIndex : 1;
-
     const params = new URLSearchParams({
       DeviceId: deviceId,
       MediaSourceId: mediaSourceId || itemId,
       VideoCodec: 'av1,hevc,h264,vp9',
       AudioCodec: 'aac',
-      AudioStreamIndex: audioIndex.toString(),
       VideoBitrate: '140000000',
       AudioBitrate: '384000',
       TranscodingMaxAudioChannels: '2',
@@ -232,6 +229,10 @@ export const JellyfinService = {
       BreakOnNonKeyFrames: 'false',
       api_key: token,
     });
+
+    if (audioStreamIndex !== undefined) {
+      params.set('AudioStreamIndex', audioStreamIndex.toString());
+    }
 
     return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;
   },

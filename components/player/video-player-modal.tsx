@@ -128,7 +128,7 @@ export function VideoPlayerModal({
       >
         <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-5 bg-gradient-to-b from-black/80 via-black/40 to-transparent transition-opacity duration-300 pointer-events-auto">
           <h2 className="text-base sm:text-lg font-semibold text-white truncate max-w-2xl drop-shadow-md">
-            {title || 'Media Player'}
+            {title}
           </h2>
           <button
             onClick={handleClose}

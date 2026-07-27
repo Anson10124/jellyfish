@@ -58,7 +58,8 @@ export function usePlayer() {
       const src = JellyfinService.getStreamUrl(
         jellyfinConfig.serverUrl,
         jellyfinItem.Id,
-        jellyfinConfig.accessToken
+        jellyfinConfig.accessToken,
+        jellyfinItem
       );
 
       const title = `${seriesTitle} - S${episode.season_number} E${episode.episode_number}: ${episode.name}`;
