@@ -249,6 +249,74 @@ export const JellyfinService = {
     };
   },
 
+  // Get episodes for a TV series
+  async getEpisodesForSeries(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    seriesId: string,
+    seasonNumber?: number
+  ): Promise<JellyfinBaseItem[]> {
+    const params = new URLSearchParams();
+    params.set('UserId', userId);
+    params.set('Fields', JELLYFIN_DEFAULT_FIELDS);
+    if (seasonNumber !== undefined) {
+      params.set('SeasonNumber', seasonNumber.toString());
+    }
+
+    const endpoint = `/Shows/${seriesId}/Episodes?${params.toString()}`;
+    try {
+      const res = await serverFetch<{ Items: JellyfinBaseItem[] }>(serverUrl, endpoint, { token });
+      if (res.Items && res.Items.length > 0) {
+        return res.Items;
+      }
+    } catch (err) {
+      console.warn('Failed to fetch episodes from /Shows/seriesId/Episodes, trying /Users/userId/Items fallback:', err);
+    }
+
+    try {
+      const fallbackParams = new URLSearchParams();
+      fallbackParams.set('ParentId', seriesId);
+      fallbackParams.set('IncludeItemTypes', 'Episode');
+      fallbackParams.set('Recursive', 'true');
+      fallbackParams.set('Fields', JELLYFIN_DEFAULT_FIELDS);
+      const fallbackEndpoint = `/Users/${userId}/Items?${fallbackParams.toString()}`;
+      const res = await serverFetch<{ Items: JellyfinBaseItem[] }>(serverUrl, fallbackEndpoint, { token });
+      return res.Items || [];
+    } catch (err) {
+      console.warn('Failed to fetch episodes fallback:', err);
+      return [];
+    }
+  },
+
+  // Find specific episode item for a series and season/episode number
+  async findEpisodeItem(
+    serverUrl: string,
+    userId: string,
+    token: string,
+    seriesId: string,
+    seasonNumber: number,
+    episodeNumber: number
+  ): Promise<JellyfinBaseItem | null> {
+    const episodes = await this.getEpisodesForSeries(serverUrl, userId, token, seriesId, seasonNumber);
+    if (!episodes || episodes.length === 0) return null;
+
+    // 1. Exact match by season & episode number
+    const exactMatch = episodes.find(
+      (ep) =>
+        (ep.ParentIndexNumber === seasonNumber || (seasonNumber === 1 && ep.ParentIndexNumber === undefined)) &&
+        ep.IndexNumber === episodeNumber
+    );
+    if (exactMatch) return exactMatch;
+
+    // 2. Match by episode number alone
+    const indexMatch = episodes.find((ep) => ep.IndexNumber === episodeNumber);
+    if (indexMatch) return indexMatch;
+
+    // 3. Return first episode if available
+    return episodes[0] || null;
+  },
+
   // Query Jellyfin /Items/{itemId}/PlaybackInfo with web browser DeviceProfile
   async getPlaybackSource(
     serverUrl: string,

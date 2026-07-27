@@ -80,21 +80,68 @@ export function usePlayer() {
 
   const playMovie = useCallback(
     async ({ jellyfinItem, title, posterUrl }: PlayMovieOptions) => {
-      if (!jellyfinItem?.Id) return;
-      const initialTime = ticksToSeconds(jellyfinItem.UserData?.PlaybackPositionTicks);
-      await resolveAndPlayMedia(jellyfinItem, title, posterUrl, initialTime);
+      if (!jellyfinConfig || !jellyfinItem?.Id) return;
+
+      let targetItem: JellyfinBaseItem | null = jellyfinItem;
+      let displayTitle = title;
+
+      if (jellyfinItem.Type === 'Series' || jellyfinItem.Type === 'Season') {
+        const episodes = await JellyfinService.getEpisodesForSeries(
+          jellyfinConfig.serverUrl,
+          jellyfinConfig.userId,
+          jellyfinConfig.accessToken,
+          jellyfinItem.Id
+        );
+
+        if (episodes && episodes.length > 0) {
+          const resumeEp = episodes.find((ep) => (ep.UserData?.PlaybackPositionTicks ?? 0) > 0);
+          const unwatchedEp = episodes.find((ep) => !ep.UserData?.Played);
+          targetItem = resumeEp || unwatchedEp || episodes[0];
+
+          if (targetItem) {
+            const sNum = targetItem.ParentIndexNumber ?? 1;
+            const eNum = targetItem.IndexNumber ?? 1;
+            const epName = targetItem.Name || 'Episode';
+            displayTitle = `${title} - S${sNum} E${eNum}: ${epName}`;
+          }
+        }
+      }
+
+      if (!targetItem || !targetItem.Id) return;
+      const initialTime = ticksToSeconds(targetItem.UserData?.PlaybackPositionTicks);
+      await resolveAndPlayMedia(targetItem, displayTitle, posterUrl, initialTime);
     },
-    [resolveAndPlayMedia]
+    [jellyfinConfig, resolveAndPlayMedia]
   );
 
   const playEpisode = useCallback(
     async ({ jellyfinItem, seriesTitle, episode, posterUrl }: PlayEpisodeOptions) => {
-      if (!jellyfinItem?.Id) return;
-      const title = `${seriesTitle} - S${episode.season_number} E${episode.episode_number}: ${episode.name}`;
+      if (!jellyfinConfig || !jellyfinItem?.Id) return;
+
+      let targetItem: JellyfinBaseItem | null = jellyfinItem;
+
+      if (jellyfinItem.Type === 'Series' || jellyfinItem.Type === 'Season' || jellyfinItem.Type !== 'Episode') {
+        const episodeItem = await JellyfinService.findEpisodeItem(
+          jellyfinConfig.serverUrl,
+          jellyfinConfig.userId,
+          jellyfinConfig.accessToken,
+          jellyfinItem.Id,
+          episode.season_number,
+          episode.episode_number
+        );
+        if (episodeItem) {
+          targetItem = episodeItem;
+        }
+      }
+
+      if (!targetItem || !targetItem.Id) return;
+
+      const title = `${seriesTitle} - S${episode.season_number} E${episode.episode_number}: ${episode.name || targetItem.Name || 'Episode'}`;
       const poster = getTmdbImage(episode.still_path || posterUrl, 'original');
-      await resolveAndPlayMedia(jellyfinItem, title, poster, 0);
+      const initialTime = ticksToSeconds(targetItem.UserData?.PlaybackPositionTicks);
+      await resolveAndPlayMedia(targetItem, title, poster, initialTime);
     },
-    [resolveAndPlayMedia]
+    [jellyfinConfig, resolveAndPlayMedia]
   );
 
   return {

@@ -8,6 +8,8 @@ import { createPlayer } from '@videojs/react';
 import { VideoSkin, Video, videoFeatures } from '@videojs/react/video';
 import { HlsJsVideo } from '@videojs/react/media/hlsjs-video';
 import { useJellyfinPlayback } from '@/hooks/media/use-jellyfin-playback';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { JellyfinService } from '@/services/jellyfin.service';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import type { VideoPlayerModalProps } from '@/types/player';
@@ -27,6 +29,7 @@ export function VideoPlayerModal({
   subtitles: propSubtitles,
   onFallbackTranscode,
 }: VideoPlayerModalProps) {
+  const { jellyfinConfig } = useServerConfig();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -38,6 +41,14 @@ export function VideoPlayerModal({
   const itemId = activeVideo?.itemId ?? propItemId;
   const playMethod = activeVideo?.playMethod ?? propPlayMethod;
   const subtitles = activeVideo?.subtitles ?? propSubtitles;
+
+  const [overrideSrc, setOverrideSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    setOverrideSrc(null);
+  }, [src]);
+
+  const effectiveSrc = overrideSrc || src;
 
   const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState<number | null>(() => {
     const defaultSub = subtitles?.find((s) => s.isDefault);
@@ -151,6 +162,14 @@ export function VideoPlayerModal({
     console.error('Video player error event:', e.currentTarget.error);
     if (onFallbackTranscode) {
       onFallbackTranscode();
+    } else if (jellyfinConfig && itemId && effectiveSrc && !effectiveSrc.includes('.m3u8')) {
+      console.warn('DirectPlay failed in browser, attempting HLS transcode fallback...');
+      const transcodeUrl = JellyfinService.getStreamUrl(
+        jellyfinConfig.serverUrl,
+        itemId,
+        jellyfinConfig.accessToken
+      );
+      setOverrideSrc(transcodeUrl);
     }
   };
 
@@ -162,14 +181,14 @@ export function VideoPlayerModal({
     onClose();
   };
 
-  if (!isPlayerOpen || !src) return null;
+  if (!isPlayerOpen || !effectiveSrc) return null;
 
-  const isHls = Boolean(src && src.includes('.m3u8'));
+  const isHls = Boolean(effectiveSrc && effectiveSrc.includes('.m3u8'));
   const VideoComponent = (isHls ? HlsJsVideo : Video) as React.ElementType;
 
   const sharedVideoProps = {
     ref: videoRef,
-    src,
+    src: effectiveSrc,
     poster,
     crossOrigin: 'anonymous' as const,
     playsInline: true,
