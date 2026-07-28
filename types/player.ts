@@ -9,12 +9,22 @@ export interface SubtitleTrack {
   vttUrl: string;
 }
 
+export interface AudioTrack {
+  index: number;
+  language: string;
+  title: string;
+  isDefault: boolean;
+  channels?: number;
+  codec?: string;
+}
+
 export interface PlaybackSourceResult {
   url: string;
   isHls: boolean;
   playMethod: 'DirectPlay' | 'Transcode' | 'DirectStream';
   mediaSourceId?: string;
   subtitles?: SubtitleTrack[];
+  audioTracks?: AudioTrack[];
 }
 
 export interface ActiveVideo {
@@ -27,6 +37,7 @@ export interface ActiveVideo {
   mediaSourceId?: string;
   isHls?: boolean;
   subtitles?: SubtitleTrack[];
+  audioTracks?: AudioTrack[];
 }
 
 export interface VideoPlayerModalProps {
@@ -40,6 +51,7 @@ export interface VideoPlayerModalProps {
   itemId?: string;
   playMethod?: 'DirectPlay' | 'Transcode' | 'DirectStream';
   subtitles?: SubtitleTrack[];
+  audioTracks?: AudioTrack[];
   onFallbackTranscode?: () => void;
 }
 

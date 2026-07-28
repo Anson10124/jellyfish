@@ -56,6 +56,7 @@ export function usePlayer() {
           mediaSourceId: source.mediaSourceId,
           isHls: source.isHls,
           subtitles: source.subtitles,
+          audioTracks: source.audioTracks,
         });
       } catch (err) {
         console.warn('Failed to fetch PlaybackInfo, falling back to direct stream:', err);

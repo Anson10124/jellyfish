@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 import '@videojs/react/video/skin.css';
@@ -12,9 +12,106 @@ import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
-import type { VideoPlayerModalProps } from '@/types/player';
+import { getStoredDeviceId } from '@/lib/storage/server-storage';
+import type { VideoPlayerModalProps, AudioTrack } from '@/types/player';
 
 const Player = createPlayer({ features: videoFeatures });
+
+function generatePlaySessionId(): string {
+  return crypto.randomUUID().replace(/-/g, '');
+}
+
+function buildTranscodeUrl(
+  base: string,
+  itemId: string,
+  mediaSourceId: string,
+  audioStreamIndex: number,
+  token: string
+): string {
+  const deviceId = getStoredDeviceId();
+  const params = new URLSearchParams({
+    DeviceId: deviceId,
+    MediaSourceId: mediaSourceId,
+    PlaySessionId: generatePlaySessionId(),
+    AudioStreamIndex: audioStreamIndex.toString(),
+    VideoCodec: 'av1,hevc,h264,vp9',
+    AudioCodec: 'aac',
+    VideoBitrate: '140000000',
+    AudioBitrate: '384000',
+    TranscodingMaxAudioChannels: '2',
+    MaxAudioChannels: '2',
+    RequireAvc: 'false',
+    EnableAudioVbrEncoding: 'true',
+    SegmentContainer: 'mp4',
+    MinSegments: '1',
+    BreakOnNonKeyFrames: 'false',
+    api_key: token,
+  });
+  return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;
+}
+
+interface JellyfinAudioBridgeProps {
+  audioTracks: AudioTrack[];
+  selectedAudioIndex: number;
+  onSelectTrack: (track: AudioTrack) => void;
+}
+
+function JellyfinAudioBridge({ audioTracks, selectedAudioIndex, onSelectTrack }: JellyfinAudioBridgeProps) {
+  const store = Player.usePlayer();
+
+  const onSelectTrackRef = useRef(onSelectTrack);
+  onSelectTrackRef.current = onSelectTrack;
+  const audioTracksRef = useRef(audioTracks);
+  audioTracksRef.current = audioTracks;
+  const selectedAudioIndexRef = useRef(selectedAudioIndex);
+  selectedAudioIndexRef.current = selectedAudioIndex;
+
+  useEffect(() => {
+    if (!store || audioTracks.length <= 1) return;
+
+    const $state = (store as any).$state as { patch: (partial: Record<string, unknown>) => void };
+
+    const inject = () => {
+      const current = (store as any).audioTrackList as any[] | undefined;
+      const needsInject =
+        !current ||
+        current.length !== audioTracksRef.current.length ||
+        current.some(
+          (t, i) =>
+            t.id !== String(audioTracksRef.current[i].index) ||
+            t.enabled !== (audioTracksRef.current[i].index === selectedAudioIndexRef.current)
+        );
+
+      if (needsInject) {
+        $state.patch({
+          audioTrackList: audioTracksRef.current.map((t) => ({
+            id: String(t.index),
+            kind: 'main',
+            label: t.title,
+            language: t.language,
+            enabled: t.index === selectedAudioIndexRef.current,
+          })),
+          selectAudioTrack: (value: string) => {
+            const track = audioTracksRef.current.find((t) => String(t.index) === value);
+            if (track) onSelectTrackRef.current(track);
+          },
+        });
+      }
+    };
+
+    inject();
+
+    const unsubscribe = store.subscribe(() => {
+      inject();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [store, audioTracks.length, selectedAudioIndex]);
+
+  return null;
+}
 
 export function VideoPlayerModal({
   isOpen,
@@ -27,6 +124,7 @@ export function VideoPlayerModal({
   itemId: propItemId,
   playMethod: propPlayMethod,
   subtitles: propSubtitles,
+  audioTracks: propAudioTracks,
   onFallbackTranscode,
 }: VideoPlayerModalProps) {
   const { jellyfinConfig } = useServerConfig();
@@ -41,6 +139,7 @@ export function VideoPlayerModal({
   const itemId = activeVideo?.itemId ?? propItemId;
   const playMethod = activeVideo?.playMethod ?? propPlayMethod;
   const subtitles = activeVideo?.subtitles ?? propSubtitles;
+  const audioTracks = activeVideo?.audioTracks ?? propAudioTracks;
 
   const [overrideSrc, setOverrideSrc] = useState<string | null>(null);
 
@@ -50,10 +149,50 @@ export function VideoPlayerModal({
 
   const effectiveSrc = overrideSrc || src;
 
+  const isHls = Boolean(effectiveSrc && effectiveSrc.includes('.m3u8'));
+
   const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState<number | null>(() => {
     const defaultSub = subtitles?.find((s) => s.isDefault);
     return defaultSub ? defaultSub.index : null;
   });
+
+  const hasMultipleAudio = audioTracks && audioTracks.length > 1;
+  const [selectedAudioIndex, setSelectedAudioIndex] = useState<number>(() => {
+    const defaultTrack = audioTracks?.find((t) => t.isDefault) ?? audioTracks?.[0];
+    return defaultTrack?.index ?? 0;
+  });
+
+  useEffect(() => {
+    const defaultTrack = audioTracks?.find((t) => t.isDefault) ?? audioTracks?.[0];
+    setSelectedAudioIndex(defaultTrack?.index ?? 0);
+  }, [src, audioTracks]);
+
+  const switchAudioTrack = useCallback(
+    (track: AudioTrack) => {
+      if (track.index === selectedAudioIndex) return;
+
+      setSelectedAudioIndex(track.index);
+
+      const video = videoRef.current;
+      if (!video || !jellyfinConfig || !itemId) return;
+
+      const currentTime = video.currentTime;
+      const base = jellyfinConfig.serverUrl.replace(/\/$/, '');
+      const mediaSourceId = activeVideo?.mediaSourceId || itemId;
+
+      const newUrl = buildTranscodeUrl(base, itemId, mediaSourceId, track.index, jellyfinConfig.accessToken);
+      setOverrideSrc(newUrl);
+
+      const restoreTime = () => {
+        if (currentTime > 0 && video.duration && currentTime < video.duration) {
+          video.currentTime = currentTime;
+        }
+        video.removeEventListener('loadedmetadata', restoreTime);
+      };
+      video.addEventListener('loadedmetadata', restoreTime);
+    },
+    [selectedAudioIndex, jellyfinConfig, itemId, activeVideo?.mediaSourceId]
+  );
 
   useScrollLock(isPlayerOpen);
 
@@ -183,7 +322,6 @@ export function VideoPlayerModal({
 
   if (!isPlayerOpen || !effectiveSrc) return null;
 
-  const isHls = Boolean(effectiveSrc && effectiveSrc.includes('.m3u8'));
   const VideoComponent = (isHls ? HlsJsVideo : Video) as React.ElementType;
 
   const sharedVideoProps = {
@@ -232,6 +370,14 @@ export function VideoPlayerModal({
           className="relative w-full h-full flex items-center justify-center bg-black"
         >
           <Player.Provider>
+            {hasMultipleAudio && (
+              <JellyfinAudioBridge
+                audioTracks={audioTracks!}
+                selectedAudioIndex={selectedAudioIndex}
+                onSelectTrack={switchAudioTrack}
+              />
+            )}
+
             <VideoSkin className="w-full h-full border-none rounded-none bg-black">
               <VideoComponent {...sharedVideoProps}>
                 {subtitles?.map((sub) => {

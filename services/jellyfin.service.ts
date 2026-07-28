@@ -2,7 +2,7 @@ import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
 import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 import { createWebDeviceProfile } from '@/lib/jellyfin/device-profile';
-import type { SubtitleTrack, PlaybackSourceResult } from '@/types/player';
+import type { SubtitleTrack, AudioTrack, PlaybackSourceResult } from '@/types/player';
 export type { PlaybackSourceResult };
 
 const JELLYFIN_DEFAULT_FIELDS =
@@ -348,7 +348,20 @@ export const JellyfinService = {
         language: s.Language || 'und',
         title: s.DisplayTitle || s.Title || s.Language || `Subtitle ${s.Index}`,
         isDefault: Boolean(s.IsDefault),
-        vttUrl: `${base}/Videos/${itemId}/${mediaSourceId}/Subtitles/${s.Index}/0/Stream.vtt?api_key=${token}`,
+        vttUrl: `${base}/Videos/${itemId}/${mediaSourceId}/Subtitles/${s.Index}/0/Stream.vtt?api_key=${token}&copyTimestamps=true&addVttTimeMap=true`,
+      }));
+
+      const audioStreams = (mediaSource?.MediaStreams || []).filter(
+        (s: any) => s.Type === 'Audio' && s.Index !== undefined
+      );
+
+      const audioTracks: AudioTrack[] = audioStreams.map((s: any) => ({
+        index: s.Index,
+        language: s.Language || 'und',
+        title: s.DisplayTitle || s.Title || s.Language || `Audio ${s.Index}`,
+        isDefault: Boolean(s.IsDefault),
+        channels: s.Channels,
+        codec: s.Codec,
       }));
 
       if (mediaSource?.SupportsDirectPlay) {
@@ -358,6 +371,7 @@ export const JellyfinService = {
           playMethod: 'DirectPlay',
           mediaSourceId,
           subtitles,
+          audioTracks,
         };
       }
 
@@ -368,6 +382,7 @@ export const JellyfinService = {
           playMethod: 'Transcode',
           mediaSourceId,
           subtitles,
+          audioTracks,
         };
       }
 
@@ -377,6 +392,7 @@ export const JellyfinService = {
         playMethod: 'DirectPlay',
         mediaSourceId,
         subtitles,
+        audioTracks,
       };
     } catch (err) {
       console.warn('Failed to fetch PlaybackInfo, falling back to direct stream:', err);
