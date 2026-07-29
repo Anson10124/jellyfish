@@ -27,7 +27,7 @@ export function UserDropdownMenu({
   t,
 }: UserDropdownMenuProps) {
   const router = useRouter();
-  const { servers, activeServerId, switchServer, removeServer } = useServerConfig();
+  const { servers, activeServerId, switchServer, removeServer, serverStatuses } = useServerConfig();
   const [view, setView] = useState<'main' | 'servers'>('main');
   const [direction, setDirection] = useState<number>(1);
   const [contentHeight, setContentHeight] = useState<number | 'auto'>('auto');
@@ -115,7 +115,16 @@ export function UserDropdownMenu({
         <div className="px-3 py-2 border-b border-white/10 mb-1">
           <p className="text-xs font-semibold text-white truncate">{jellyfinConfig.username}</p>
           {jellyfinConfig.serverName && (
-            <p className="text-[11px] text-neutral-400 truncate">{jellyfinConfig.serverName}</p>
+            <div className="flex items-center justify-between gap-2 mt-0.5">
+              <span className="text-[11px] text-neutral-400 truncate flex-1">{jellyfinConfig.serverName}</span>
+              {activeServerId && (
+                <span
+                  className={`text-[11px] text-neutral-400`}
+                >
+                  {serverStatuses[activeServerId] || 'checking'}
+                </span>
+              )}
+            </div>
           )}
         </div>
 
@@ -195,6 +204,7 @@ export function UserDropdownMenu({
                 <div className="space-y-0.5">
                   {servers.map((server) => {
                     const isActive = activeServerId === server.id;
+                    const status = serverStatuses[server.id] || 'checking';
                     return (
                       <motion.button
                         key={server.id}

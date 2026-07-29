@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
 import { JellyfinConfig, SeerrConfig, ServerConnectionState } from '@/types/server';
 import { useI18n } from '@/context/i18n-context';
 import {
@@ -28,6 +29,7 @@ interface ServerContextType {
   isInitialized: boolean;
 
   seerrConfig: SeerrConfig | null;
+  serverStatuses: Record<string, 'online' | 'offline' | 'checking'>;
 
   verifyServerUrl: (url: string) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string }>;
   connectWithPassword: (serverUrl: string, username: string, password?: string) => Promise<boolean>;
@@ -36,12 +38,14 @@ interface ServerContextType {
   removeServer: (serverId: string) => void;
   disconnectJellyfin: () => void;
   saveSeerrConfig: (config: SeerrConfig) => void;
+  checkServersStatus: () => Promise<void>;
 }
 
 const ServerContext = createContext<ServerContextType | undefined>(undefined);
 
 export function ServerProvider({ children }: { children: React.ReactNode }) {
   const { t } = useI18n();
+  const pathname = usePathname();
   const [servers, setServers] = useState<JellyfinConfig[]>([]);
   const [activeServerId, setActiveServerId] = useState<string | null>(null);
   const [seerrConfig, setSeerrConfig] = useState<SeerrConfig | null>(null);
@@ -49,11 +53,54 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
   const [connectionState, setConnectionState] = useState<ServerConnectionState>({
     status: 'disconnected',
   });
+  const [serverStatuses, setServerStatuses] = useState<Record<string, 'online' | 'offline' | 'checking'>>({});
 
   const activeServer = useMemo(
     () => servers.find((s) => s.id === activeServerId) ?? null,
     [servers, activeServerId]
   );
+
+  const checkServersStatus = useCallback(async () => {
+    const store = getStoredServers();
+    if (store.servers.length === 0) return;
+
+    setServerStatuses((prev) => {
+      const next = { ...prev };
+      store.servers.forEach((s) => {
+        next[s.id] = 'checking';
+      });
+      return next;
+    });
+
+    await Promise.all(
+      store.servers.map(async (server) => {
+        try {
+          await JellyfinService.testConnection(server.serverUrl);
+          setServerStatuses((prev) => ({ ...prev, [server.id]: 'online' }));
+          
+          if (server.id === store.activeServerId) {
+            setConnectionState({
+              status: 'connected',
+              serverName: server.serverName,
+              version: server.version,
+            });
+          }
+        } catch (err) {
+          console.warn(`Server ${server.serverUrl} status check failed:`, err);
+          setServerStatuses((prev) => ({ ...prev, [server.id]: 'offline' }));
+          
+          if (server.id === store.activeServerId) {
+            setConnectionState({
+              status: 'offline',
+              serverName: server.serverName,
+              version: server.version,
+              error: 'Server is unreachable',
+            });
+          }
+        }
+      })
+    );
+  }, []);
 
   useEffect(() => {
     const store = getStoredServers();
@@ -71,6 +118,8 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
           version: active.version,
         });
       }
+
+      checkServersStatus();
     }
 
     if (storedSeerr) {
@@ -78,7 +127,35 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     }
 
     setIsInitialized(true);
-  }, []);
+  }, [checkServersStatus]);
+
+  // Check active server status on page navigation / pathname changes
+  useEffect(() => {
+    if (!isInitialized || !activeServer) return;
+
+    const checkActive = async () => {
+      try {
+        await JellyfinService.testConnection(activeServer.serverUrl);
+        setServerStatuses((prev) => ({ ...prev, [activeServer.id]: 'online' }));
+        setConnectionState({
+          status: 'connected',
+          serverName: activeServer.serverName,
+          version: activeServer.version,
+        });
+      } catch (err) {
+        console.warn(`Active server ${activeServer.serverUrl} is offline:`, err);
+        setServerStatuses((prev) => ({ ...prev, [activeServer.id]: 'offline' }));
+        setConnectionState({
+          status: 'offline',
+          serverName: activeServer.serverName,
+          version: activeServer.version,
+          error: 'Server is unreachable',
+        });
+      }
+    };
+
+    checkActive();
+  }, [pathname, activeServer, isInitialized]);
 
   const persistState = useCallback((newServers: JellyfinConfig[], newActiveId: string | null) => {
     setServers(newServers);
@@ -144,6 +221,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
         persistState(updatedServers, newConfig.id);
         addStoredServer(newConfig);
+        setServerStatuses((prev) => ({ ...prev, [newConfig.id]: 'online' }));
 
         setConnectionState({
           status: 'connected',
@@ -217,6 +295,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
         persistState(updatedServers, newConfig.id);
         addStoredServer(newConfig);
+        setServerStatuses((prev) => ({ ...prev, [newConfig.id]: 'online' }));
 
         setConnectionState({
           status: 'connected',
@@ -251,6 +330,27 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         version: target.version,
         error: null,
       });
+
+      const checkActive = async () => {
+        try {
+          await JellyfinService.testConnection(target.serverUrl);
+          setServerStatuses((prev) => ({ ...prev, [target.id]: 'online' }));
+          setConnectionState({
+            status: 'connected',
+            serverName: target.serverName,
+            version: target.version,
+          });
+        } catch (err) {
+          setServerStatuses((prev) => ({ ...prev, [target.id]: 'offline' }));
+          setConnectionState({
+            status: 'offline',
+            serverName: target.serverName,
+            version: target.version,
+            error: 'Server is unreachable',
+          });
+        }
+      };
+      checkActive();
     },
     [servers]
   );
@@ -305,6 +405,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       connectionState,
       isInitialized,
       seerrConfig,
+      serverStatuses,
       verifyServerUrl,
       connectWithPassword,
       connectWithQuickConnect,
@@ -312,6 +413,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       removeServer: removeServerHandler,
       disconnectJellyfin,
       saveSeerrConfig,
+      checkServersStatus,
     }),
     [
       servers,
@@ -320,6 +422,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       connectionState,
       isInitialized,
       seerrConfig,
+      serverStatuses,
       verifyServerUrl,
       connectWithPassword,
       connectWithQuickConnect,
@@ -327,6 +430,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       removeServerHandler,
       disconnectJellyfin,
       saveSeerrConfig,
+      checkServersStatus,
     ]
   );
 

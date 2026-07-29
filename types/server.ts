@@ -1,4 +1,5 @@
-export type ConnectionStatus = 'disconnected' | 'testing' | 'connected' | 'error';
+export type ConnectionStatus = 'disconnected' | 'testing' | 'connected' | 'error' | 'offline';
+
 
 export interface JellyfinConfig {
   id: string;

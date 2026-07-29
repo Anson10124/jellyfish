@@ -6,6 +6,7 @@ export function useServerConfig() {
     servers,
     activeServerId,
     activeServer,
+    serverStatuses,
 
     // Backwards-compatible alias
     jellyfinConfig,
@@ -25,6 +26,7 @@ export function useServerConfig() {
     removeServer,
     disconnectJellyfin,
     saveSeerrConfig,
+    checkServersStatus,
   } = useServerContext();
 
   return {
@@ -36,8 +38,10 @@ export function useServerConfig() {
     servers,
     activeServerId,
     activeServer,
+    serverStatuses,
     switchServer,
     removeServer,
+    checkServersStatus,
 
     // Pass-through
     seerrConfig,
@@ -50,3 +54,4 @@ export function useServerConfig() {
     saveSeerrConfig,
   };
 }
+

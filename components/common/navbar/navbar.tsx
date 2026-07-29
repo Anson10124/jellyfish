@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable } from 'lucide-react';
+import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useIsIOS } from '@/hooks/device/use-ios';
@@ -24,7 +24,8 @@ export function Navbar() {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const isIOS = useIsIOS();
-  const { jellyfinConfig, isInitialized } = useServerContext();
+  const { jellyfinConfig, isInitialized, connectionState } = useServerContext();
+  const isOffline = isInitialized && connectionState.status === 'offline';
 
   const isConnected = isInitialized && Boolean(jellyfinConfig?.username);
 
@@ -262,12 +263,17 @@ export function Navbar() {
                   aria-expanded={userDropdownOpen}
                   aria-haspopup="true"
                 >
-                  <UserAvatar
-                    serverUrl={jellyfinConfig.serverUrl}
-                    userId={jellyfinConfig.userId}
-                    tag={jellyfinConfig.userPrimaryImageTag}
-                    username={jellyfinConfig.username}
-                  />
+                  <div className="relative shrink-0">
+                    <UserAvatar
+                      serverUrl={jellyfinConfig.serverUrl}
+                      userId={jellyfinConfig.userId}
+                      tag={jellyfinConfig.userPrimaryImageTag}
+                      username={jellyfinConfig.username}
+                    />
+                    {isOffline && (
+                      <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-rose-500 border border-[#121215]" />
+                    )}
+                  </div>
                   <span className="hidden lg:inline truncate">
                     {jellyfinConfig.username.length > 8
                       ? `${jellyfinConfig.username.slice(0, 8)}...`
@@ -342,6 +348,15 @@ export function Navbar() {
           t={t}
         />
       </header>
+
+      {isOffline && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#18181b]/65 backdrop-blur-xl text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <WifiOff className="w-3.5 h-3.5 text-white shrink-0 animate-pulse" />
+          <span>
+            {t('nav.offlineWarning', 'Server unreachable. Please check your connection.')}
+          </span>
+        </div>
+      )}
     </>
   );
 }
