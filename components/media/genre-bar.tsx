@@ -73,6 +73,7 @@ export function GenreBar({
       ) : (
         <Link
           href={baseUrl}
+          prefetch={false}
           className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl ${
             activeGenreId === null
               ? 'bg-white text-black shadow-md scale-[1.02]'
@@ -109,6 +110,7 @@ export function GenreBar({
           <Link
             key={genre.id}
             href={`${baseUrl}/genre/${genre.id}`}
+            prefetch={false}
             className={buttonClasses}
           >
             {genreName}

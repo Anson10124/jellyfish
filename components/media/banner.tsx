@@ -242,6 +242,7 @@ export function Banner({
                 {href ? (
                   <Link
                     href={href}
+                    prefetch={false}
                     className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
                   >
                     <Play className="h-4 w-4 fill-current" />
@@ -260,6 +261,7 @@ export function Banner({
                 {href ? (
                   <Link
                     href={href}
+                    prefetch={false}
                     className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
                   >
                     <Info className="h-4 w-4" />

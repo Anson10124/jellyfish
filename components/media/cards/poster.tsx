@@ -72,7 +72,7 @@ export function Poster({
 
   if (targetHref) {
     return (
-      <Link href={targetHref} className="block w-full focus:outline-none">
+      <Link href={targetHref} prefetch={false} className="block w-full focus:outline-none">
         {content}
       </Link>
     );
