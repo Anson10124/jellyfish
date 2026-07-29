@@ -33,7 +33,8 @@ export function formatDate(
 
     if (isNaN(date.getTime())) return options.fallback ?? null;
 
-    const { fallback: _fallback, ...dateTimeOptions } = options;
+    const dateTimeOptions = { ...options };
+    delete dateTimeOptions.fallback;
 
     const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',

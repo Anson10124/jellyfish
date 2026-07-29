@@ -9,9 +9,7 @@ export interface MediaCategoryConfig {
   infinite?: boolean;
 }
 
-export function getMovieBrowseCategories(
-  _t: (key: string, fallback?: string) => string
-): MediaCategoryConfig[] {
+export function getMovieBrowseCategories(): MediaCategoryConfig[] {
   return [
     {
       id: 'trending-movies',
@@ -73,9 +71,7 @@ export function getMovieBrowseCategories(
   ];
 }
 
-export function getTvBrowseCategories(
-  _t: (key: string, fallback?: string) => string
-): MediaCategoryConfig[] {
+export function getTvBrowseCategories(): MediaCategoryConfig[] {
   return [
     {
       id: 'trending-tv',

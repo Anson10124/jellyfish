@@ -17,8 +17,8 @@ export function MediaBrowseView({ mediaType }: MediaBrowseViewProps) {
 
   const categories =
     mediaType === 'tv'
-      ? getTvBrowseCategories(t)
-      : getMovieBrowseCategories(t);
+      ? getTvBrowseCategories()
+      : getMovieBrowseCategories();
 
   return (
     <>
