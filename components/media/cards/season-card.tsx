@@ -37,10 +37,10 @@ export function SeasonCard({
       className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
     >
       <div
-        className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-white/4 shadow-lg transition duration-300 ${
+        className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg transition duration-300 ${
           isSelected
-            ? 'ring-2 ring-white scale-[1.04] shadow-white/10 shadow-2xl'
-            : 'ring-1 ring-white/5 group-hover:scale-[1.025] group-hover:ring-white/40'
+            ? 'ring-2 ring-foreground scale-[1.04] shadow-foreground/10 shadow-2xl'
+            : 'ring-1 ring-border group-hover:scale-[1.025] group-hover:ring-foreground/40'
         }`}
       >
         {imageUrl ? (
@@ -53,7 +53,7 @@ export function SeasonCard({
             className="object-cover w-full h-full pointer-events-none select-none"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-white/40 p-4 text-center">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-foreground/5 text-foreground/40 p-4 text-center">
             <Layers className="h-10 w-10 mb-2 stroke-[1.5]" />
             <span className="text-xs font-medium line-clamp-2">{season.name}</span>
           </div>
@@ -63,13 +63,13 @@ export function SeasonCard({
       <div className="mt-2 min-w-0">
         <p
           className={`truncate text-[12px] font-semibold transition-colors duration-300 sm:text-[13px] ${
-            isSelected ? 'text-white font-bold' : 'text-white/80 group-hover:text-white'
+            isSelected ? 'text-foreground font-bold' : 'text-foreground/80 group-hover:text-foreground'
           }`}
         >
           {season.name}
         </p>
         {subtitle && (
-          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-white/60 drop-shadow-xl">
+          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-foreground/60 drop-shadow-xl">
             {subtitle}
           </p>
         )}

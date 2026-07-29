@@ -44,15 +44,15 @@ export function SearchDropdown({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl bg-[#121215]/65 backdrop-blur-2xl border border-white/10 shadow-2xl z-[100]"
+        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl bg-background/65 backdrop-blur-2xl border border-border shadow-2xl z-[100]"
         style={{
           left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(255,255,255,0.1) transparent',
+          scrollbarColor: 'var(--border) transparent',
         }}
       >
         {searchLoading && results.length === 0 ? (
-          <div className="flex items-center justify-center gap-2 py-8 text-neutral-400">
+          <div className="flex items-center justify-center gap-2 py-8 text-foreground/50">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span className="text-sm">{t('common.searching', 'Searching')}...</span>
           </div>
@@ -62,10 +62,10 @@ export function SearchDropdown({
               <button
                 key={`${item.media_type}-${item.id}`}
                 onClick={() => handleResultClick(item.media_type, item.id)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/8 transition-colors duration-150 cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-foreground/8 transition-colors duration-150 cursor-pointer group"
               >
                 {/* Poster */}
-                <div className="relative w-10 h-[60px] rounded-lg overflow-hidden bg-white/5 shrink-0">
+                <div className="relative w-10 h-[60px] rounded-lg overflow-hidden bg-foreground/5 shrink-0">
                   {item.poster_path ? (
                     <img
                       src={`${TMDB_IMAGE_BASE}${item.poster_path}`}
@@ -75,9 +75,9 @@ export function SearchDropdown({
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       {item.media_type === 'movie' ? (
-                        <Film className="w-4 h-4 text-neutral-600" />
+                        <Film className="w-4 h-4 text-foreground/30" />
                       ) : (
-                        <Tv className="w-4 h-4 text-neutral-600" />
+                        <Tv className="w-4 h-4 text-foreground/30" />
                       )}
                     </div>
                   )}
@@ -85,10 +85,10 @@ export function SearchDropdown({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-medium text-white truncate group-hover:text-white/90">
+                  <p className="text-sm font-medium text-foreground truncate group-hover:text-foreground/90">
                     {item.title}
                   </p>
-                  <p className="text-[12px] text-neutral-500 mt-0.5">
+                  <p className="text-[12px] text-foreground/50 mt-0.5">
                     {getYear(item.release_date)}{getYear(item.release_date) && ' • '}{item.media_type === 'movie'
                       ? t('common.movie', 'Movie')
                       : t('common.tvShow', 'TV Show')}
@@ -98,7 +98,7 @@ export function SearchDropdown({
             ))}
           </div>
         ) : (
-          <div className="py-8 text-center text-neutral-500 text-sm">
+          <div className="py-8 text-center text-foreground/50 text-sm">
             {t('common.noResults', 'No results found')}
           </div>
         )}

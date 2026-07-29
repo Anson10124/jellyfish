@@ -107,19 +107,19 @@ export function UserDropdownMenu({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.96 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl bg-[#121215]/80 backdrop-blur-2xl border border-white/10 shadow-2xl p-1.5 z-[100] overflow-hidden"
+        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl bg-background/65 backdrop-blur-2xl border border-border shadow-2xl p-1.5 z-[100] overflow-hidden"
         style={{
           right: userDropdownPos.right !== undefined ? `${userDropdownPos.right}px` : '12px',
         }}
       >
-        <div className="px-3 py-2 border-b border-white/10 mb-1">
-          <p className="text-xs font-semibold text-white truncate">{jellyfinConfig.username}</p>
+        <div className="px-3 py-2 border-b border-border mb-1">
+          <p className="text-xs font-semibold text-foreground truncate">{jellyfinConfig.username}</p>
           {jellyfinConfig.serverName && (
             <div className="flex items-center justify-between gap-2 mt-0.5">
-              <span className="text-[11px] text-neutral-400 truncate flex-1">{jellyfinConfig.serverName}</span>
+              <span className="text-[11px] text-foreground/50 truncate flex-1">{jellyfinConfig.serverName}</span>
               {activeServerId && (
                 <span
-                  className={`text-[11px] text-neutral-400`}
+                  className="text-[11px] text-foreground/50"
                 >
                   {serverStatuses[activeServerId] || 'checking'}
                 </span>
@@ -153,17 +153,17 @@ export function UserDropdownMenu({
                     setDirection(1);
                     setView('servers');
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <Server className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors duration-150 shrink-0" />
+                    <Server className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
                     <span className="truncate">{t('nav.changeServer', 'Change Server')}</span>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
                     {servers.length > 1 && (
-                      <span className="text-[10px] text-neutral-500 tabular-nums">{servers.length}</span>
+                      <span className="text-[10px] text-foreground/40 tabular-nums">{servers.length}</span>
                     )}
-                    <ChevronLeft className="w-3.5 h-3.5 text-neutral-500 rotate-180 transition-all duration-150 shrink-0" />
+                    <ChevronLeft className="w-3.5 h-3.5 text-foreground/40 rotate-180 transition-all duration-150 shrink-0" />
                   </div>
                 </motion.button>
 
@@ -195,16 +195,15 @@ export function UserDropdownMenu({
                     setDirection(-1);
                     setView('main');
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all duration-150 ease-out cursor-pointer mb-1 group"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium text-foreground/50 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer mb-1 group"
                 >
-                  <ChevronLeft className="w-4 h-4 text-neutral-400 group-hover:text-white transition-transform duration-150 shrink-0" />
+                  <ChevronLeft className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-transform duration-150 shrink-0" />
                   <span>{t('nav.back', 'Back')}</span>
                 </motion.button>
 
                 <div className="space-y-0.5">
                   {servers.map((server) => {
                     const isActive = activeServerId === server.id;
-                    const status = serverStatuses[server.id] || 'checking';
                     return (
                       <motion.button
                         key={server.id}
@@ -213,27 +212,27 @@ export function UserDropdownMenu({
                         onClick={() => handleSwitchServer(server.id)}
                         className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 ease-out cursor-pointer group ${
                           isActive
-                            ? 'bg-white/10 text-white shadow-sm'
-                            : 'text-neutral-300 hover:text-white hover:bg-white/[0.08]'
+                            ? 'bg-foreground/10 text-foreground shadow-sm'
+                            : 'text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08]'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 text-left">
                           <Server
                             className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
-                              isActive ? 'text-white' : 'text-neutral-400 group-hover:text-white'
+                              isActive ? 'text-foreground' : 'text-foreground/50 group-hover:text-foreground'
                             }`}
                           />
                           <div className="min-w-0 flex-1 text-left">
                             <span
                               className={`block truncate text-xs font-semibold leading-tight ${
-                                isActive ? 'text-white' : 'text-neutral-200 group-hover:text-white'
+                                isActive ? 'text-foreground' : 'text-foreground/90 group-hover:text-foreground'
                               }`}
                             >
                               {server.serverName || server.serverUrl}
                             </span>
                             <span
                               className={`block truncate text-[11px] leading-tight mt-0.5 ${
-                                isActive ? 'text-white/70' : 'text-neutral-400 group-hover:text-neutral-300'
+                                isActive ? 'text-foreground/70' : 'text-foreground/50 group-hover:text-foreground/70'
                               }`}
                             >
                               {server.username}
@@ -242,7 +241,7 @@ export function UserDropdownMenu({
                         </div>
                         {isActive && (
                           <div className="flex items-center gap-1 shrink-0">
-                            <Check className="w-3.5 h-3.5 text-white" />
+                            <Check className="w-3.5 h-3.5 text-foreground" />
                           </div>
                         )}
                       </motion.button>
@@ -250,16 +249,16 @@ export function UserDropdownMenu({
                   })}
                 </div>
 
-                <div className="border-t border-white/10 my-1" />
+                <div className="border-t border-border my-1" />
 
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={handleAddServer}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-300 hover:text-white hover:bg-white/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
                 >
-                  <div className="w-4 h-4 rounded-md bg-white/10 group-hover:bg-white/20 flex items-center justify-center transition-colors duration-150 shrink-0">
-                    <Plus className="w-3 h-3 text-white" />
+                  <div className="w-4 h-4 rounded-md bg-foreground/10 group-hover:bg-foreground/20 flex items-center justify-center transition-colors duration-150 shrink-0">
+                    <Plus className="w-3 h-3 text-foreground" />
                   </div>
                   <span>{t('nav.addServer', 'Add Server')}</span>
                 </motion.button>
@@ -267,8 +266,8 @@ export function UserDropdownMenu({
             )}
           </AnimatePresence>
         </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
-  </AnimatePresence>
+    </AnimatePresence>
   );
 }

@@ -117,7 +117,7 @@ export function Banner({
 
   if (loading && !activeItem) {
     return (
-      <div className="w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] bg-[#0a0a0a] mb-1" />
+      <div className="w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] bg-background mb-1" />
     );
   }
 
@@ -157,7 +157,7 @@ export function Banner({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
-      className="relative w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] overflow-hidden bg-[#0a0a0a] border-none ring-0 rounded-none m-0 p-0 mb-1"
+      className="relative w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px] overflow-hidden bg-background border-none ring-0 rounded-none m-0 p-0 mb-1"
     >
       <div className="absolute inset-0 select-none">
         <AnimatePresence mode="popLayout" initial={false}>
@@ -177,7 +177,7 @@ export function Banner({
       </div>
 
       {/* Side Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/70 via-[#0a0a0a]/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
 
       {/* Bottom Overlay */}
       <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden">
@@ -205,7 +205,7 @@ export function Banner({
                     draggable={false}
                   />
                 ) : (
-                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg line-clamp-2 text-center lg:text-left">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground drop-shadow-lg line-clamp-2 text-center lg:text-left">
                     {title}
                   </h1>
                 )}
@@ -225,14 +225,14 @@ export function Banner({
 
               {/* Tagline (Hidden on < lg) */}
               {tagline && (
-                <p className="hidden lg:block text-sm lg:text-base italic text-white/80 drop-shadow">
+                <p className="hidden lg:block text-sm lg:text-base italic text-foreground/80 drop-shadow">
                   &ldquo;{tagline}&rdquo;
                 </p>
               )}
 
               {/* Overview */}
               {overview && (
-                <p className="text-sm lg:text-base leading-relaxed text-white/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
+                <p className="text-sm lg:text-base leading-relaxed text-foreground/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
                   {overview}
                 </p>
               )}
@@ -242,7 +242,7 @@ export function Banner({
                 {href ? (
                   <Link
                     href={href}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -250,7 +250,7 @@ export function Banner({
                 ) : (
                   <button
                     type="button"
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -260,7 +260,7 @@ export function Banner({
                 {href ? (
                   <Link
                     href={href}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -268,7 +268,7 @@ export function Banner({
                 ) : (
                   <button
                     type="button"
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -288,8 +288,8 @@ export function Banner({
                   aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
                   className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                     idx === currentIndex
-                      ? 'w-7 bg-white'
-                      : 'w-2 bg-white/40 hover:bg-white/70'
+                      ? 'w-7 bg-foreground'
+                      : 'w-2 bg-foreground/40 hover:bg-foreground/70'
                   }`}
                 />
               ))}

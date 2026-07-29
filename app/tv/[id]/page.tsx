@@ -86,19 +86,19 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="w-full min-h-screen bg-[#0a0a0a] text-white">
-        <div className="w-full h-[80vh] min-h-[500px] sm:h-[80vh] sm:min-h-[560px] md:h-[82vh] lg:h-[88vh] bg-[#0a0a0a]" />
+      <div className="w-full min-h-screen bg-background text-foreground">
+        <div className="w-full h-[80vh] min-h-[500px] sm:h-[80vh] sm:min-h-[560px] md:h-[82vh] lg:h-[88vh] bg-background" />
       </div>
     );
   }
 
   if (!tvShow) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-white">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-foreground">
         <h2 className="text-2xl font-bold">{t('tv.tvShowNotFound', 'TV Show not found')}</h2>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-semibold transition"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/10 hover:bg-foreground/20 text-sm font-semibold transition"
         >
           <ArrowLeft className="h-4 w-4" />
           {t('common.back', 'Back')}
@@ -142,7 +142,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   const selectedSeason = seasons.find((s) => s.season_number === activeSeasonNumber);
 
   return (
-    <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#121215] text-white">
+    <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background text-foreground">
       <div className="fixed inset-0 h-screen w-screen select-none pointer-events-none z-0 overflow-hidden">
         <motion.img
           src={backdropUrl}
@@ -155,7 +155,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
           draggable={false}
         />
         {/* Side Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#121215]/70 via-[#121215]/20 to-transparent w-full md:w-3/5 lg:w-1/2" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent w-full md:w-3/5 lg:w-1/2" />
       </div>
 
       <div className="relative z-10 w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px]">
@@ -170,7 +170,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                   draggable={false}
                 />
               ) : (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white drop-shadow-lg line-clamp-2 text-center lg:text-left">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground drop-shadow-lg line-clamp-2 text-center lg:text-left">
                   {title}
                 </h1>
               )}
@@ -187,26 +187,26 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             />
             
             {tvShow.tagline && (
-              <p className="hidden lg:block text-sm lg:text-base italic text-white/80 drop-shadow text-center lg:text-left">
+              <p className="hidden lg:block text-sm lg:text-base italic text-foreground/80 drop-shadow text-center lg:text-left">
                 &ldquo;{tvShow.tagline}&rdquo;
               </p>
             )}
 
             {tvShow.overview && (
-              <p className="text-sm lg:text-base leading-relaxed text-white/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
+              <p className="text-sm lg:text-base leading-relaxed text-foreground/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
                 {tvShow.overview}
               </p>
             )}
 
             <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
               {isChecking ? (
-                <Skeleton className="h-9 w-28 rounded-xl bg-white/10" />
+                <Skeleton className="h-9 w-28 rounded-xl bg-foreground/10" />
               ) : isAvailable ? (
                 <>
                   <button
                     type="button"
                     onClick={handlePlaySeries}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -215,9 +215,9 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                   {hasMissingEpisodes && (
                     <button
                       type="button"
-                      className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                      className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
                     >
-                      <CloudDownload className="h-4 w-4 text-white" />
+                      <CloudDownload className="h-4 w-4 text-foreground" />
                       {t('common.requestMore', 'Request More')}
                     </button>
                   )}
@@ -225,7 +225,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
               ) : (
                 <button
                   type="button"
-                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-white/90 px-4 text-[13px] font-semibold shadow-none transition hover:bg-white active:scale-[0.98] text-[#111111] cursor-pointer"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
                 >
                   <CloudDownload className="h-4 w-4" />
                   {t('common.request', 'Request')}
@@ -236,7 +236,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                 <button
                   type="button"
                   onClick={playTrailer}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-white/16 active:scale-[0.98] bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 cursor-pointer"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
                 >
                   <Film className="h-4 w-4 text-red-400" />
                   {t('movies.watchTrailer', 'Watch Trailer')}
@@ -245,7 +245,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
 
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/12 ring-1 ring-white/8 backdrop-blur-2xl text-white/80 hover:bg-white/16 active:scale-[0.98] transition cursor-pointer"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer"
                 aria-label="Add to watchlist"
               >
                 <Bookmark className="h-4 w-4" />
@@ -255,7 +255,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
         </div>
       </div>
 
-      <div className="relative z-20 w-full min-h-screen bg-[#121215]/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-white/10">
+      <div className="relative z-20 w-full min-h-screen bg-background/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-border">
 
         {/* Season & Episodes */}
         {seasons.length > 0 && (
@@ -292,56 +292,56 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
 
         {/* Facts */}
         <section className={`relative z-10 ${PADDING_X_CLASSES}`}>
-          <h2 className="text-base sm:text-lg font-bold tracking-tight text-white mb-4">
+          <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground mb-4">
             {t('movies.details', 'Details')}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6 text-xs sm:text-sm">
             {tvShow.first_air_date && (
               <div>
-                <p className="text-white/50 font-medium">{t('tv.firstAirDate', 'First Air Date')}</p>
-                <p className="text-white/90 font-semibold mt-1">{formatDate(tvShow.first_air_date)}</p>
+                <p className="text-foreground/50 font-medium">{t('tv.firstAirDate', 'First Air Date')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{formatDate(tvShow.first_air_date)}</p>
               </div>
             )}
             {tvShow.last_air_date && (
               <div>
-                <p className="text-white/50 font-medium">{t('tv.lastAirDate', 'Last Air Date')}</p>
-                <p className="text-white/90 font-semibold mt-1">{formatDate(tvShow.last_air_date)}</p>
+                <p className="text-foreground/50 font-medium">{t('tv.lastAirDate', 'Last Air Date')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{formatDate(tvShow.last_air_date)}</p>
               </div>
             )}
             {tvShow.number_of_seasons !== undefined && (
               <div>
-                <p className="text-white/50 font-medium">{t('tv.numberOfSeasons', 'Seasons')}</p>
-                <p className="text-white/90 font-semibold mt-1">{tvShow.number_of_seasons}</p>
+                <p className="text-foreground/50 font-medium">{t('tv.numberOfSeasons', 'Seasons')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{tvShow.number_of_seasons}</p>
               </div>
             )}
             {tvShow.number_of_episodes !== undefined && (
               <div>
-                <p className="text-white/50 font-medium">{t('tv.numberOfEpisodes', 'Total Episodes')}</p>
-                <p className="text-white/90 font-semibold mt-1">{tvShow.number_of_episodes}</p>
+                <p className="text-foreground/50 font-medium">{t('tv.numberOfEpisodes', 'Total Episodes')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{tvShow.number_of_episodes}</p>
               </div>
             )}
             {tvShow.status && (
               <div>
-                <p className="text-white/50 font-medium">{t('movies.status', 'Status')}</p>
-                <p className="text-white/90 font-semibold mt-1">{tvShow.status}</p>
+                <p className="text-foreground/50 font-medium">{t('movies.status', 'Status')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{tvShow.status}</p>
               </div>
             )}
             {countryOfOrigin && (
               <div>
-                <p className="text-white/50 font-medium">{t('movies.countryOfOrigin', 'Country of Origin')}</p>
-                <p className="text-white/90 font-semibold mt-1">{countryOfOrigin}</p>
+                <p className="text-foreground/50 font-medium">{t('movies.countryOfOrigin', 'Country of Origin')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{countryOfOrigin}</p>
               </div>
             )}
             {tvShow.original_language && (
               <div>
-                <p className="text-white/50 font-medium">{t('movies.originalLanguage', 'Original Language')}</p>
-                <p className="text-white/90 font-semibold mt-1 uppercase">{tvShow.original_language}</p>
+                <p className="text-foreground/50 font-medium">{t('movies.originalLanguage', 'Original Language')}</p>
+                <p className="text-foreground/90 font-semibold mt-1 uppercase">{tvShow.original_language}</p>
               </div>
             )}
             {networks && (
               <div>
-                <p className="text-white/50 font-medium">{t('tv.networks', 'Networks')}</p>
-                <p className="text-white/90 font-semibold mt-1">{networks}</p>
+                <p className="text-foreground/50 font-medium">{t('tv.networks', 'Networks')}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{networks}</p>
               </div>
             )}
           </div>

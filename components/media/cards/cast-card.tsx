@@ -35,7 +35,7 @@ export function CastCard({
 
   return (
     <div className={`group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none ${className}`}>
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-white/4 shadow-lg ring-1 ring-white/5 transition duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
         <img
           src={imageUrl}
           alt={displayName}
@@ -46,11 +46,11 @@ export function CastCard({
         />
       </div>
       <div className="mt-2 min-w-0">
-        <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-white sm:text-[13px] text-white/80">
+        <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[13px] text-foreground/80">
           {displayName}
         </p>
         {displayRole && (
-          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-white/60 drop-shadow-xl">
+          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-foreground/60 drop-shadow-xl">
             {displayRole}
           </p>
         )}

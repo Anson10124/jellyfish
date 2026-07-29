@@ -208,7 +208,7 @@ export function Navbar() {
       {!isIOS && <ProgressiveBlur position="top" height="6rem" fade />}
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
-        <nav className="relative flex items-center justify-between rounded-full bg-[#121215]/65 backdrop-blur-2xl border border-white/10 px-3 py-2 shadow-2xl text-neutral-200">
+        <nav className="relative flex items-center justify-between rounded-full bg-background/65 backdrop-blur-2xl border border-border px-3 py-2 shadow-2xl text-foreground/80">
           <NavItems
             navItems={navItems}
             activeIndex={activeIndex}
@@ -221,12 +221,12 @@ export function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="p-2 rounded-full hover:bg-white/10 text-neutral-200 transition-colors cursor-pointer"
+              className="p-2 rounded-full hover:bg-foreground/10 text-foreground/80 transition-colors cursor-pointer"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <span className="text-sm font-semibold text-white px-2">
+            <span className="text-sm font-semibold text-foreground px-2">
               {activeIndex !== -1
                 ? navItems[activeIndex]?.label
                 : pathname === '/connect'
@@ -257,8 +257,8 @@ export function Navbar() {
                   onClick={() => setUserDropdownOpen((prev) => !prev)}
                   className={`flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer ${
                     userDropdownOpen
-                      ? 'bg-white/15 text-white font-semibold shadow-md'
-                      : 'text-neutral-300 hover:text-white hover:bg-white/10'
+                      ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
+                      : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
                   }`}
                   aria-expanded={userDropdownOpen}
                   aria-haspopup="true"
@@ -271,7 +271,7 @@ export function Navbar() {
                       username={jellyfinConfig.username}
                     />
                     {isOffline && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-rose-500 border border-[#121215]" />
+                      <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-rose-500 border border-background" />
                     )}
                   </div>
                   <span className="hidden lg:inline truncate">
@@ -280,8 +280,8 @@ export function Navbar() {
                       : jellyfinConfig.username}
                   </span>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 text-neutral-400 transition-transform duration-200 ${
-                      userDropdownOpen ? 'rotate-180 text-white' : ''
+                    className={`w-3.5 h-3.5 text-foreground/50 transition-transform duration-200 ${
+                      userDropdownOpen ? 'rotate-180 text-foreground' : ''
                     }`}
                   />
                 </button>
@@ -291,8 +291,8 @@ export function Navbar() {
                 href="/connect"
                 className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 ${
                   pathname === '/connect'
-                    ? 'bg-white/15 text-white font-semibold shadow-md'
-                    : 'text-neutral-300 hover:text-white hover:bg-white/10'
+                    ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
+                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
                 }`}
               >
                 <Cable className="w-4 h-4 shrink-0" />
@@ -350,8 +350,8 @@ export function Navbar() {
       </header>
 
       {isOffline && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#18181b]/65 backdrop-blur-xl text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <WifiOff className="w-3.5 h-3.5 text-white shrink-0 animate-pulse" />
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/65 backdrop-blur-xl text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <WifiOff className="w-3.5 h-3.5 text-foreground shrink-0 animate-pulse" />
           <span>
             {t('nav.offlineWarning', 'Server unreachable. Please check your connection.')}
           </span>

@@ -28,8 +28,8 @@ function TopRankNumber({ rank }: { rank: number }) {
         x={rank === 10 ? '48.5' : '42.5'}
         y="114"
         textAnchor="middle"
-        fill="#121215"
-        stroke="#ffffff4d"
+        fill="var(--background)"
+        stroke="rgba(255, 255, 255, 0.3)"
         strokeWidth="1.5"
         strokeLinejoin="round"
         paintOrder="stroke fill"

@@ -24,8 +24,8 @@ export function CarouselHeader({
   return (
     <div className={`mb-4 flex items-center justify-between ${PADDING_X_CLASSES}`}>
       <div>
-        {title && <h2 className="text-base font-semibold tracking-tight text-white/90">{title}</h2>}
-        {subtitle && <p className="text-xs sm:text-sm text-white/60 mt-1">{subtitle}</p>}
+        {title && <h2 className="text-base font-semibold tracking-tight text-foreground/90">{title}</h2>}
+        {subtitle && <p className="text-xs sm:text-sm text-foreground/60 mt-1">{subtitle}</p>}
       </div>
 
       <div className="hidden md:flex items-center space-x-2">

@@ -41,16 +41,16 @@ export default function LibraryPage() {
         {!isInitialized ? null : !isConnected ? (
           <div className="w-full px-6 py-8 rounded-2xl text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-6">
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-lg font-bold text-foreground">
                 {t('library.connectPromptTitle', 'Connect Your Jellyfin Server')}
               </h3>
-              <p className="text-sm text-neutral-400 max-w-md">
+              <p className="text-sm text-foreground/60 max-w-md">
                 {t('library.connectPromptDesc', 'Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly.')}
               </p>
             </div>
             <Link
               href="/connect"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-neutral-200 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
             >
               <span>{t('nav.connect', 'Connect Server')}</span>
             </Link>

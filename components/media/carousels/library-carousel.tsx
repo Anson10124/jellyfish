@@ -40,9 +40,9 @@ export function LibraryCarousel({ title }: LibraryCarouselProps) {
   // Case 2: Connected but no libraries found
   if (!libraries || libraries.length === 0) {
     return (
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-14 xl:px-16 2xl:px-20 py-8 my-4 text-center text-white/50 text-sm flex flex-col items-center gap-2">
-        <FolderOpen className="w-8 h-8 text-neutral-500" />
-        <h3 className="font-semibold text-white">{carouselTitle}</h3>
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-14 xl:px-16 2xl:px-20 py-8 my-4 text-center text-foreground/50 text-sm flex flex-col items-center gap-2">
+        <FolderOpen className="w-8 h-8 text-foreground/30" />
+        <h3 className="font-semibold text-foreground">{carouselTitle}</h3>
         <p>{t('library.noLibraries', 'No media libraries found on your Jellyfin server.')}</p>
       </div>
     );

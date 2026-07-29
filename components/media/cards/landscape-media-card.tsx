@@ -65,7 +65,7 @@ export function LandscapeMediaCard({
       onClick={() => onPlay?.(item)}
       className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-white/5 shadow-lg ring-1 ring-white/10 transition duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/5 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -76,7 +76,7 @@ export function LandscapeMediaCard({
             className="object-cover w-full h-full pointer-events-none select-none"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-white/40 p-4 text-center">
+          <div className="w-full h-full flex flex-col items-center justify-center bg-foreground/5 text-foreground/40 p-4 text-center">
             <Film className="h-10 w-10 mb-2 stroke-[1.5]" />
             <span className="text-xs font-medium truncate max-w-full">{title}</span>
           </div>
@@ -101,25 +101,25 @@ export function LandscapeMediaCard({
         {progressPercentage > 0 && (
           <div className="absolute bottom-2.5 left-3 right-3 h-1 rounded-full bg-black/40 backdrop-blur-md overflow-hidden z-20">
             <div
-              className="h-full rounded-full bg-white transition-all duration-300 shadow-md"
+              className="h-full rounded-full bg-primary transition-all duration-300 shadow-md"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
         )}
 
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center z-30">
-          <div className="flex items-center justify-center h-11 w-11 rounded-full bg-white/90 text-[#121215] shadow-xl">
+          <div className="flex items-center justify-center h-11 w-11 rounded-full bg-primary text-primary-foreground shadow-xl">
             <Play className="h-5 w-5 fill-current ml-0.5" />
           </div>
         </div>
       </div>
 
       <div className="mt-2.5 min-w-0">
-        <p className="truncate text-[13px] font-semibold transition-colors duration-300 group-hover:text-white sm:text-[14px] text-white/90">
+        <p className="truncate text-[13px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[14px] text-foreground/90">
           {title}
         </p>
         {subtitle && (
-          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-white/50">
+          <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-foreground/50">
             {subtitle}
           </p>
         )}

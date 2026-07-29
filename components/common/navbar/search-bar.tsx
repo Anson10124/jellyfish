@@ -52,7 +52,7 @@ export function SearchBar({
           }}
           className="relative flex items-center h-9 rounded-full border px-3.5 overflow-hidden cursor-pointer shadow-sm group"
         >
-          <Search className="w-4 h-4 text-neutral-300 shrink-0 transition-colors group-hover:text-white" />
+          <Search className="w-4 h-4 text-foreground/80 shrink-0 transition-colors group-hover:text-foreground" />
 
           <AnimatePresence mode="wait">
             {searchOpen ? (
@@ -75,7 +75,7 @@ export function SearchBar({
                   onFocus={() => {
                     if (searchQuery.trim().length >= 2) setDropdownVisible(true);
                   }}
-                  className="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-neutral-500"
+                  className="bg-transparent border-none outline-none text-foreground text-sm w-full placeholder:text-foreground/40"
                 />
                 <button
                   onClick={(e) => {
@@ -89,7 +89,7 @@ export function SearchBar({
                       setDropdownVisible(false);
                     }
                   }}
-                  className="text-neutral-400 hover:text-white cursor-pointer ml-1 p-0.5 shrink-0"
+                  className="text-foreground/50 hover:text-foreground cursor-pointer ml-1 p-0.5 shrink-0"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -101,7 +101,7 @@ export function SearchBar({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="ml-2 text-sm font-medium text-neutral-300 group-hover:text-white hidden sm:inline select-none"
+                className="ml-2 text-sm font-medium text-foreground/80 group-hover:text-foreground hidden sm:inline select-none"
               >
                 {t('nav.search', 'Search')}
               </motion.span>
@@ -111,7 +111,7 @@ export function SearchBar({
       ) : (
         <button
           onClick={() => setSearchOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-white/10 text-neutral-300 hover:text-white transition-all text-sm cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-foreground transition-all text-sm cursor-pointer"
         >
           <Search className="w-4 h-4" />
           <span className="hidden sm:inline font-medium">{t('nav.search', 'Search')}</span>

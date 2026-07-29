@@ -35,9 +35,9 @@ export function LandscapeCarouselSkeletonList({
     <div className={`flex gap-4 overflow-hidden py-2 ${PADDING_X_CLASSES}`}>
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="w-[260px] sm:w-[300px] md:w-[340px] xl:w-[380px] shrink-0 space-y-2">
-          <Skeleton className="w-full aspect-[16/9] rounded-xl bg-white/5" />
-          <Skeleton className="h-4 w-3/4 bg-white/5" />
-          <Skeleton className="h-3 w-1/2 bg-white/5" />
+          <Skeleton className="w-full aspect-[16/9] rounded-xl" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
         </div>
       ))}
     </div>

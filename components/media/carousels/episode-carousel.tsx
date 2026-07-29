@@ -41,8 +41,8 @@ export function EpisodeCarousel({
 
   if (!episodes || episodes.length === 0) {
     return (
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-14 xl:px-16 2xl:px-20 py-4 text-white/50 text-sm">
-        <h3 className="font-semibold text-white mb-1">{carouselTitle}</h3>
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-14 xl:px-16 2xl:px-20 py-4 text-foreground/50 text-sm">
+        <h3 className="font-semibold text-foreground mb-1">{carouselTitle}</h3>
         <p>{t('tv.noEpisodes', 'No episodes available for this season.')}</p>
       </div>
     );
