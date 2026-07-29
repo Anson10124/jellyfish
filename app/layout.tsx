@@ -20,6 +20,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Jellyfish",
   description: "A web third party client for jellyfin with integration with Seerr",
+  appleWebApp: {
+    title: 'Jellyfish',
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 export default async function RootLayout({
