@@ -17,6 +17,7 @@ import {
 import { JellyfinService } from '@/services/jellyfin.service';
 import { JellyfinPublicSystemInfo } from '@/types/jellyfin';
 import { normalizeServerUrl } from '@/lib/api/fetch-client';
+import { getErrorMessage } from '@/lib/utils';
 
 interface ServerContextType {
   servers: JellyfinConfig[];
@@ -103,8 +104,8 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         error: null,
       });
       return { success: true, info };
-    } catch (err: any) {
-      const errorMsg = err?.message || 'Could not connect to Jellyfin server.';
+    } catch (err: unknown) {
+      const errorMsg = getErrorMessage(err) || 'Could not connect to Jellyfin server.';
       setConnectionState({
         status: 'error',
         error: errorMsg,
@@ -152,11 +153,12 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         });
 
         return true;
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const errMessage = getErrorMessage(err);
         const errorMsg =
-          err?.message === 'AUTH_INVALID_CREDENTIALS'
+          errMessage === 'AUTH_INVALID_CREDENTIALS'
             ? t('connect.errors.invalidCredentials', 'Incorrect username or password')
-            : err?.message || 'Authentication failed. Please check your username and password.';
+            : errMessage || 'Authentication failed. Please check your username and password.';
         setConnectionState({
           status: 'error',
           error: errorMsg,
@@ -224,8 +226,8 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         });
 
         return true;
-      } catch (err: any) {
-        const errorMsg = err?.message || 'Quick connect authentication failed.';
+      } catch (err: unknown) {
+        const errorMsg = getErrorMessage(err) || 'Quick connect authentication failed.';
         setConnectionState({
           status: 'error',
           error: errorMsg,

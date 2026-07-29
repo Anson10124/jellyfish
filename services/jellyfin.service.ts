@@ -1,6 +1,7 @@
 import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
-import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView } from '@/types/jellyfin';
+import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView, JellyfinMediaSource, JellyfinMediaStream } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
+import { getErrorMessage } from '@/lib/utils';
 import { createWebDeviceProfile } from '@/lib/jellyfin/device-profile';
 import type { SubtitleTrack, AudioTrack, PlaybackSourceResult } from '@/types/player';
 export type { PlaybackSourceResult };
@@ -36,6 +37,11 @@ function extractAudioStreamInfo(item?: JellyfinBaseItem | null) {
 
 
 
+interface PlaybackInfoResponse {
+  MediaSources?: JellyfinMediaSource[];
+  PlaySessionId?: string;
+}
+
 export const JellyfinService = {
   // Test connection
   async testConnection(serverUrl: string): Promise<JellyfinPublicSystemInfo> {
@@ -60,8 +66,8 @@ export const JellyfinService = {
           Pw: password || '',
         }),
       });
-    } catch (err: any) {
-      if (err?.message?.includes('Server returned status 401')) {
+    } catch (err: unknown) {
+      if (getErrorMessage(err).includes('Server returned status 401')) {
         throw new Error('AUTH_INVALID_CREDENTIALS');
       }
       throw err;
@@ -317,6 +323,7 @@ export const JellyfinService = {
     return episodes[0] || null;
   },
 
+
   // Query Jellyfin /Items/{itemId}/PlaybackInfo with web browser DeviceProfile
   async getPlaybackSource(
     serverUrl: string,
@@ -330,7 +337,7 @@ export const JellyfinService = {
     const endpoint = userId ? `/Items/${itemId}/PlaybackInfo?UserId=${userId}` : `/Items/${itemId}/PlaybackInfo`;
 
     try {
-      const res = await serverFetch<any>(serverUrl, endpoint, {
+      const res = await serverFetch<PlaybackInfoResponse>(serverUrl, endpoint, {
         method: 'POST',
         token,
         body: JSON.stringify({ DeviceProfile: deviceProfile }),
@@ -340,10 +347,10 @@ export const JellyfinService = {
       const mediaSourceId = mediaSource?.Id || itemId;
 
       const subtitleStreams = (mediaSource?.MediaStreams || []).filter(
-        (s: any) => s.Type === 'Subtitle' && s.Index !== undefined
+        (s): s is JellyfinMediaStream & { Index: number } => s.Type === 'Subtitle' && s.Index !== undefined
       );
 
-      const subtitles: SubtitleTrack[] = subtitleStreams.map((s: any) => ({
+      const subtitles: SubtitleTrack[] = subtitleStreams.map((s) => ({
         index: s.Index,
         language: s.Language || 'und',
         title: s.DisplayTitle || s.Title || s.Language || `Subtitle ${s.Index}`,
@@ -352,10 +359,10 @@ export const JellyfinService = {
       }));
 
       const audioStreams = (mediaSource?.MediaStreams || []).filter(
-        (s: any) => s.Type === 'Audio' && s.Index !== undefined
+        (s): s is JellyfinMediaStream & { Index: number } => s.Type === 'Audio' && s.Index !== undefined
       );
 
-      const audioTracks: AudioTrack[] = audioStreams.map((s: any) => ({
+      const audioTracks: AudioTrack[] = audioStreams.map((s) => ({
         index: s.Index,
         language: s.Language || 'und',
         title: s.DisplayTitle || s.Title || s.Language || `Audio ${s.Index}`,
@@ -446,7 +453,7 @@ export const JellyfinService = {
   getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string; type?: 'Primary' | 'Backdrop' | 'Thumb' | 'Logo' } = {}): string {
     const base = normalizeServerUrl(serverUrl);
     const imgType = options.type || 'Primary';
-    let url = `${base}/Items/${itemId}/Images/${imgType}`;
+    const url = `${base}/Items/${itemId}/Images/${imgType}`;
     const params = new URLSearchParams();
     if (options.width) params.set('fillWidth', options.width.toString());
     if (options.height) params.set('fillHeight', options.height.toString());

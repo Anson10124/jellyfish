@@ -1,18 +1,18 @@
-import { Locale, TRANSLATIONS, DEFAULT_LOCALE } from './config';
+import { Locale, TRANSLATIONS, DEFAULT_LOCALE, TranslationValue, TranslationDict } from './config';
 
 export function translateKey(locale: Locale, key: string, defaultText?: string): string {
   const keys = key.split('.');
-  let current: any = TRANSLATIONS[locale];
+  let current: TranslationValue | undefined = TRANSLATIONS[locale];
 
   for (const k of keys) {
     if (current && typeof current === 'object' && k in current) {
-      current = current[k];
+      current = (current as TranslationDict)[k];
     } else {
       // Fallback to default locale (English)
-      let fallback: any = TRANSLATIONS[DEFAULT_LOCALE];
+      let fallback: TranslationValue | undefined = TRANSLATIONS[DEFAULT_LOCALE];
       for (const fk of keys) {
         if (fallback && typeof fallback === 'object' && fk in fallback) {
-          fallback = fallback[fk];
+          fallback = (fallback as TranslationDict)[fk];
         } else {
           return defaultText || key;
         }

@@ -1,4 +1,4 @@
-import { GENRE_MAP, getGenreName } from '@/constants/genres';
+import { getGenreName } from '@/constants/genres';
 import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry } from '@/types/media';
 import { JellyfinService } from '@/services/jellyfin.service';
 

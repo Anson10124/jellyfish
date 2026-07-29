@@ -33,7 +33,7 @@ export function formatDate(
 
     if (isNaN(date.getTime())) return options.fallback ?? null;
 
-    const { fallback, ...dateTimeOptions } = options;
+    const { fallback: _fallback, ...dateTimeOptions } = options;
 
     const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',
@@ -44,7 +44,7 @@ export function formatDate(
     };
 
     return new Intl.DateTimeFormat(locale, defaultOptions).format(date);
-  } catch (error) {
+  } catch {
     return options.fallback ?? null;
   }
 }

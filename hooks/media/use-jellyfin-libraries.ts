@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
+import { getErrorMessage } from '@/lib/utils';
 import type { JellyfinUserView } from '@/types/jellyfin';
 
 export function useJellyfinLibraries() {
@@ -32,9 +33,9 @@ export function useJellyfinLibraries() {
         return type === 'movies' || type === 'tvshows';
       });
       setLibraries(filtered);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch Jellyfin libraries:', err);
-      setError(err?.message || 'Failed to load libraries');
+      setError(getErrorMessage(err) || 'Failed to load libraries');
     } finally {
       setLoading(false);
     }

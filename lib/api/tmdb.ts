@@ -2,8 +2,40 @@ import { getImageLanguageParam } from '@/lib/i18n/config';
 
 const API_BASE_URL = '/api/tmdb';
 
-const responseCache = new Map<string, any>();
-const pendingRequests = new Map<string, Promise<any>>();
+class BoundedCache<K, V> {
+  private cache = new Map<K, { value: V; expiry: number }>();
+  constructor(private maxEntries = 200, private ttlMs = 5 * 60 * 1000) {}
+
+  get(key: K): V | undefined {
+    const entry = this.cache.get(key);
+    if (!entry) return undefined;
+    if (Date.now() > entry.expiry) {
+      this.cache.delete(key);
+      return undefined;
+    }
+    return entry.value;
+  }
+
+  set(key: K, value: V): void {
+    if (this.cache.size >= this.maxEntries) {
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey !== undefined) {
+        this.cache.delete(oldestKey);
+      }
+    }
+    this.cache.set(key, {
+      value,
+      expiry: Date.now() + this.ttlMs,
+    });
+  }
+
+  has(key: K): boolean {
+    return this.get(key) !== undefined;
+  }
+}
+
+const responseCache = new BoundedCache<string, unknown>();
+const pendingRequests = new Map<string, Promise<unknown>>();
 
 export async function tmdbFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const cacheKey = `${options.method || 'GET'}:${endpoint}`;
@@ -39,8 +71,9 @@ export async function tmdbFetch<T>(endpoint: string, options: RequestInit = {}):
   })();
 
   pendingRequests.set(cacheKey, fetchPromise);
-  return fetchPromise;
+  return fetchPromise as Promise<T>;
 }
+
 
 export interface TmdbPaginatedResponse<T = Record<string, unknown>> {
   page: number;

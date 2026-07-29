@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { getErrorMessage } from '@/lib/utils';
 
 export type AuthMethod = 'credentials' | 'quickconnect';
 export type QuickConnectStatus = 'idle' | 'waiting' | 'authorized' | 'error';
@@ -121,10 +122,10 @@ export function useConnectFlow() {
           // Ignore errors
         }
       }, 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setIsGeneratingQC(false);
       setQcStatus('error');
-      setQcError(err.message || t('connect.errors.quickConnectFailed', 'Failed to initiate Quick Connect on server.'));
+      setQcError(getErrorMessage(err) || t('connect.errors.quickConnectFailed', 'Failed to initiate Quick Connect on server.'));
     }
   };
 
@@ -175,9 +176,9 @@ export function useConnectFlow() {
       try {
         await connectWithPassword(serverUrl, username, password);
         triggerExitAndNavigate();
-      } catch (err: any) {
+      } catch (err: unknown) {
         setIsAuthenticating(false);
-        setAuthError(err.message || t('connect.errors.loginFailed', 'Login failed. Please check your credentials.'));
+        setAuthError(getErrorMessage(err) || t('connect.errors.loginFailed', 'Login failed. Please check your credentials.'));
       }
     } else {
       if (qcStatus !== 'authorized' || !quickConnectSecret) {
@@ -189,9 +190,9 @@ export function useConnectFlow() {
       try {
         await connectWithQuickConnect(serverUrl, quickConnectSecret);
         triggerExitAndNavigate();
-      } catch (err: any) {
+      } catch (err: unknown) {
         setIsAuthenticating(false);
-        setQcError(err.message || t('connect.errors.quickConnectLoginFailed', 'Quick Connect login failed.'));
+        setQcError(getErrorMessage(err) || t('connect.errors.quickConnectLoginFailed', 'Quick Connect login failed.'));
       }
     }
   };

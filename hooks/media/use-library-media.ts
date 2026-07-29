@@ -3,6 +3,7 @@ import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { useInfiniteScroll } from '@/hooks/ui/use-infinite-scroll';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
+import { getErrorMessage } from '@/lib/utils';
 
 export interface UseLibraryMediaParams {
   params: Promise<{ id: string }>;
@@ -96,10 +97,10 @@ export function useLibraryMedia({ params }: UseLibraryMediaParams) {
     }
 
     loadInitialData()
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         if (!isMounted) return;
         console.error('Failed to load library items:', err);
-        setError(err?.message || 'Failed to load library items');
+        setError(getErrorMessage(err) || 'Failed to load library items');
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -146,7 +147,7 @@ export function useLibraryMedia({ params }: UseLibraryMediaParams) {
       setItems((prev) => [...prev, ...filteredItems]);
       const updatedTotal = items.length + fetchedItems.length;
       setHasMore(updatedTotal < res.TotalRecordCount);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load more items:', err);
     } finally {
       setLoadingMore(false);

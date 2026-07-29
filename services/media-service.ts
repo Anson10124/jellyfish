@@ -10,7 +10,7 @@ export interface MediaCategoryConfig {
 }
 
 export function getMovieBrowseCategories(
-  t: (key: string, fallback?: string) => string
+  _t: (key: string, fallback?: string) => string
 ): MediaCategoryConfig[] {
   return [
     {
@@ -74,7 +74,7 @@ export function getMovieBrowseCategories(
 }
 
 export function getTvBrowseCategories(
-  t: (key: string, fallback?: string) => string
+  _t: (key: string, fallback?: string) => string
 ): MediaCategoryConfig[] {
   return [
     {

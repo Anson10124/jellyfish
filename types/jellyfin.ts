@@ -83,6 +83,7 @@ export interface JellyfinMediaSource {
   SupportsDirectPlay?: boolean;
   SupportsDirectStream?: boolean;
   SupportsTranscoding?: boolean;
+  TranscodingUrl?: string;
   MediaStreams?: JellyfinMediaStream[];
 }
 

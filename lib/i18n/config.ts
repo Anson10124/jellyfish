@@ -21,9 +21,12 @@ export const TMDB_LANGUAGE_MAP: Record<Locale, string> = {
   'zh-TW': 'zh-TW',
 };
 
-export const TRANSLATIONS: Record<Locale, Record<string, any>> = {
-  en,
-  'zh-TW': zhTW,
+export type TranslationValue = string | { [key: string]: TranslationValue };
+export type TranslationDict = Record<string, TranslationValue>;
+
+export const TRANSLATIONS: Record<Locale, TranslationDict> = {
+  en: en as unknown as TranslationDict,
+  'zh-TW': zhTW as unknown as TranslationDict,
 };
 
 // Extract language code from a full locale identifier

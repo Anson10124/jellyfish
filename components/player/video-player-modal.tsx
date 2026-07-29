@@ -50,6 +50,27 @@ function buildTranscodeUrl(
   return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;
 }
 
+interface VideoJsAudioTrack {
+  id: string;
+  kind: string;
+  label: string;
+  language: string;
+  enabled: boolean;
+}
+
+interface VideoJsPlayerStoreState {
+  audioTrackList?: VideoJsAudioTrack[];
+  selectAudioTrack?: (value: string) => void;
+}
+
+interface VideoJsPlayerStore {
+  $state: {
+    patch: (partial: Partial<VideoJsPlayerStoreState> | Record<string, unknown>) => void;
+  };
+  audioTrackList?: VideoJsAudioTrack[];
+  subscribe: (callback: () => void) => () => void;
+}
+
 interface JellyfinAudioBridgeProps {
   audioTracks: AudioTrack[];
   selectedAudioIndex: number;
@@ -69,10 +90,11 @@ function JellyfinAudioBridge({ audioTracks, selectedAudioIndex, onSelectTrack }:
   useEffect(() => {
     if (!store || audioTracks.length <= 1) return;
 
-    const $state = (store as any).$state as { patch: (partial: Record<string, unknown>) => void };
+    const typedStore = store as unknown as VideoJsPlayerStore;
+    const $state = typedStore.$state;
 
     const inject = () => {
-      const current = (store as any).audioTrackList as any[] | undefined;
+      const current = typedStore.audioTrackList;
       const needsInject =
         !current ||
         current.length !== audioTracksRef.current.length ||
@@ -101,7 +123,7 @@ function JellyfinAudioBridge({ audioTracks, selectedAudioIndex, onSelectTrack }:
 
     inject();
 
-    const unsubscribe = store.subscribe(() => {
+    const unsubscribe = typedStore.subscribe(() => {
       inject();
     });
 
@@ -130,6 +152,7 @@ export function VideoPlayerModal({
   const { jellyfinConfig } = useServerConfig();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const restoreTimeListenerRef = useRef<(() => void) | null>(null);
 
   const isPlayerOpen = isOpen ?? Boolean(activeVideo);
   const src = activeVideo?.src ?? propSrc;
@@ -176,6 +199,11 @@ export function VideoPlayerModal({
       const video = videoRef.current;
       if (!video || !jellyfinConfig || !itemId) return;
 
+      if (restoreTimeListenerRef.current) {
+        video.removeEventListener('loadedmetadata', restoreTimeListenerRef.current);
+        restoreTimeListenerRef.current = null;
+      }
+
       const currentTime = video.currentTime;
       const base = jellyfinConfig.serverUrl.replace(/\/$/, '');
       const mediaSourceId = activeVideo?.mediaSourceId || itemId;
@@ -188,11 +216,23 @@ export function VideoPlayerModal({
           video.currentTime = currentTime;
         }
         video.removeEventListener('loadedmetadata', restoreTime);
+        restoreTimeListenerRef.current = null;
       };
+
+      restoreTimeListenerRef.current = restoreTime;
       video.addEventListener('loadedmetadata', restoreTime);
     },
     [selectedAudioIndex, jellyfinConfig, itemId, activeVideo?.mediaSourceId]
   );
+
+  useEffect(() => {
+    return () => {
+      const video = videoRef.current;
+      if (video && restoreTimeListenerRef.current) {
+        video.removeEventListener('loadedmetadata', restoreTimeListenerRef.current);
+      }
+    };
+  }, []);
 
   useScrollLock(isPlayerOpen);
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { getErrorMessage } from '@/lib/utils';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
 export type JellyfinSectionFetcher = (
@@ -35,9 +36,9 @@ export function useJellyfinSection(fetcher: JellyfinSectionFetcher, limit: numbe
         limit
       );
       setItems(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch Jellyfin section items:', err);
-      setError(err?.message || 'Failed to load items');
+      setError(getErrorMessage(err) || 'Failed to load items');
     } finally {
       setLoading(false);
     }
