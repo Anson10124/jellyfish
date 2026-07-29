@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
-import { useIsIOS } from '@/hooks/device/use-ios';
 import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
@@ -23,7 +22,6 @@ export function Navbar() {
   const router = useRouter();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const isIOS = useIsIOS();
   const { jellyfinConfig, isInitialized, connectionState } = useServerContext();
   const isOffline = isInitialized && connectionState.status === 'offline';
 
@@ -205,7 +203,7 @@ export function Navbar() {
 
   return (
     <>
-      {!isIOS && <ProgressiveBlur position="top" height="6rem" fade />}
+      <ProgressiveBlur position="top" height="6rem" fade />
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <nav className="relative flex items-center justify-between rounded-full bg-background/65 backdrop-blur-2xl border border-border px-3 py-2 shadow-2xl text-foreground/80">
