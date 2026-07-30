@@ -1,6 +1,8 @@
 {
   "common": {
     "watchNow": "立即觀看",
+    "watchAgain": "再看一次",
+    "resume": "繼續觀看",
     "moreInfo": "詳細資訊",
     "top10": "Top 10",
     "language": "語言",

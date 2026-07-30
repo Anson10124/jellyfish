@@ -8,3 +8,4 @@ export * from './media-browse-view';
 export * from './genre-browse-view';
 export * from './library-browse-view';
 export * from './poster-grid';
+export * from './play-button';

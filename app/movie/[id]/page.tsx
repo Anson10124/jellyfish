@@ -2,7 +2,7 @@
 
 import React, { use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
+import { Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -18,7 +18,7 @@ import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability
 import { usePlayer } from '@/hooks/player/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, MediaBadges } from '@/components/media';
+import { CastCarousel, Carousel, MediaBadges, PlayButton } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import type { MovieDetails } from '@/types/media';
 
@@ -100,6 +100,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     });
   };
 
+
+
   return (
     <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background text-foreground">
       <div className="fixed inset-0 h-screen w-screen select-none pointer-events-none z-0 overflow-hidden">
@@ -160,14 +162,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               {isChecking ? (
                 <Skeleton className="h-9 w-28 rounded-xl bg-foreground/10" />
               ) : isAvailable ? (
-                <button
-                  type="button"
-                  onClick={handleWatchNow}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
-                >
-                  <Play className="h-4 w-4 fill-current" />
-                  {t('common.watchNow', 'Watch Now')}
-                </button>
+                <PlayButton jellyfinItem={jellyfinItem} onClick={handleWatchNow} />
               ) : (
                 <button
                   type="button"

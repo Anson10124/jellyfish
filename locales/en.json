@@ -1,6 +1,8 @@
 {
   "common": {
     "watchNow": "Watch Now",
+    "watchAgain": "Watch Again",
+    "resume": "Resume",
     "moreInfo": "More Info",
     "top10": "Top 10",
     "language": "Language",

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, use } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { motion } from 'motion/react';
-import { Play, Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
+import { Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -17,9 +17,12 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
+import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { JellyfinService } from '@/services/jellyfin.service';
+import type { JellyfinBaseItem } from '@/types/jellyfin';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges } from '@/components/media';
+import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges, PlayButton } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import type { Episode, TVDetails } from '@/types/media';
 
@@ -55,6 +58,36 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
     mediaType: 'tv',
   });
 
+  const { jellyfinConfig } = useServerConfig();
+  const [episodes, setEpisodes] = useState<JellyfinBaseItem[]>([]);
+
+  useEffect(() => {
+    if (!jellyfinConfig || !isAvailable || !jellyfinItem || jellyfinItem.Type !== 'Series') {
+      return;
+    }
+
+    let isMounted = true;
+
+    JellyfinService.getEpisodesForSeries(
+      jellyfinConfig.serverUrl,
+      jellyfinConfig.userId,
+      jellyfinConfig.accessToken,
+      jellyfinItem.Id!
+    )
+      .then((eps) => {
+        if (isMounted) {
+          setEpisodes(eps);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load episodes for series watch status:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [jellyfinConfig, isAvailable, jellyfinItem]);
+
   const handlePlaySeries = () => {
     playMovie({
       jellyfinItem,
@@ -62,6 +95,8 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
       posterUrl: getTmdbImage(tvShow?.backdrop_path || tvShow?.poster_path, 'original'),
     });
   };
+
+
 
   const handlePlayEpisode = (episode: Episode) => {
     playEpisode({
@@ -203,14 +238,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
                 <Skeleton className="h-9 w-28 rounded-xl bg-foreground/10" />
               ) : isAvailable ? (
                 <>
-                  <button
-                    type="button"
-                    onClick={handlePlaySeries}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
-                  >
-                    <Play className="h-4 w-4 fill-current" />
-                    {t('common.watchNow', 'Watch Now')}
-                  </button>
+                  <PlayButton jellyfinItem={jellyfinItem} episodes={episodes} onClick={handlePlaySeries} />
 
                   {hasMissingEpisodes && (
                     <button
