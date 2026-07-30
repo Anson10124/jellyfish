@@ -10,3 +10,4 @@ export * from './use-tv-season-details';
 export * from './use-next-up';
 export * from './use-continue-watching';
 export * from './use-search';
+export * from './use-jellyfin-media-info';

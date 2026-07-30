@@ -22,7 +22,7 @@ import { JellyfinService } from '@/services/jellyfin.service';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges, PlayButton } from '@/components/media';
+import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges, PlayButton, JellyfinMediaInfo } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { Episode, TVDetails } from '@/types/media';
@@ -411,6 +411,14 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             />
           )}
         </div>
+
+        {/* Jellyfin Media Info & Languages */}
+        {isAvailable && (
+          <section className={`relative z-10 ${PADDING_X_CLASSES} pb-12`}>
+            <JellyfinMediaInfo item={jellyfinItem} fallbackMediaSource={episodes?.[0]?.MediaSources?.[0]} />
+          </section>
+        )}
+
       </div>
 
       {/* Trailer Player */}

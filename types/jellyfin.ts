@@ -68,6 +68,20 @@ export interface JellyfinMediaStream {
   IsForced?: boolean;
   Type?: 'Audio' | 'Video' | 'Subtitle';
   Index?: number;
+  Height?: number;
+  Width?: number;
+  VideoDoViTitle?: string;
+  VideoRangeType?: string;
+  VideoRange?: string;
+  RealFrameRate?: number;
+  AverageFrameRate?: number;
+  AspectRatio?: string;
+  IsExternal?: boolean;
+  IsTextSubtitleStream?: boolean;
+  ColorSpace?: string;
+  ColorTransfer?: string;
+  ColorPrimaries?: string;
+  BitDepth?: number;
 }
 
 export interface JellyfinMediaSource {
@@ -120,5 +134,28 @@ export interface JellyfinBaseItem {
   ParentIndexNumber?: number;
   MediaSources?: JellyfinMediaSource[];
   MediaStreams?: JellyfinMediaStream[];
+}
+
+export interface FormattedMediaInfo {
+  resolution?: string;
+  aspectRatio?: string;
+  frameRate?: string;
+  bitrate?: string;
+  bitDepth?: string;
+  videoRange?: string;
+  colorSpace?: string;
+  videoCodec?: string;
+  audioCodec?: string;
+  container?: string;
+  fileSize?: string;
+}
+
+export interface LanguageSupportRow {
+  code: string;
+  name: string;
+  hasAudio: boolean;
+  hasSubtitles: boolean;
+  audioTitles: string[];
+  subtitleTitles: string[];
 }
 

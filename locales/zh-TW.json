@@ -179,5 +179,21 @@
     "librariesCount": "個媒體庫",
     "connectPromptTitle": "連接你的 Jellyfin 伺服器",
     "connectPromptDesc": "連接你的 Jellyfin 伺服器，直接存取你的個人電影、影集與音樂媒體庫。"
+  },
+  "mediaInfo": {
+    "title": "媒體資訊",
+    "resolution": "解析度",
+    "frameRate": "幀率",
+    "bitrate": "位元率",
+    "bitDepth": "位元深度",
+    "hdr": "動態範圍",
+    "colorSpace": "色彩空間",
+    "videoCodec": "視訊編碼",
+    "fileSize": "檔案大小與格式",
+    "audio": "音訊",
+    "audioFormat": "音訊格式",
+    "subtitles": "字幕",
+    "language": "語言",
+    "seeAllLanguages": "查看全部 {{count}} 種語言"
   }
 }

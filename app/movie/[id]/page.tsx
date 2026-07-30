@@ -18,7 +18,7 @@ import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability
 import { usePlayer } from '@/hooks/player/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, MediaBadges, PlayButton } from '@/components/media';
+import { CastCarousel, Carousel, MediaBadges, PlayButton, JellyfinMediaInfo } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { MovieDetails } from '@/types/media';
@@ -283,6 +283,14 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
             />
           )}
         </div>
+
+        {/* Jellyfin Media Info & Languages */}
+        {isAvailable && (
+          <section className={`relative z-10 ${PADDING_X_CLASSES} pb-12`}>
+            <JellyfinMediaInfo item={jellyfinItem} />
+          </section>
+        )}
+
       </div>
 
       {/* Trailer Player */}

@@ -179,6 +179,22 @@
     "librariesCount": "libraries",
     "connectPromptTitle": "Connect Your Jellyfin Server",
     "connectPromptDesc": "Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly."
+  },
+  "mediaInfo": {
+    "title": "Media Information",
+    "resolution": "Resolution",
+    "frameRate": "Framerate",
+    "bitrate": "Bitrate",
+    "bitDepth": "Bit Depth",
+    "hdr": "Video Range",
+    "colorSpace": "Color Space",
+    "videoCodec": "Video Codec",
+    "fileSize": "Size & Format",
+    "audio": "Audio",
+    "audioFormat": "Audio Format",
+    "subtitles": "Subtitles",
+    "language": "Language",
+    "seeAllLanguages": "See all {{count}} languages"
   }
 }
 
