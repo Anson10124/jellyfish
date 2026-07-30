@@ -20,6 +20,7 @@ import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, MediaBadges, PlayButton } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
+import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { MovieDetails } from '@/types/media';
 
 interface MovieDetailPageProps {
@@ -30,6 +31,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const resolvedParams = use(params);
   const movieId = resolvedParams.id;
   const { t, formatDate } = useTranslation();
+  const isMobile = useIsMobile();
 
   const {
     activeVideo,
@@ -76,13 +78,27 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   }
 
   const title = getMediaTitle(movie);
-  const rawBackdrop =
-    movie.images?.backdrops && movie.images.backdrops.length > 0
-      ? movie.images.backdrops[0].file_path
-      : movie.backdrop_path;
+  const textlessPoster = movie.images?.posters?.find(
+    (p) => p.iso_639_1 === null
+  )?.file_path;
+  const textlessBackdrop = movie.images?.backdrops?.find(
+    (b) => b.iso_639_1 === null
+  )?.file_path;
 
-  const backdropUrl = getTmdbImage(rawBackdrop || movie.poster_path, 'original');
-  const isPosterFallback = !rawBackdrop && !!movie.poster_path;
+  const rawBackdrop =
+    textlessBackdrop ||
+    (movie.images?.backdrops && movie.images.backdrops.length > 0
+      ? movie.images.backdrops[0].file_path
+      : movie.backdrop_path);
+
+  const rawPoster = textlessPoster || movie.poster_path;
+
+  const selectedImagePath = isMobile
+    ? rawPoster || rawBackdrop
+    : rawBackdrop || movie.poster_path;
+
+  const backdropUrl = getTmdbImage(selectedImagePath, 'original');
+  const isPosterFallback = !isMobile && !rawBackdrop && !!movie.poster_path;
   const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
   const formattedRuntime = formatRuntime(movie.runtime);
   const formattedBudget = formatCurrency(movie.budget);

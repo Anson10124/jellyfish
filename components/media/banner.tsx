@@ -10,6 +10,7 @@ import { getMediaTitle, getMediaHref, formatRuntime } from '@/lib/utils/media-fo
 import { MediaBadges } from './media-badges';
 import { useTmdbMedia } from '@/hooks/media/use-tmdb-media';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useIsMobile } from '@/hooks/device/use-mobile';
 import { TmdbApi } from '@/lib/api/tmdb';
 import type { MediaItem, MovieDetails, TVDetails } from '@/types/media';
 
@@ -29,6 +30,7 @@ export function Banner({
   autoPlayInterval = 9000,
 }: BannerProps) {
   const { t, tmdbLanguage } = useTranslation();
+  const isMobile = useIsMobile();
   const { slides, loading } = useTmdbMedia({
     type,
     mediaType,
@@ -78,6 +80,16 @@ export function Banner({
           if (!isMounted) return;
           if (details) {
             setDetailsMap((prev) => ({ ...prev, [item.id]: details }));
+            // Preload textless poster/backdrop if available
+            const textlessPoster = details.images?.posters?.find((p) => p.iso_639_1 === null)?.file_path;
+            const textlessBackdrop = details.images?.backdrops?.find((b) => b.iso_639_1 === null)?.file_path;
+            const targetImage = isMobile
+              ? textlessPoster || details.poster_path || textlessBackdrop || details.backdrop_path
+              : textlessBackdrop || details.backdrop_path || details.poster_path;
+            if (targetImage) {
+              const img = new Image();
+              img.src = getTmdbImage(targetImage, 'original');
+            }
           }
         })
         .catch(() => {});
@@ -125,8 +137,19 @@ export function Banner({
 
   const activeDetails = activeItem.id ? detailsMap[activeItem.id] : null;
   const title = getMediaTitle(activeItem);
+  const textlessPoster = activeDetails?.images?.posters?.find(
+    (p) => p.iso_639_1 === null
+  )?.file_path;
+  const textlessBackdrop = activeDetails?.images?.backdrops?.find(
+    (b) => b.iso_639_1 === null
+  )?.file_path;
+
+  const selectedImagePath = isMobile
+    ? textlessPoster || activeItem.poster_path || textlessBackdrop || activeItem.backdrop_path
+    : textlessBackdrop || activeItem.backdrop_path || activeItem.poster_path;
+
   const backdropUrl = getTmdbImage(
-    activeItem.backdrop_path || activeItem.poster_path,
+    selectedImagePath,
     'original'
   );
   const activeLogoUrl = activeItem.id ? logosMap[activeItem.id] : null;

@@ -24,6 +24,7 @@ import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { CastCarousel, Carousel, SeasonCarousel, EpisodeCarousel, MediaBadges, PlayButton } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
+import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { Episode, TVDetails } from '@/types/media';
 
 interface TvDetailPageProps {
@@ -34,6 +35,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   const resolvedParams = use(params);
   const tvId = resolvedParams.id;
   const { t, formatDate } = useTranslation();
+  const isMobile = useIsMobile();
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number | null>(null);
 
   const {
@@ -143,13 +145,27 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   }
 
   const title = getMediaTitle(tvShow);
-  const rawBackdrop =
-    tvShow.images?.backdrops && tvShow.images.backdrops.length > 0
-      ? tvShow.images.backdrops[0].file_path
-      : tvShow.backdrop_path;
+  const textlessPoster = tvShow.images?.posters?.find(
+    (p) => p.iso_639_1 === null
+  )?.file_path;
+  const textlessBackdrop = tvShow.images?.backdrops?.find(
+    (b) => b.iso_639_1 === null
+  )?.file_path;
 
-  const backdropUrl = getTmdbImage(rawBackdrop || tvShow.poster_path, 'original');
-  const isPosterFallback = !rawBackdrop && !!tvShow.poster_path;
+  const rawBackdrop =
+    textlessBackdrop ||
+    (tvShow.images?.backdrops && tvShow.images.backdrops.length > 0
+      ? tvShow.images.backdrops[0].file_path
+      : tvShow.backdrop_path);
+
+  const rawPoster = textlessPoster || tvShow.poster_path;
+
+  const selectedImagePath = isMobile
+    ? rawPoster || rawBackdrop
+    : rawBackdrop || tvShow.poster_path;
+
+  const backdropUrl = getTmdbImage(selectedImagePath, 'original');
+  const isPosterFallback = !isMobile && !rawBackdrop && !!tvShow.poster_path;
   const formattedAirYears = formatAirYears(tvShow.first_air_date, tvShow.last_air_date);
 
   const episodeRuntime =

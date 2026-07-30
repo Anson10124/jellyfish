@@ -19,7 +19,8 @@ export interface MediaItem {
   revenue?: number;
   original_language?: string;
   images?: {
-    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number }[];
+    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
+    posters?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
     logos?: { file_path: string; iso_639_1?: string }[];
   };
   [key: string]: unknown;
@@ -87,7 +88,8 @@ export interface MovieDetails extends MediaItem {
     results: MediaItem[];
   };
   images?: {
-    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number }[];
+    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
+    posters?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
     logos?: { file_path: string; iso_639_1?: string }[];
   };
 }
@@ -159,7 +161,8 @@ export interface TVDetails extends MediaItem {
     results: MediaItem[];
   };
   images?: {
-    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number }[];
+    backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
+    posters?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
     logos?: { file_path: string; iso_639_1?: string }[];
   };
 }
