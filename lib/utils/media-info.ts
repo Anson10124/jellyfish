@@ -3,62 +3,13 @@ import type {
   FormattedMediaInfo,
   LanguageSupportRow,
 } from '@/types/jellyfin';
+import {
+  ISO_639_2_TO_1,
+  getNormalizedLanguageCode,
+  formatLanguageName,
+} from './language';
 
-const ISO_639_2_TO_1: Record<string, string> = {
-  eng: 'en', fre: 'fr', fra: 'fr', ger: 'de', deu: 'de', spa: 'es', ita: 'it', por: 'pt',
-  rus: 'ru', zho: 'zh', chi: 'zh', jpn: 'ja', kor: 'ko', pol: 'pl', ukr: 'uk', nld: 'nl',
-  dut: 'nl', swe: 'sv', nor: 'no', dan: 'da', fin: 'fi', tur: 'tr', ara: 'ar', heb: 'he',
-  hin: 'hi', tha: 'th', vie: 'vi', ind: 'id', ces: 'cs', cze: 'cs', hun: 'hu', ron: 'ro',
-  rum: 'ro', ell: 'el', gre: 'el', cat: 'ca', hrv: 'hr', srp: 'sr', slv: 'sl', bul: 'bg',
-  slk: 'sk', slo: 'sk', est: 'et', lav: 'lv', lit: 'lt', msa: 'ms', may: 'ms', tam: 'ta',
-  tel: 'te', kan: 'kn', mal: 'ml', ben: 'bn', guj: 'gu', pan: 'pa', urd: 'ur', fas: 'fa',
-  per: 'fa', fil: 'tl', tgl: 'tl', hye: 'hy', arm: 'hy', kat: 'ka', geo: 'ka', isl: 'is', ice: 'is',
-};
-
-export function formatLanguageName(
-  langCode?: string | null,
-  titleFallback?: string | null,
-  targetLocale: string = 'en'
-): string {
-  const codeLower = langCode ? langCode.toLowerCase().trim() : '';
-
-  if (codeLower && codeLower !== 'und') {
-    const code2 = ISO_639_2_TO_1[codeLower] || codeLower;
-    try {
-      const displayNames = new Intl.DisplayNames([targetLocale, 'en'], { type: 'language' });
-      const name = displayNames.of(code2);
-      if (name && name.toLowerCase() !== code2.toLowerCase()) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
-      }
-    } catch {
-      // Fallback
-    }
-  }
-
-  if (titleFallback) {
-    const firstWord = titleFallback.split(/[-–—(\[\s]/)[0].trim();
-    if (firstWord.length >= 3) {
-      const wordLower = firstWord.toLowerCase();
-      const code2 = ISO_639_2_TO_1[wordLower] || wordLower;
-      try {
-        const displayNames = new Intl.DisplayNames([targetLocale, 'en'], { type: 'language' });
-        const name = displayNames.of(code2);
-        if (name && name.toLowerCase() !== code2.toLowerCase()) {
-          return name.charAt(0).toUpperCase() + name.slice(1);
-        }
-      } catch {
-        // ignore
-      }
-      return firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
-    }
-  }
-
-  if (codeLower && codeLower !== 'und') {
-    return codeLower.length <= 3 ? codeLower.toUpperCase() : codeLower.charAt(0).toUpperCase() + codeLower.slice(1);
-  }
-
-  return 'Unknown';
-}
+export { ISO_639_2_TO_1, getNormalizedLanguageCode, formatLanguageName };
 
 export function extractFormattedMediaInfo(mediaSource?: JellyfinMediaSource | null): FormattedMediaInfo {
   if (!mediaSource) return {};
@@ -232,12 +183,16 @@ export function extractLanguageSupportTable(
 
   const rows = Array.from(map.values());
   const userLangName = formatLanguageName(userLocale, null, userLocale).toLowerCase();
+  const normalizedUserCode = getNormalizedLanguageCode(userLocale, null);
 
   const getPriority = (row: LanguageSupportRow): number => {
+    const normalizedRowCode = getNormalizedLanguageCode(row.code, row.name);
+
     const isUserLocale =
       row.name.toLowerCase() === userLangName ||
       (userLocale && row.code.toLowerCase() === userLocale.toLowerCase()) ||
-      (userLocale && ISO_639_2_TO_1[row.code.toLowerCase()] === userLocale.toLowerCase());
+      (userLocale && ISO_639_2_TO_1[row.code.toLowerCase()] === userLocale.toLowerCase()) ||
+      Boolean(normalizedUserCode && normalizedRowCode && normalizedUserCode === normalizedRowCode);
 
     if (isUserLocale) return 0;
     if (row.hasAudio && row.hasSubtitles) return 1;
