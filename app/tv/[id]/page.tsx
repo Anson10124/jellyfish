@@ -13,6 +13,7 @@ import {
   formatAirYears,
   sortSeasons,
 } from '@/lib/utils/media-format';
+import { formatLanguageName } from '@/lib/utils/language';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useTvSeasonCredits } from '@/hooks/media/use-tv-season-credits';
@@ -35,7 +36,7 @@ interface TvDetailPageProps {
 export default function TvDetailPage({ params }: TvDetailPageProps) {
   const resolvedParams = use(params);
   const tvId = resolvedParams.id;
-  const { t, formatDate } = useTranslation();
+  const { t, formatDate, locale } = useTranslation();
   const isMobile = useIsMobile();
   const [selectedSeasonNumber, setSelectedSeasonNumber] = useState<number | null>(null);
 
@@ -389,7 +390,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             {tvShow.original_language && (
               <div>
                 <p className="text-foreground/50 font-medium">{t('movies.originalLanguage', 'Original Language')}</p>
-                <p className="text-foreground/90 font-semibold mt-1 uppercase">{tvShow.original_language}</p>
+                <p className="text-foreground/90 font-semibold mt-1">{formatLanguageName(tvShow.original_language, null, locale)}</p>
               </div>
             )}
             {networks && (
