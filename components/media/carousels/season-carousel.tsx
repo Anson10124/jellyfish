@@ -22,7 +22,15 @@ export function SeasonCarousel({
   selectedSeasonNumber,
   onSelectSeason,
 }: SeasonCarouselProps) {
-  const { emblaRef, isBeginning, isEnd, handlePrev, handleNext } = useEmblaNavigation();
+  const { emblaRef, emblaApi, isBeginning, isEnd, handlePrev, handleNext } = useEmblaNavigation();
+
+  React.useEffect(() => {
+    if (!emblaApi || selectedSeasonNumber === undefined || !seasons || seasons.length === 0) return;
+    const index = seasons.findIndex((s) => s.season_number === selectedSeasonNumber);
+    if (index !== -1) {
+      emblaApi.scrollTo(index);
+    }
+  }, [emblaApi, selectedSeasonNumber, seasons]);
 
   if (!seasons || seasons.length === 0) return null;
 

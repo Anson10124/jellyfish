@@ -4,3 +4,14 @@ export const SLIDE_WIDTH_CLASS = 'w-[120px] sm:w-[132px] md:w-[144px] xl:w-[164p
 export const SKELETON_WIDTH_CLASS = 'w-[104px] sm:w-[116px] md:w-[128px] xl:w-[148px] 2xl:w-[170px] shrink-0 flex-[0_0_auto] min-w-0';
 export const TOP10_SLIDE_WIDTH_CLASS = 'w-[166px] sm:w-[186px] md:w-[204px] xl:w-[234px] 2xl:w-[264px] pr-4 shrink-0 flex-[0_0_auto] min-w-0';
 export const EPISODE_SLIDE_WIDTH_CLASS = 'w-[260px] sm:w-[300px] md:w-[340px] xl:w-[380px] pr-4 shrink-0 flex-[0_0_auto] min-w-0';
+
+export function getCarouselPaddingX(): number {
+  if (typeof window === 'undefined') return 16;
+  const width = window.innerWidth;
+  if (width >= 1536) return 80;
+  if (width >= 1280) return 64;
+  if (width >= 1024) return 56;
+  if (width >= 768) return 48;
+  if (width >= 640) return 32;
+  return 16;
+}
