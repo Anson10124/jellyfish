@@ -7,6 +7,7 @@ export * from './use-media-details';
 export * from './use-genre-media';
 export * from './use-tmdb-media';
 export * from './use-tv-season-details';
+export * from './use-tv-season-credits';
 export * from './use-next-up';
 export * from './use-continue-watching';
 export * from './use-search';

@@ -15,6 +15,7 @@ import {
 } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useMediaDetails } from '@/hooks/media/use-media-details';
+import { useTvSeasonCredits } from '@/hooks/media/use-tv-season-credits';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
@@ -121,6 +122,24 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
     return sortSeasons(tvShow?.seasons);
   }, [tvShow?.seasons]);
 
+  const activeSeasonNumber =
+    selectedSeasonNumber !== null
+      ? selectedSeasonNumber
+      : seasons.length > 0
+        ? seasons[0].season_number
+        : null;
+
+  const selectedSeason = seasons.find((s) => s.season_number === activeSeasonNumber);
+
+  const { credits: seasonCredits } = useTvSeasonCredits(tvId, activeSeasonNumber);
+
+  const castList = React.useMemo(() => {
+    if (seasonCredits && ((seasonCredits.cast && seasonCredits.cast.length > 0) || (seasonCredits.crew && seasonCredits.crew.length > 0))) {
+      return processCastAndCrew(seasonCredits, 16);
+    }
+    return processCastAndCrew(tvShow?.credits, 16);
+  }, [seasonCredits, tvShow?.credits]);
+
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-background text-foreground">
@@ -181,16 +200,6 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
       : null;
 
   const voteAverage = tvShow.vote_average ? tvShow.vote_average.toFixed(1) : null;
-  const castList = processCastAndCrew(tvShow.credits, 16);
-
-  const activeSeasonNumber =
-    selectedSeasonNumber !== null
-      ? selectedSeasonNumber
-      : seasons.length > 0
-        ? seasons[0].season_number
-        : null;
-
-  const selectedSeason = seasons.find((s) => s.season_number === activeSeasonNumber);
 
   return (
     <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background text-foreground">
@@ -329,6 +338,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
           <section className="relative z-10">
             <CastCarousel
               title={t('movies.castcrew', 'Cast & Crew')}
+              subtitle={selectedSeason?.name}
               cast={castList}
             />
           </section>

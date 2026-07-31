@@ -179,4 +179,13 @@ export const TmdbApi = {
   ) => {
     return tmdbFetch<T>(`/tv/${tvId}/season/${seasonNumber}?language=${language}`);
   },
+
+  // TV Season Credits
+  getTvSeasonCredits: <T = Record<string, unknown>>(
+    tvId: number | string,
+    seasonNumber: number,
+    language = 'en-US'
+  ) => {
+    return tmdbFetch<T>(`/tv/${tvId}/season/${seasonNumber}/credits?language=${language}`);
+  },
 };
