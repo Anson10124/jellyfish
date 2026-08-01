@@ -6,11 +6,10 @@ import Link from 'next/link';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { usePersonDetails } from '@/hooks/media/use-person-details';
 import { PADDING_X_CLASSES, SLIDE_WIDTH_CLASS } from '@/constants/carousel';
-import { Skeleton } from '@/components/ui';
 import { Poster } from '@/components/media/cards';
 import { CarouselWrapper } from '@/components/media/carousels/carousel-wrapper';
 import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
-import { PersonHeader, PersonFilmography } from '@/components/media/person';
+import { PersonHeader, PersonFilmography, PersonSkeleton } from '@/components/media/person';
 import { getCreditRoleLabel } from '@/lib/utils/media-format';
 
 interface PersonDetailPageProps {
@@ -34,20 +33,7 @@ export default function PersonDetailPage({ params }: PersonDetailPageProps) {
   const { emblaRef, isBeginning, isEnd, handlePrev, handleNext } = useEmblaNavigation();
 
   if (loading) {
-    return (
-      <div className="w-full min-h-screen bg-background text-foreground pt-24 pb-16">
-        <div className={`max-w-7xl mx-auto space-y-8 ${PADDING_X_CLASSES}`}>
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            <Skeleton className="w-48 sm:w-64 aspect-[2/3] rounded-2xl shrink-0 bg-foreground/10" />
-            <div className="flex-1 space-y-4 w-full">
-              <Skeleton className="h-10 w-3/4 rounded-xl bg-foreground/10" />
-              <Skeleton className="h-6 w-1/3 rounded-xl bg-foreground/10" />
-              <Skeleton className="h-32 w-full rounded-2xl bg-foreground/10" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <PersonSkeleton />;
   }
 
   if (error || !person) {
