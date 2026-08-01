@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import type { CastMember, CrewMember } from '@/types/media';
 
 export interface CastCardProps {
+  id?: number | string;
   cast?: CastMember | CrewMember;
   name?: string;
   character?: string;
@@ -14,6 +16,7 @@ export interface CastCardProps {
 }
 
 export function CastCard({
+  id,
   cast,
   name,
   character,
@@ -21,6 +24,7 @@ export function CastCard({
   profilePath,
   className = '',
 }: CastCardProps) {
+  const personId = id || cast?.id;
   const displayName = name || cast?.name || 'Unknown';
   const displayRole =
     character ||
@@ -33,7 +37,7 @@ export function CastCard({
     ? getTmdbImage(rawPath, 'w342')
     : `https://placehold.co/342x513/18181b/a1a1aa?text=${encodeURIComponent(displayName)}`;
 
-  return (
+  const cardContent = (
     <div className={`group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none ${className}`}>
       <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
         <img
@@ -57,6 +61,17 @@ export function CastCard({
       </div>
     </div>
   );
+
+  if (personId) {
+    return (
+      <Link href={`/person/${personId}`} prefetch={false} className="block w-full focus:outline-none">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }
 
 export default CastCard;
+

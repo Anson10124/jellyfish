@@ -195,5 +195,29 @@
     "subtitles": "字幕",
     "language": "語言",
     "seeAllLanguages": "查看全部 {{count}} 種語言"
+  },
+  "person": {
+    "person": "演人員",
+    "knownFor": "知名代表作",
+    "biography": "個人簡介",
+    "personalInfo": "個人資訊",
+    "knownForDepartment": "主要領域",
+    "gender": "性別",
+    "birthday": "出生日期",
+    "placeOfBirth": "出生地點",
+    "deathday": "逝世日期",
+    "acting": "演出作品",
+    "crew": "幕後製作",
+    "movies": "電影",
+    "tvShows": "影集",
+    "allCredits": "全部作品",
+    "filmography": "演藝作品",
+    "appearances": "演出與作品",
+    "all": "全部",
+    "photos": "劇照與相片",
+    "readMore": "閱讀更多",
+    "showLess": "顯示更少",
+    "personNotFound": "未找到人物資料",
+    "back": "返回"
   }
 }

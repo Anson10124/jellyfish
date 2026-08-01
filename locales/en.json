@@ -195,7 +195,29 @@
     "subtitles": "Subtitles",
     "language": "Language",
     "seeAllLanguages": "See all {{count}} languages"
+  },
+  "person": {
+    "person": "Person",
+    "knownFor": "Known For",
+    "biography": "Biography",
+    "personalInfo": "Personal Info",
+    "knownForDepartment": "Known For Department",
+    "gender": "Gender",
+    "birthday": "Born",
+    "placeOfBirth": "Place of Birth",
+    "deathday": "Died",
+    "acting": "Acting",
+    "crew": "Crew",
+    "movies": "Movies",
+    "tvShows": "TV Shows",
+    "all": "All",
+    "filmography": "Filmography",
+    "appearances": "Appearances",
+
+    "photos": "Photos",
+    "readMore": "Read More",
+    "showLess": "Show Less",
+    "personNotFound": "Person not found",
+    "back": "Back"
   }
 }
-
-

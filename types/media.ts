@@ -167,3 +167,61 @@ export interface TVDetails extends MediaItem {
   };
 }
 
+export interface PersonExternalIds {
+  imdb_id?: string | null;
+  facebook_id?: string | null;
+  instagram_id?: string | null;
+  twitter_id?: string | null;
+  tiktok_id?: string | null;
+  youtube_id?: string | null;
+  wikidata_id?: string | null;
+}
+
+export interface PersonCastCredit extends MediaItem {
+  character?: string;
+  credit_id?: string;
+  order?: number;
+  media_type: 'movie' | 'tv';
+}
+
+export interface PersonCrewCredit extends MediaItem {
+  job?: string;
+  department?: string;
+  credit_id?: string;
+  media_type: 'movie' | 'tv';
+}
+
+export interface PersonProfileImage {
+  aspect_ratio: number;
+  height: number;
+  width: number;
+  file_path: string;
+  vote_average?: number;
+  vote_count?: number;
+}
+
+export interface PersonDetails {
+  id: number;
+  name: string;
+  also_known_as?: string[];
+  biography?: string;
+  birthday?: string | null;
+  deathday?: string | null;
+  gender?: number;
+  homepage?: string | null;
+  imdb_id?: string | null;
+  known_for_department?: string;
+  place_of_birth?: string | null;
+  popularity?: number;
+  profile_path?: string | null;
+  external_ids?: PersonExternalIds;
+  combined_credits?: {
+    cast: PersonCastCredit[];
+    crew: PersonCrewCredit[];
+  };
+  images?: {
+    profiles?: PersonProfileImage[];
+  };
+}
+
+

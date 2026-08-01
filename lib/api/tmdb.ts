@@ -188,4 +188,11 @@ export const TmdbApi = {
   ) => {
     return tmdbFetch<T>(`/tv/${tvId}/season/${seasonNumber}/credits?language=${language}`);
   },
-};
+
+  // Person Details
+  getPersonDetails: <T = Record<string, unknown>>(id: number | string, language = 'en-US') => {
+    return tmdbFetch<T>(
+      `/person/${id}?append_to_response=combined_credits,external_ids,images&language=${language}`
+    );
+  },
+};

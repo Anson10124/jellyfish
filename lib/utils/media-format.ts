@@ -1,8 +1,9 @@
 import { getGenreName } from '@/constants/genres';
-import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry } from '@/types/media';
+import type { MediaItem, CastMember, CrewMember, VideoItem, Season, ProductionCountry, PersonCastCredit, PersonCrewCredit } from '@/types/media';
 import { JellyfinService } from '@/services/jellyfin.service';
 
 export { formatDate, type FormatDateOptions } from './date-format';
+export { getPersonSocialUrls, type PersonSocialUrls } from './person-social';
 
 export function getMediaTitle(item: MediaItem): string {
   return item.title || item.name || 'Untitled';
@@ -66,8 +67,42 @@ export function formatCurrency(amount?: number): string | null {
 
 export function getMediaHref(id?: number | string, mediaType: string = 'movie'): string | undefined {
   if (!id) return undefined;
+  if (mediaType === 'person') return `/person/${id}`;
   return mediaType === 'tv' ? `/tv/${id}` : `/movie/${id}`;
 }
+
+export function calculateAge(birthday?: string | null, deathday?: string | null): number | null {
+  if (!birthday) return null;
+  const birthDate = new Date(birthday);
+  if (isNaN(birthDate.getTime())) return null;
+
+  const endDate = deathday ? new Date(deathday) : new Date();
+  if (isNaN(endDate.getTime())) return null;
+
+  let age = endDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = endDate.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && endDate.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 0 ? age : null;
+}
+
+export function formatGender(gender?: number): string | null {
+  if (gender === 1) return 'Female';
+  if (gender === 2) return 'Male';
+  if (gender === 3) return 'Non-binary';
+  return null;
+}
+
+export function getCreditRoleLabel(item: PersonCastCredit | PersonCrewCredit): string | undefined {
+  const character = (item as PersonCastCredit).character?.trim();
+  const job = (item as PersonCrewCredit).job?.trim();
+  if (character) {
+    return /^as\s+/i.test(character) ? `as ${character.replace(/^as\s+/i, '')}` : `as ${character}`;
+  }
+  return job;
+}
+
 
 export function getOfficialTrailerKey(videos?: VideoItem[]): string | null {
   if (!videos || videos.length === 0) return null;

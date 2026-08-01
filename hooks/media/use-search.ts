@@ -6,7 +6,7 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 export interface SearchResult {
   id: number;
   title: string;
-  media_type: 'movie' | 'tv';
+  media_type: 'movie' | 'tv' | 'person';
   poster_path?: string;
   release_date?: string;
   vote_average?: number;
@@ -42,19 +42,20 @@ export function useSearch(query: string, debounceMs = 300) {
         const filtered: SearchResult[] = (res.results || [])
           .filter(
             (item) =>
-              item.media_type === 'movie' || item.media_type === 'tv'
+              item.media_type === 'movie' || item.media_type === 'tv' || item.media_type === 'person'
           )
           .slice(0, 8)
           .map((item) => ({
             id: Number(item.id),
             title: (item.title || item.name || 'Unknown') as string,
-            media_type: item.media_type as 'movie' | 'tv',
-            poster_path: item.poster_path,
+            media_type: item.media_type as 'movie' | 'tv' | 'person',
+            poster_path: (item.poster_path || item.profile_path) as string | undefined,
             release_date: item.release_date || item.first_air_date,
             vote_average: item.vote_average,
           }));
 
         setResults(filtered);
+
       } catch (err) {
         if (!controller.signal.aborted) {
           console.error('Search error:', err);

@@ -10,4 +10,4 @@ export * from './library-browse-view';
 export * from './poster-grid';
 export * from './play-button';
 export * from './jellyfin-media-info';
-
+export * from './person';

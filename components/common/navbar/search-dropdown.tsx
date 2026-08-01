@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Film, Tv, Loader2 } from 'lucide-react';
+import { Film, Tv, User, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
@@ -76,8 +76,10 @@ export function SearchDropdown({
                     <div className="w-full h-full flex items-center justify-center">
                       {item.media_type === 'movie' ? (
                         <Film className="w-4 h-4 text-foreground/30" />
-                      ) : (
+                      ) : item.media_type === 'tv' ? (
                         <Tv className="w-4 h-4 text-foreground/30" />
+                      ) : (
+                        <User className="w-4 h-4 text-foreground/30" />
                       )}
                     </div>
                   )}
@@ -91,12 +93,15 @@ export function SearchDropdown({
                   <p className="text-[12px] text-foreground/50 mt-0.5">
                     {getYear(item.release_date)}{getYear(item.release_date) && ' • '}{item.media_type === 'movie'
                       ? t('common.movie', 'Movie')
-                      : t('common.tvShow', 'TV Show')}
+                      : item.media_type === 'tv'
+                      ? t('common.tvShow', 'TV Show')
+                      : t('person.person', 'Person')}
                   </p>
                 </div>
               </button>
             ))}
           </div>
+
         ) : (
           <div className="py-8 text-center text-foreground/50 text-sm">
             {t('common.noResults', 'No results found')}
