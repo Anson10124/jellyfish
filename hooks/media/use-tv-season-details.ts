@@ -21,14 +21,21 @@ export function useTvSeasonDetails(
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!tvId || seasonNumber === undefined) {
-      setLoading(false);
+      Promise.resolve().then(() => {
+        if (isMounted) setLoading(false);
+      });
       return;
     }
 
-    let isMounted = true;
-    setLoading(true);
-    setError(null);
+    Promise.resolve().then(() => {
+      if (isMounted) {
+        setLoading(true);
+        setError(null);
+      }
+    });
 
     TmdbApi.getTvSeasonDetails<TvSeasonDetails>(tvId, seasonNumber, tmdbLanguage)
       .then((data) => {

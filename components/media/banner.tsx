@@ -124,7 +124,9 @@ export function Banner({
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    setImageLoaded(false);
+    Promise.resolve().then(() => {
+      setImageLoaded(false);
+    });
   }, [activeItem?.id]);
 
   if (loading && !activeItem) {

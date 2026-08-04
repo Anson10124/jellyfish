@@ -22,15 +22,22 @@ export function useJellyfinAvailability({
   const [jellyfinItem, setJellyfinItem] = useState<JellyfinBaseItem | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!isConnected || !jellyfinConfig || !jellyfinConfig.serverUrl || !jellyfinConfig.userId || !jellyfinConfig.accessToken || !id) {
-      setIsAvailable(false);
-      setJellyfinItem(null);
-      setIsChecking(false);
+      Promise.resolve().then(() => {
+        if (isMounted) {
+          setIsAvailable(false);
+          setJellyfinItem(null);
+          setIsChecking(false);
+        }
+      });
       return;
     }
 
-    let isMounted = true;
-    setIsChecking(true);
+    Promise.resolve().then(() => {
+      if (isMounted) setIsChecking(true);
+    });
 
     const { serverUrl, userId, accessToken } = jellyfinConfig;
     const includeType = mediaType === 'tv' ? 'Series' : 'Movie';

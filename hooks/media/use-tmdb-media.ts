@@ -119,9 +119,13 @@ export function useTmdbMedia({
     }
 
     let isMounted = true;
-    setLoading(true);
-    setPage(1);
-    setTotalPages(1);
+    Promise.resolve().then(() => {
+      if (isMounted) {
+        setLoading(true);
+        setPage(1);
+        setTotalPages(1);
+      }
+    });
 
     const fetchInitialData = async () => {
       try {

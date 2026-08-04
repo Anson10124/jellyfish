@@ -45,12 +45,19 @@ export function useJellyfinSection(fetcher: JellyfinSectionFetcher, limit: numbe
   }, [jellyfinConfig, fetcher, limit]);
 
   useEffect(() => {
-    if (isConnected) {
-      fetchItems();
-    } else {
-      setItems([]);
-      setLoading(false);
-    }
+    let isMounted = true;
+    Promise.resolve().then(() => {
+      if (!isMounted) return;
+      if (isConnected) {
+        fetchItems();
+      } else {
+        setItems([]);
+        setLoading(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [isConnected, fetchItems]);
 
   return {

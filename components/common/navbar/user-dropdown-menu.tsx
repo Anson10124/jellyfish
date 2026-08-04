@@ -35,9 +35,11 @@ export function UserDropdownMenu({
 
   useEffect(() => {
     if (!userDropdownOpen) {
-      setView('main');
-      setDirection(1);
-      setContentHeight('auto');
+      Promise.resolve().then(() => {
+        setView('main');
+        setDirection(1);
+        setContentHeight('auto');
+      });
     }
   }, [userDropdownOpen]);
 

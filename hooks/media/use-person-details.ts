@@ -26,8 +26,12 @@ export function usePersonDetails(id: string | number | undefined): UsePersonDeta
     if (!id) return;
 
     let isMounted = true;
-    setLoading(true);
-    setError(null);
+    Promise.resolve().then(() => {
+      if (isMounted) {
+        setLoading(true);
+        setError(null);
+      }
+    });
 
     TmdbApi.getPersonDetails<PersonDetails>(id, tmdbLanguage)
       .then((data) => {

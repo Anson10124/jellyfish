@@ -22,12 +22,16 @@ export function useSearch(query: string, debounceMs = 300) {
     const trimmed = query.trim();
 
     if (trimmed.length < 2) {
-      setResults([]);
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setResults([]);
+        setLoading(false);
+      });
       return;
     }
 
-    setLoading(true);
+    Promise.resolve().then(() => {
+      setLoading(true);
+    });
 
     const timer = setTimeout(async () => {
       abortRef.current?.abort();

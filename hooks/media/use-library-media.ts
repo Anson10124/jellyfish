@@ -26,14 +26,21 @@ export function useLibraryMedia({ params }: UseLibraryMediaParams) {
   const limit = 30;
 
   useEffect(() => {
+    let isMounted = true;
+
     if (!jellyfinConfig || !jellyfinConfig.serverUrl || !jellyfinConfig.userId || !jellyfinConfig.accessToken || !libraryId) {
-      setLoading(false);
+      Promise.resolve().then(() => {
+        if (isMounted) setLoading(false);
+      });
       return;
     }
 
-    let isMounted = true;
-    setLoading(true);
-    setError(null);
+    Promise.resolve().then(() => {
+      if (isMounted) {
+        setLoading(true);
+        setError(null);
+      }
+    });
 
     async function loadInitialData() {
       if (!jellyfinConfig) return;

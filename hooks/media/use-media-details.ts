@@ -31,8 +31,13 @@ export function useMediaDetails<T = MovieDetails>(
     if (!id) return;
 
     let isMounted = true;
-    setLoading(true);
-    setError(null);
+
+    Promise.resolve().then(() => {
+      if (isMounted) {
+        setLoading(true);
+        setError(null);
+      }
+    });
 
     const isoLang = tmdbLanguage.split('-')[0];
 

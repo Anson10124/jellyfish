@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
@@ -52,22 +52,7 @@ export function useConnectFlow() {
 
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Only pre-fill the server URL when there are no servers yet (reconnecting).
-  // When adding a new server (servers.length > 0), start with a fresh form.
-  useEffect(() => {
-    if (servers.length === 0 && jellyfinConfig?.serverUrl) {
-      setServerUrl(jellyfinConfig.serverUrl);
-      handleCheckServer(jellyfinConfig.serverUrl);
-    }
-  }, [jellyfinConfig]);
-
-  useEffect(() => {
-    return () => {
-      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    };
-  }, []);
-
-  const handleCheckServer = async (urlToCheck?: string) => {
+  const handleCheckServer = useCallback(async (urlToCheck?: string) => {
     const targetUrl = urlToCheck || serverUrl;
     if (!targetUrl.trim()) {
       setVerifyError(t('connect.errors.enterServerAddress', 'Please enter your Jellyfin server address.'));
@@ -93,7 +78,25 @@ export function useConnectFlow() {
       setServerVerified(false);
       setVerifyError(res.error || t('connect.errors.couldNotConnect', 'Could not connect to Jellyfin server.'));
     }
-  };
+  }, [serverUrl, t]);
+
+  // Only pre-fill the server URL when there are no servers yet (reconnecting).
+  // When adding a new server (servers.length > 0), start with a fresh form.
+  useEffect(() => {
+    if (servers.length === 0 && jellyfinConfig?.serverUrl) {
+      const url = jellyfinConfig.serverUrl;
+      Promise.resolve().then(() => {
+        setServerUrl(url);
+        handleCheckServer(url);
+      });
+    }
+  }, [jellyfinConfig, servers.length, handleCheckServer]);
+
+  useEffect(() => {
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
+  }, []);
 
   const startQuickConnectFlow = async () => {
     if (!serverUrl || !serverVerified) return;

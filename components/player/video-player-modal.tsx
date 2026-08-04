@@ -13,7 +13,6 @@ import { JellyfinService } from '@/services/jellyfin.service';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
-import { getStoredDeviceId } from '@/lib/storage/server-storage';
 import { toast } from '@/components/ui/toast';
 import { QUALITY_OPTIONS, getFilteredQualityOptions, type VideoPlayerModalProps, type AudioTrack, type QualityOptionId, type QualityOption } from '@/types/player';
 
@@ -63,11 +62,14 @@ function JellyfinAudioBridge({ audioTracks, selectedAudioIndex, onSelectTrack }:
   const store = Player.usePlayer();
 
   const onSelectTrackRef = useRef(onSelectTrack);
-  onSelectTrackRef.current = onSelectTrack;
   const audioTracksRef = useRef(audioTracks);
-  audioTracksRef.current = audioTracks;
   const selectedAudioIndexRef = useRef(selectedAudioIndex);
-  selectedAudioIndexRef.current = selectedAudioIndex;
+
+  useEffect(() => {
+    onSelectTrackRef.current = onSelectTrack;
+    audioTracksRef.current = audioTracks;
+    selectedAudioIndexRef.current = selectedAudioIndex;
+  });
 
   useEffect(() => {
     if (!store || audioTracks.length <= 1) return;
@@ -135,9 +137,7 @@ function JellyfinQualityBridge({
   const store = Player.usePlayer();
 
   const onSelectQualityRef = useRef(onSelectQuality);
-  onSelectQualityRef.current = onSelectQuality;
   const selectedQualityIdRef = useRef(selectedQualityId);
-  selectedQualityIdRef.current = selectedQualityId;
 
   const filteredOptions = React.useMemo(
     () => getFilteredQualityOptions(sourceWidth, sourceHeight, sourceBitrate),
@@ -148,7 +148,12 @@ function JellyfinQualityBridge({
     [filteredOptions]
   );
   const filteredOptionsRef = useRef(filteredOptions);
-  filteredOptionsRef.current = filteredOptions;
+
+  useEffect(() => {
+    onSelectQualityRef.current = onSelectQuality;
+    selectedQualityIdRef.current = selectedQualityId;
+    filteredOptionsRef.current = filteredOptions;
+  });
 
   useEffect(() => {
     if (!store) return;
@@ -255,12 +260,16 @@ export function VideoPlayerModal({
   useEffect(() => {
     const isOptionValid = availableOptions.some((q) => q.id === selectedQualityId);
     if (!isOptionValid) {
-      setSelectedQualityId('auto');
+      Promise.resolve().then(() => {
+        setSelectedQualityId('auto');
+      });
     }
   }, [availableOptions, selectedQualityId]);
 
   useEffect(() => {
-    setOverrideSrc(null);
+    Promise.resolve().then(() => {
+      setOverrideSrc(null);
+    });
     hasAppliedInitialTimeRef.current = false;
     pendingSeekTimeRef.current = null;
   }, [src]);
@@ -281,7 +290,10 @@ export function VideoPlayerModal({
 
   useEffect(() => {
     const defaultTrack = audioTracks?.find((t) => t.isDefault) ?? audioTracks?.[0];
-    setSelectedAudioIndex(defaultTrack?.index ?? 0);
+    const trackIndex = defaultTrack?.index ?? 0;
+    Promise.resolve().then(() => {
+      setSelectedAudioIndex(trackIndex);
+    });
   }, [src, audioTracks]);
 
   const prepareTimeRestoration = useCallback((targetTime: number) => {
@@ -399,12 +411,11 @@ export function VideoPlayerModal({
   });
 
   useEffect(() => {
-    if (subtitles && subtitles.length > 0) {
-      const defaultSub = subtitles.find((s) => s.isDefault);
-      setSelectedSubtitleIndex(defaultSub ? defaultSub.index : null);
-    } else {
-      setSelectedSubtitleIndex(null);
-    }
+    const defaultSub = subtitles && subtitles.length > 0 ? subtitles.find((s) => s.isDefault) : null;
+    const targetIdx = defaultSub ? defaultSub.index : null;
+    Promise.resolve().then(() => {
+      setSelectedSubtitleIndex(targetIdx);
+    });
   }, [subtitles, src]);
 
   useEffect(() => {

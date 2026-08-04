@@ -43,11 +43,13 @@ export function I18nProvider({
   useEffect(() => {
     const savedLocale = getInitialLocale();
     if (savedLocale && savedLocale !== locale) {
-      setLocaleState(savedLocale);
+      Promise.resolve().then(() => {
+        setLocaleState(savedLocale);
+      });
     } else if (typeof window !== 'undefined') {
       document.cookie = `${LOCAL_STORAGE_KEY}=${locale}; path=/; max-age=31536000`;
     }
-  }, []);
+  }, [locale]);
 
   const t = useCallback(
     (key: string, defaultText?: string): string => {

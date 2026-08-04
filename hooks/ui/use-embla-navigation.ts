@@ -45,7 +45,9 @@ export function useEmblaNavigation(config?: UseEmblaNavigationOptions) {
   useEffect(() => {
     if (!emblaApi) return;
 
-    updateEdgeState();
+    Promise.resolve().then(() => {
+      updateEdgeState();
+    });
     emblaApi.on('select', updateEdgeState);
     emblaApi.on('reInit', updateEdgeState);
     emblaApi.on('scroll', updateEdgeState);

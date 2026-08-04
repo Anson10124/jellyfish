@@ -224,4 +224,17 @@ export interface PersonDetails {
   };
 }
 
+export interface MediaCategoryConfig {
+  id: string;
+  titleKey: string;
+  defaultTitle: string;
+  type?: 'popular' | 'trending' | 'top_rated';
+  timeWindow?: 'day' | 'week';
+  mediaType: 'movie' | 'tv' | 'all';
+  genreId?: number;
+  infinite?: boolean;
+}
+
+
+
 

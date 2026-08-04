@@ -14,7 +14,9 @@ export function UserAvatar({ serverUrl, userId, tag, username }: UserAvatarProps
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    setHasError(false);
+    Promise.resolve().then(() => {
+      setHasError(false);
+    });
   }, [serverUrl, userId, tag]);
 
   if (serverUrl && userId && !hasError) {

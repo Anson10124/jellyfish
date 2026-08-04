@@ -1,8 +1,7 @@
 'use client';
 
 import React, { use } from 'react';
-import { motion } from 'motion/react';
-import { Film, Bookmark, ArrowLeft, CloudDownload } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import {
@@ -18,8 +17,7 @@ import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
-import { Skeleton } from '@/components/ui';
-import { CastCarousel, Carousel, MediaBadges, PlayButton, JellyfinMediaInfo } from '@/components/media';
+import { CastCarousel, Carousel, MediaDetailHero, MediaFactsGrid, JellyfinMediaInfo } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { MovieDetails } from '@/types/media';
@@ -79,12 +77,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   }
 
   const title = getMediaTitle(movie);
-  const textlessPoster = movie.images?.posters?.find(
-    (p) => p.iso_639_1 === null
-  )?.file_path;
-  const textlessBackdrop = movie.images?.backdrops?.find(
-    (b) => b.iso_639_1 === null
-  )?.file_path;
+  const textlessPoster = movie.images?.posters?.find((p) => p.iso_639_1 === null)?.file_path;
+  const textlessBackdrop = movie.images?.backdrops?.find((b) => b.iso_639_1 === null)?.file_path;
 
   const rawBackdrop =
     textlessBackdrop ||
@@ -93,11 +87,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
       : movie.backdrop_path);
 
   const rawPoster = textlessPoster || movie.poster_path;
-
-  const selectedImagePath = isMobile
-    ? rawPoster || rawBackdrop
-    : rawBackdrop || movie.poster_path;
-
+  const selectedImagePath = isMobile ? rawPoster || rawBackdrop : rawBackdrop || movie.poster_path;
   const backdropUrl = getTmdbImage(selectedImagePath, 'original');
   const isPosterFallback = !isMobile && !rawBackdrop && !!movie.poster_path;
   const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
@@ -105,7 +95,6 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const formattedBudget = formatCurrency(movie.budget);
   const formattedRevenue = formatCurrency(movie.revenue);
   const countryOfOrigin = formatCountryOfOrigin(movie);
-
   const voteAverage = movie.vote_average ? movie.vote_average.toFixed(1) : null;
   const castList = processCastAndCrew(movie.credits, 16);
 
@@ -117,152 +106,76 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     });
   };
 
-
+  const factItems = [
+    movie.release_date
+      ? {
+          key: 'release-date',
+          label: t('movies.releaseDate', 'Release Date'),
+          value: formatDate(movie.release_date),
+        }
+      : null,
+    countryOfOrigin
+      ? {
+          key: 'country',
+          label: t('movies.countryOfOrigin', 'Country of Origin'),
+          value: countryOfOrigin,
+        }
+      : null,
+    movie.original_language
+      ? {
+          key: 'language',
+          label: t('movies.originalLanguage', 'Original Language'),
+          value: formatLanguageName(movie.original_language, null, locale),
+        }
+      : null,
+    formattedBudget
+      ? {
+          key: 'budget',
+          label: t('movies.budget', 'Budget'),
+          value: formattedBudget,
+        }
+      : null,
+    formattedRevenue
+      ? {
+          key: 'revenue',
+          label: t('movies.revenue', 'Revenue'),
+          value: formattedRevenue,
+        }
+      : null,
+  ];
 
   return (
     <main className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-background text-foreground">
-      <div className="fixed inset-0 h-screen w-screen select-none pointer-events-none z-0 overflow-hidden">
-        <motion.img
-          src={backdropUrl}
-          alt={title}
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
-          className={`h-full w-full object-cover object-center ${isPosterFallback ? 'blur-2xl opacity-35 scale-110' : ''
-            }`}
-          draggable={false}
-        />
-        {/* Side Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent w-full md:w-3/5 lg:w-1/2" />
-      </div>
-
-      <div className="relative z-10 w-full h-[80vh] min-h-[500px] lg:h-[88vh] lg:min-h-[600px]">
-        <div className={`relative z-20 flex h-full flex-col justify-end pt-24 pb-14 lg:pb-20 ${PADDING_X_CLASSES}`}>
-          <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl text-center lg:text-left space-y-3 sm:space-y-4 mx-auto lg:mx-0 flex flex-col items-center lg:items-start pb-10 lg:pb-0">
-            <div>
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={title}
-                  className="max-h-24 sm:max-h-36 md:max-h-48 lg:max-h-56 w-auto max-w-[260px] sm:max-w-[400px] lg:max-w-[500px] object-contain mx-auto lg:mx-0 drop-shadow-lg"
-                  draggable={false}
-                />
-              ) : (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground drop-shadow-lg line-clamp-2 text-center lg:text-left">
-                  {title}
-                </h1>
-              )}
-            </div>
-
-            <MediaBadges
-              voteAverage={voteAverage}
-              releaseYear={releaseYear}
-              runtime={formattedRuntime}
-              genres={movie.genres}
-              genreIds={movie.genre_ids}
-              className="hidden lg:flex"
-            />
-            
-            {movie.tagline && (
-              <p className="hidden lg:block text-sm lg:text-base italic text-foreground/80 drop-shadow text-center lg:text-left">
-                &ldquo;{movie.tagline}&rdquo;
-              </p>
-            )}
-
-            {movie.overview && (
-              <p className="text-sm lg:text-base leading-relaxed text-foreground/80 line-clamp-2 lg:line-clamp-3 max-w-xl drop-shadow text-center lg:text-left mx-auto lg:mx-0">
-                {movie.overview}
-              </p>
-            )}
-
-            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 w-full">
-              {isChecking ? (
-                <Skeleton className="h-9 w-28 rounded-xl bg-foreground/10" />
-              ) : isAvailable ? (
-                <PlayButton jellyfinItem={jellyfinItem} onClick={handleWatchNow} />
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
-                >
-                  <CloudDownload className="h-4 w-4" />
-                  {t('common.request', 'Request')}
-                </button>
-              )}
-
-              {trailerKey && (
-                <button
-                  type="button"
-                  onClick={playTrailer}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
-                >
-                  <Film className="h-4 w-4 text-red-400" />
-                  {t('movies.watchTrailer', 'Watch Trailer')}
-                </button>
-              )}
-
-              <button
-                type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer"
-                aria-label={t('common.addToWatchlist', 'Add to watchlist')}
-              >
-                <Bookmark className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MediaDetailHero
+        title={title}
+        backdropUrl={backdropUrl}
+        logoUrl={logoUrl}
+        tagline={movie.tagline}
+        overview={movie.overview}
+        voteAverage={voteAverage}
+        releaseYear={releaseYear}
+        runtime={formattedRuntime}
+        genres={movie.genres}
+        genreIds={movie.genre_ids}
+        isPosterFallback={isPosterFallback}
+        isChecking={isChecking}
+        isAvailable={isAvailable}
+        jellyfinItem={jellyfinItem}
+        trailerKey={trailerKey}
+        onWatchNow={handleWatchNow}
+        onWatchTrailer={playTrailer}
+      />
 
       <div className="relative z-20 w-full min-h-screen bg-background/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-border">
-
         {/* Cast */}
         {castList.length > 0 && (
           <section className="relative z-10">
-            <CastCarousel
-              title={t('movies.castcrew', 'Cast & Crew')}
-              cast={castList}
-            />
+            <CastCarousel title={t('movies.castcrew', 'Cast & Crew')} cast={castList} />
           </section>
         )}
 
         {/* Facts */}
-        <section className={`relative z-10 ${PADDING_X_CLASSES}`}>
-          <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground mb-4">
-            {t('movies.details', 'Details')}
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6 text-xs sm:text-sm">
-            {movie.release_date && (
-              <div>
-                <p className="text-foreground/50 font-medium">{t('movies.releaseDate', 'Release Date')}</p>
-                <p className="text-foreground/90 font-semibold mt-1">{formatDate(movie.release_date)}</p>
-              </div>
-            )}
-            {countryOfOrigin && (
-              <div>
-                <p className="text-foreground/50 font-medium">{t('movies.countryOfOrigin', 'Country of Origin')}</p>
-                <p className="text-foreground/90 font-semibold mt-1">{countryOfOrigin}</p>
-              </div>
-            )}
-            {movie.original_language && (
-              <div>
-                <p className="text-foreground/50 font-medium">{t('movies.originalLanguage', 'Original Language')}</p>
-                <p className="text-foreground/90 font-semibold mt-1">{formatLanguageName(movie.original_language, null, locale)}</p>
-              </div>
-            )}
-            {formattedBudget && (
-              <div>
-                <p className="text-foreground/50 font-medium">{t('movies.budget', 'Budget')}</p>
-                <p className="text-foreground/90 font-semibold mt-1">{formattedBudget}</p>
-              </div>
-            )}
-            {formattedRevenue && (
-              <div>
-                <p className="text-foreground/50 font-medium">{t('movies.revenue', 'Revenue')}</p>
-                <p className="text-foreground/90 font-semibold mt-1">{formattedRevenue}</p>
-              </div>
-            )}
-          </div>
-        </section>
+        <MediaFactsGrid items={factItems} title={t('movies.details', 'Details')} />
 
         {/* Similar & Recommended */}
         <div className="relative z-10 space-y-8">
@@ -285,13 +198,12 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
           )}
         </div>
 
-        {/* Jellyfin Media Info & Languages */}
+        {/* Jellyfin Media Info */}
         {isAvailable && (
           <section className={`relative z-10 ${PADDING_X_CLASSES} pb-12`}>
             <JellyfinMediaInfo item={jellyfinItem} />
           </section>
         )}
-
       </div>
 
       {/* Trailer Player */}

@@ -42,12 +42,19 @@ export function useJellyfinLibraries() {
   }, [jellyfinConfig]);
 
   useEffect(() => {
-    if (isConnected) {
-      fetchLibraries();
-    } else {
-      setLibraries([]);
-      setLoading(false);
-    }
+    let isMounted = true;
+    Promise.resolve().then(() => {
+      if (!isMounted) return;
+      if (isConnected) {
+        fetchLibraries();
+      } else {
+        setLibraries([]);
+        setLoading(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [isConnected, fetchLibraries]);
 
   return {

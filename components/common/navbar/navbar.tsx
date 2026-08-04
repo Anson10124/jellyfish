@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff } from 'lucide-react';
@@ -100,8 +100,10 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    setActivePath(pathname);
-    setUserDropdownOpen(false);
+    Promise.resolve().then(() => {
+      setActivePath(pathname);
+      setUserDropdownOpen(false);
+    });
   }, [pathname]);
 
   useEffect(() => {
@@ -138,11 +140,10 @@ export function Navbar() {
   }, [searchOpen]);
 
   useEffect(() => {
-    if (searchQuery.trim().length >= 2) {
-      setDropdownVisible(true);
-    } else {
-      setDropdownVisible(false);
-    }
+    const isVisible = searchQuery.trim().length >= 2;
+    Promise.resolve().then(() => {
+      setDropdownVisible(isVisible);
+    });
   }, [searchQuery, results]);
 
   const handleResultClick = (mediaType: string, id: number) => {
@@ -177,29 +178,35 @@ export function Navbar() {
   const tabRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, ready: false });
 
-  const updatePill = () => {
+  const updatePill = useCallback(() => {
     if (activeIndex === -1) {
-      setPillStyle((prev) => ({ ...prev, ready: false }));
+      Promise.resolve().then(() => {
+        setPillStyle((prev) => ({ ...prev, ready: false }));
+      });
       return;
     }
     const currentTab = tabRefs.current[activeIndex];
     if (currentTab) {
-      setPillStyle({
-        left: currentTab.offsetLeft,
-        width: currentTab.offsetWidth,
-        ready: true,
+      const left = currentTab.offsetLeft;
+      const width = currentTab.offsetWidth;
+      Promise.resolve().then(() => {
+        setPillStyle({
+          left,
+          width,
+          ready: true,
+        });
       });
     }
-  };
+  }, [activeIndex]);
 
   useLayoutEffect(() => {
     updatePill();
-  }, [activeIndex]);
+  }, [updatePill]);
 
   useEffect(() => {
     window.addEventListener('resize', updatePill);
     return () => window.removeEventListener('resize', updatePill);
-  }, [activeIndex]);
+  }, [updatePill]);
 
   return (
     <>

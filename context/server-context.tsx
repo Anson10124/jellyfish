@@ -108,26 +108,29 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     const storedSeerr = getStoredSeerrConfig();
 
     if (store.servers.length > 0) {
-      setServers(store.servers);
-      setActiveServerId(store.activeServerId);
+      Promise.resolve().then(() => {
+        setServers(store.servers);
+        setActiveServerId(store.activeServerId);
 
-      const active = store.servers.find((s) => s.id === store.activeServerId);
-      if (active) {
-        setConnectionState({
-          status: 'connected',
-          serverName: active.serverName,
-          version: active.version,
-        });
+        const active = store.servers.find((s) => s.id === store.activeServerId);
+        if (active) {
+          setConnectionState({
+            status: 'connected',
+            serverName: active.serverName,
+            version: active.version,
+          });
+        }
+
+        checkServersStatus();
+      });
+    }
+
+    Promise.resolve().then(() => {
+      if (storedSeerr) {
+        setSeerrConfig(storedSeerr);
       }
-
-      checkServersStatus();
-    }
-
-    if (storedSeerr) {
-      setSeerrConfig(storedSeerr);
-    }
-
-    setIsInitialized(true);
+      setIsInitialized(true);
+    });
   }, [checkServersStatus]);
 
   // Check active server status on page navigation / pathname changes
