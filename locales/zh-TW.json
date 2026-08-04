@@ -15,7 +15,9 @@
     "request": "請求",
     "requestMore": "請求更多",
     "searching": "搜尋中",
-    "noResults": "未找到結果"
+    "noResults": "未找到結果",
+    "movies": "電影",
+    "addToWatchlist": "加入待看清單"
   },
   "nav": {
     "home": "首頁",
@@ -29,7 +31,9 @@
     "changeServer": "更換伺服器",
     "signOut": "登出",
     "back": "返回",
-    "addServer": "新增伺服器"
+    "addServer": "新增伺服器",
+    "offlineWarning": "無法連接伺服器，請檢查網路連線。",
+    "toggleMenu": "切換選單"
   },
   "carousel": {
     "previousSlide": "上一張",
@@ -71,7 +75,9 @@
     "originalLanguage": "原始語言",
     "production": "製作公司",
     "similarMovies": "相似電影",
-    "recommendations": "為你推薦"
+    "recommendations": "為你推薦",
+    "movieNotFound": "未找到電影資料",
+    "backToMovies": "返回電影"
   },
   "tv": {
     "title": "影集",
@@ -218,6 +224,11 @@
     "readMore": "閱讀更多",
     "showLess": "顯示更少",
     "personNotFound": "未找到人物資料",
-    "back": "返回"
+    "back": "返回",
+    "noCreditsFound": "未找到所選篩選條件的演藝作品。"
+  },
+  "player": {
+    "closeTrailer": "關閉預告片",
+    "closeVideoPlayer": "關閉播放器"
   }
 }

@@ -11,6 +11,7 @@ import { useJellyfinPlayback } from '@/hooks/media/use-jellyfin-playback';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
+import { useTranslation } from '@/hooks/ui/use-translation';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 import { QUALITY_OPTIONS, getFilteredQualityOptions, type VideoPlayerModalProps, type AudioTrack, type QualityOptionId, type QualityOption } from '@/types/player';
@@ -217,6 +218,7 @@ export function VideoPlayerModal({
   audioTracks: propAudioTracks,
   onFallbackTranscode,
 }: VideoPlayerModalProps) {
+  const { t } = useTranslation();
   const { jellyfinConfig } = useServerConfig();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -553,7 +555,7 @@ export function VideoPlayerModal({
           <button
             onClick={handleClose}
             className="flex items-center justify-center h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer backdrop-blur-md"
-            aria-label="Close video player"
+            aria-label={t('player.closeVideoPlayer', 'Close video player')}
           >
             <X className="h-5 w-5" />
           </button>

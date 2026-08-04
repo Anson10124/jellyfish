@@ -15,7 +15,9 @@
     "request": "Request",
     "requestMore": "Request More",
     "searching": "Searching",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "movies": "Movies",
+    "addToWatchlist": "Add to watchlist"
   },
   "nav": {
     "home": "Home",
@@ -29,7 +31,9 @@
     "changeServer": "Change Server",
     "signOut": "Sign Out",
     "back": "Back",
-    "addServer": "Add Server"
+    "addServer": "Add Server",
+    "offlineWarning": "Server unreachable. Please check your connection.",
+    "toggleMenu": "Toggle Menu"
   },
   "carousel": {
     "previousSlide": "Previous slide",
@@ -71,7 +75,9 @@
     "originalLanguage": "Original Language",
     "production": "Production Companies",
     "similarMovies": "Similar Movies",
-    "recommendations": "Recommended for You"
+    "recommendations": "Recommended for You",
+    "movieNotFound": "Movie not found",
+    "backToMovies": "Back to Movies"
   },
   "tv": {
     "title": "TV Shows",
@@ -218,6 +224,12 @@
     "readMore": "Read More",
     "showLess": "Show Less",
     "personNotFound": "Person not found",
-    "back": "Back"
+    "back": "Back",
+    "allCredits": "All Credits",
+    "noCreditsFound": "No credits found for the selected filter."
+  },
+  "player": {
+    "closeTrailer": "Close trailer",
+    "closeVideoPlayer": "Close video player"
   }
 }

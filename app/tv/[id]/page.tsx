@@ -300,7 +300,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
               <button
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer"
-                aria-label="Add to watchlist"
+                aria-label={t('common.addToWatchlist', 'Add to watchlist')}
               >
                 <Bookmark className="h-4 w-4" />
               </button>

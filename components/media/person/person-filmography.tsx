@@ -158,7 +158,7 @@ export function PersonFilmography({
         </div>
       ) : (
         <div className="py-12 text-center text-foreground/50 text-sm">
-          No credits found for the selected filter.
+          {t('person.noCreditsFound', 'No credits found for the selected filter.')}
         </div>
       )}
     </section>

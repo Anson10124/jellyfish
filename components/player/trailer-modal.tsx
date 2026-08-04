@@ -43,7 +43,7 @@ export function TrailerModal({ isOpen, onClose, videoKey, title }: TrailerModalP
             <button
               onClick={onClose}
               className="rounded-full p-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Close trailer"
+              aria-label={t('player.closeTrailer', 'Close trailer')}
             >
               <X className="h-5 w-5" />
             </button>

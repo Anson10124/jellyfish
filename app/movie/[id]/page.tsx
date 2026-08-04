@@ -66,13 +66,13 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   if (!movie) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-foreground">
-        <h2 className="text-2xl font-bold">Movie not found</h2>
+        <h2 className="text-2xl font-bold">{t('movies.movieNotFound', 'Movie not found')}</h2>
         <Link
           href="/movie"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/10 hover:bg-foreground/20 text-sm font-semibold transition"
         >
           <ArrowLeft className="h-4 w-4" />
-          {t('common.back', 'Back to Movies')}
+          {t('movies.backToMovies', 'Back to Movies')}
         </Link>
       </div>
     );
@@ -204,7 +204,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
               <button
                 type="button"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer"
-                aria-label="Add to watchlist"
+                aria-label={t('common.addToWatchlist', 'Add to watchlist')}
               >
                 <Bookmark className="h-4 w-4" />
               </button>
