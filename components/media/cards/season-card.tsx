@@ -39,7 +39,7 @@ export function SeasonCard({
       <div
         className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg transition duration-300 ${
           isSelected
-            ? 'ring-2 ring-foreground scale-[1.04]'
+            ? 'ring-2 ring-foreground scale-[1.04] shadow-foreground/10 shadow-2xl'
             : 'ring-1 ring-border group-hover:scale-[1.025] group-hover:ring-foreground/40'
         }`}
       >

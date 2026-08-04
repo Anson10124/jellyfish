@@ -120,7 +120,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   }, [isAvailable, jellyfinItem, tvShow]);
 
   const seasons = React.useMemo(() => {
-    return sortSeasons(tvShow?.seasons).filter((s) => s.season_number > 0);
+    return sortSeasons(tvShow?.seasons);
   }, [tvShow?.seasons]);
 
   const activeSeasonNumber =
@@ -322,15 +322,15 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
             />
 
             {/* Episodes Carousel */}
-            <div className="pt-2">
-              <EpisodeCarousel
-                tvId={tvId}
-                seasons={seasons}
-                activeSeasonNumber={activeSeasonNumber ?? undefined}
-                onSeasonInView={(seasonNum) => setSelectedSeasonNumber(seasonNum)}
-                onPlayEpisode={handlePlayEpisode}
-              />
-            </div>
+            {selectedSeason && (
+              <div className="pt-2">
+                <EpisodeCarousel
+                  tvId={tvId}
+                  season={selectedSeason}
+                  onPlayEpisode={handlePlayEpisode}
+                />
+              </div>
+            )}
           </section>
         )}
 

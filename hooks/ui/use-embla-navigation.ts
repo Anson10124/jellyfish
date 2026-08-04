@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import type { EmblaOptionsType, EmblaPluginType, EmblaCarouselType } from 'embla-carousel';
 
-import { getCarouselPaddingX } from '@/constants/carousel';
-
 export interface UseEmblaNavigationOptions {
   options?: EmblaOptionsType;
   plugins?: EmblaPluginType[];
@@ -16,7 +14,7 @@ export function useEmblaNavigation(config?: UseEmblaNavigationOptions) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       dragFree: true,
-      align: getCarouselPaddingX,
+      align: 'start',
       containScroll: 'trimSnaps',
       ...config?.options,
     },
