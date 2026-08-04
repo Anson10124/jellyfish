@@ -1,12 +1,16 @@
+import { QUALITY_OPTIONS, type QualityOptionId } from '@/types/player';
+
 export interface PlayerConfig {
   volume: number;
   muted: boolean;
+  preferredQuality: QualityOptionId;
 }
 
 const PLAYER_CONFIG_KEY = 'jellyfish_player_config';
 const DEFAULT_PLAYER_CONFIG: PlayerConfig = {
   volume: 1.0,
   muted: false,
+  preferredQuality: 'auto',
 };
 
 export function getStoredPlayerConfig(): PlayerConfig {
@@ -15,9 +19,11 @@ export function getStoredPlayerConfig(): PlayerConfig {
     const raw = localStorage.getItem(PLAYER_CONFIG_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      const isValidQuality = QUALITY_OPTIONS.some((q) => q.id === parsed.preferredQuality);
       return {
         volume: typeof parsed.volume === 'number' ? Math.max(0, Math.min(1, parsed.volume)) : 1.0,
         muted: typeof parsed.muted === 'boolean' ? parsed.muted : false,
+        preferredQuality: isValidQuality ? parsed.preferredQuality : 'auto',
       };
     }
   } catch (e) {

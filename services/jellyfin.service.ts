@@ -346,6 +346,11 @@ export const JellyfinService = {
       const mediaSource = res.MediaSources?.[0];
       const mediaSourceId = mediaSource?.Id || itemId;
 
+      const videoStream = (mediaSource?.MediaStreams || []).find((s) => s.Type === 'Video');
+      const sourceWidth = videoStream?.Width;
+      const sourceHeight = videoStream?.Height;
+      const sourceBitrate = mediaSource?.Bitrate || videoStream?.BitRate;
+
       const subtitleStreams = (mediaSource?.MediaStreams || []).filter(
         (s): s is JellyfinMediaStream & { Index: number } => s.Type === 'Subtitle' && s.Index !== undefined
       );
@@ -377,6 +382,9 @@ export const JellyfinService = {
           isHls: false,
           playMethod: 'DirectPlay',
           mediaSourceId,
+          sourceWidth,
+          sourceHeight,
+          sourceBitrate,
           subtitles,
           audioTracks,
         };
@@ -388,6 +396,9 @@ export const JellyfinService = {
           isHls: true,
           playMethod: 'Transcode',
           mediaSourceId,
+          sourceWidth,
+          sourceHeight,
+          sourceBitrate,
           subtitles,
           audioTracks,
         };
@@ -398,6 +409,9 @@ export const JellyfinService = {
         isHls: false,
         playMethod: 'DirectPlay',
         mediaSourceId,
+        sourceWidth,
+        sourceHeight,
+        sourceBitrate,
         subtitles,
         audioTracks,
       };
@@ -411,26 +425,46 @@ export const JellyfinService = {
     }
   },
 
-  // Construct stream URL for browser playback (synchronous fallback)
-  getStreamUrl(serverUrl: string, itemId: string, token: string, item?: JellyfinBaseItem | null): string {
+  // Construct stream URL for browser playback (synchronous fallback or quality transcode)
+  getStreamUrl(
+    serverUrl: string,
+    itemId: string,
+    token: string,
+    item?: JellyfinBaseItem | null,
+    options: { videoBitrate?: number; maxHeight?: number; audioStreamIndex?: number; mediaSourceId?: string } = {}
+  ): string {
     const base = normalizeServerUrl(serverUrl);
     const deviceId = getStoredDeviceId();
 
-    const { primaryMediaSource, mediaSourceId, container, audioStreamIndex, audioCodec } = extractAudioStreamInfo(item);
+    const { primaryMediaSource, mediaSourceId, container, audioStreamIndex: defaultAudioIndex, audioCodec } = extractAudioStreamInfo(item);
+
+    const targetMediaSourceId = options.mediaSourceId || mediaSourceId || itemId;
+    const targetAudioIndex = options.audioStreamIndex ?? defaultAudioIndex;
 
     const isBrowserDirectPlayAudio = audioCodec === 'aac' || audioCodec === 'mp3' || audioCodec === 'flac';
-    const isBrowserDirectPlayContainer = container === 'mp4' || container === 'm4v' || container === 'webm';
+    const isBrowserDirectPlayContainer = container === 'mp4' || container === 'm4v' || container === 'webm' || container === 'mkv';
 
-    if (isBrowserDirectPlayAudio && isBrowserDirectPlayContainer && primaryMediaSource?.SupportsDirectPlay !== false) {
-      return `${base}/Videos/${itemId}/stream?static=true&api_key=${token}`;
+    if (
+      !options.videoBitrate &&
+      isBrowserDirectPlayAudio &&
+      isBrowserDirectPlayContainer &&
+      primaryMediaSource?.SupportsDirectPlay !== false
+    ) {
+      return `${base}/Videos/${itemId}/stream?static=true&MediaSourceId=${targetMediaSourceId}&api_key=${token}`;
     }
+
+    const videoBitrate = options.videoBitrate ? options.videoBitrate.toString() : '140000000';
+    const playSessionId = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID().replace(/-/g, '')
+      : Math.random().toString(36).substring(2);
 
     const params = new URLSearchParams({
       DeviceId: deviceId,
-      MediaSourceId: mediaSourceId || itemId,
+      MediaSourceId: targetMediaSourceId,
+      PlaySessionId: playSessionId,
       VideoCodec: 'av1,hevc,h264,vp9',
       AudioCodec: 'aac',
-      VideoBitrate: '140000000',
+      VideoBitrate: videoBitrate,
       AudioBitrate: '384000',
       TranscodingMaxAudioChannels: '2',
       MaxAudioChannels: '2',
@@ -442,8 +476,13 @@ export const JellyfinService = {
       api_key: token,
     });
 
-    if (audioStreamIndex !== undefined) {
-      params.set('AudioStreamIndex', audioStreamIndex.toString());
+    if (options.maxHeight) {
+      params.set('MaxHeight', options.maxHeight.toString());
+      params.set('MaxWidth', Math.round((options.maxHeight * 16) / 9).toString());
+    }
+
+    if (targetAudioIndex !== undefined) {
+      params.set('AudioStreamIndex', targetAudioIndex.toString());
     }
 
     return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;

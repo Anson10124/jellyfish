@@ -13,42 +13,9 @@ import { JellyfinService } from '@/services/jellyfin.service';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
-import type { VideoPlayerModalProps, AudioTrack } from '@/types/player';
+import { QUALITY_OPTIONS, getFilteredQualityOptions, type VideoPlayerModalProps, type AudioTrack, type QualityOptionId, type QualityOption } from '@/types/player';
 
 const Player = createPlayer({ features: videoFeatures });
-
-function generatePlaySessionId(): string {
-  return crypto.randomUUID().replace(/-/g, '');
-}
-
-function buildTranscodeUrl(
-  base: string,
-  itemId: string,
-  mediaSourceId: string,
-  audioStreamIndex: number,
-  token: string
-): string {
-  const deviceId = getStoredDeviceId();
-  const params = new URLSearchParams({
-    DeviceId: deviceId,
-    MediaSourceId: mediaSourceId,
-    PlaySessionId: generatePlaySessionId(),
-    AudioStreamIndex: audioStreamIndex.toString(),
-    VideoCodec: 'av1,hevc,h264,vp9',
-    AudioCodec: 'aac',
-    VideoBitrate: '140000000',
-    AudioBitrate: '384000',
-    TranscodingMaxAudioChannels: '2',
-    MaxAudioChannels: '2',
-    RequireAvc: 'false',
-    EnableAudioVbrEncoding: 'true',
-    SegmentContainer: 'mp4',
-    MinSegments: '1',
-    BreakOnNonKeyFrames: 'false',
-    api_key: token,
-  });
-  return `${base}/videos/${itemId}/master.m3u8?${params.toString()}`;
-}
 
 interface VideoJsAudioTrack {
   id: string;
@@ -58,9 +25,21 @@ interface VideoJsAudioTrack {
   enabled: boolean;
 }
 
+interface VideoJsRendition {
+  id: string;
+  label?: string;
+  height?: number;
+  width?: number;
+  bitrate?: number;
+  selected?: boolean;
+  active?: boolean;
+}
+
 interface VideoJsPlayerStoreState {
   audioTrackList?: VideoJsAudioTrack[];
   selectAudioTrack?: (value: string) => void;
+  videoRenditionList?: VideoJsRendition[];
+  selectVideoRendition?: (value: string) => void;
 }
 
 interface VideoJsPlayerStore {
@@ -68,6 +47,7 @@ interface VideoJsPlayerStore {
     patch: (partial: Partial<VideoJsPlayerStoreState> | Record<string, unknown>) => void;
   };
   audioTrackList?: VideoJsAudioTrack[];
+  videoRenditionList?: VideoJsRendition[];
   subscribe: (callback: () => void) => () => void;
 }
 
@@ -135,6 +115,91 @@ function JellyfinAudioBridge({ audioTracks, selectedAudioIndex, onSelectTrack }:
   return null;
 }
 
+interface JellyfinQualityBridgeProps {
+  selectedQualityId: QualityOptionId;
+  onSelectQuality: (qualityId: QualityOptionId) => void;
+  sourceWidth?: number;
+  sourceHeight?: number;
+  sourceBitrate?: number;
+}
+
+function JellyfinQualityBridge({
+  selectedQualityId,
+  onSelectQuality,
+  sourceWidth,
+  sourceHeight,
+  sourceBitrate,
+}: JellyfinQualityBridgeProps) {
+  const store = Player.usePlayer();
+
+  const onSelectQualityRef = useRef(onSelectQuality);
+  onSelectQualityRef.current = onSelectQuality;
+  const selectedQualityIdRef = useRef(selectedQualityId);
+  selectedQualityIdRef.current = selectedQualityId;
+
+  const filteredOptions = React.useMemo(
+    () => getFilteredQualityOptions(sourceWidth, sourceHeight, sourceBitrate),
+    [sourceWidth, sourceHeight, sourceBitrate]
+  );
+  const nonAutoOptions = React.useMemo(
+    () => filteredOptions.filter((q: QualityOption) => q.id !== 'auto'),
+    [filteredOptions]
+  );
+  const filteredOptionsRef = useRef(filteredOptions);
+  filteredOptionsRef.current = filteredOptions;
+
+  useEffect(() => {
+    if (!store) return;
+
+    const typedStore = store as unknown as VideoJsPlayerStore;
+    const $state = typedStore.$state;
+
+    const inject = () => {
+      const current = typedStore.videoRenditionList;
+      const needsInject =
+        !current ||
+        current.length !== nonAutoOptions.length ||
+        current.some(
+          (r, i) =>
+            r.id !== nonAutoOptions[i].id ||
+            r.selected !== (nonAutoOptions[i].id === selectedQualityIdRef.current)
+        );
+
+      if (needsInject) {
+        $state.patch({
+          videoRenditionList: nonAutoOptions.map((q: QualityOption) => ({
+            id: q.id,
+            label: q.label,
+            height: q.maxHeight,
+            bitrate: q.bitrate,
+            selected: q.id === selectedQualityIdRef.current,
+          })),
+          selectVideoRendition: (value: string) => {
+            const opt = filteredOptionsRef.current.find((q: QualityOption) => q.id === value);
+            if (opt) {
+              onSelectQualityRef.current(opt.id);
+            } else if (value === 'auto') {
+              onSelectQualityRef.current('auto');
+            }
+          },
+        });
+      }
+    };
+
+    inject();
+
+    const unsubscribe = typedStore.subscribe(() => {
+      inject();
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [store, selectedQualityId, nonAutoOptions]);
+
+  return null;
+}
+
 export function VideoPlayerModal({
   isOpen,
   onClose,
@@ -145,6 +210,9 @@ export function VideoPlayerModal({
   initialTimeInSeconds: propInitialTime = 0,
   itemId: propItemId,
   playMethod: propPlayMethod,
+  sourceWidth: propSourceWidth,
+  sourceHeight: propSourceHeight,
+  sourceBitrate: propSourceBitrate,
   subtitles: propSubtitles,
   audioTracks: propAudioTracks,
   onFallbackTranscode,
@@ -161,17 +229,40 @@ export function VideoPlayerModal({
   const initialTimeInSeconds = activeVideo?.initialTimeInSeconds ?? propInitialTime;
   const itemId = activeVideo?.itemId ?? propItemId;
   const playMethod = activeVideo?.playMethod ?? propPlayMethod;
+  const sourceWidth = activeVideo?.sourceWidth ?? propSourceWidth;
+  const sourceHeight = activeVideo?.sourceHeight ?? propSourceHeight;
+  const sourceBitrate = activeVideo?.sourceBitrate ?? propSourceBitrate;
   const subtitles = activeVideo?.subtitles ?? propSubtitles;
   const audioTracks = activeVideo?.audioTracks ?? propAudioTracks;
 
   const [overrideSrc, setOverrideSrc] = useState<string | null>(null);
+  const [selectedQualityId, setSelectedQualityId] = useState<QualityOptionId>(() => {
+    return getStoredPlayerConfig().preferredQuality;
+  });
+
+  const hasAppliedInitialTimeRef = useRef(false);
+  const pendingSeekTimeRef = useRef<number | null>(null);
+  const cleanupRestoreListenerRef = useRef<(() => void) | null>(null);
+
+  const availableOptions = React.useMemo(
+    () => getFilteredQualityOptions(sourceWidth, sourceHeight, sourceBitrate),
+    [sourceWidth, sourceHeight, sourceBitrate]
+  );
+
+  useEffect(() => {
+    const isOptionValid = availableOptions.some((q) => q.id === selectedQualityId);
+    if (!isOptionValid) {
+      setSelectedQualityId('auto');
+    }
+  }, [availableOptions, selectedQualityId]);
 
   useEffect(() => {
     setOverrideSrc(null);
+    hasAppliedInitialTimeRef.current = false;
+    pendingSeekTimeRef.current = null;
   }, [src]);
 
   const effectiveSrc = overrideSrc || src;
-
   const isHls = Boolean(effectiveSrc && effectiveSrc.includes('.m3u8'));
 
   const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState<number | null>(() => {
@@ -190,6 +281,38 @@ export function VideoPlayerModal({
     setSelectedAudioIndex(defaultTrack?.index ?? 0);
   }, [src, audioTracks]);
 
+  const prepareTimeRestoration = useCallback((targetTime: number) => {
+    const video = videoRef.current;
+    if (!video || targetTime <= 0) return;
+
+    pendingSeekTimeRef.current = targetTime;
+
+    if (cleanupRestoreListenerRef.current) {
+      cleanupRestoreListenerRef.current();
+    }
+
+    const restoreTime = () => {
+      const seekTo = pendingSeekTimeRef.current;
+      if (seekTo !== null && seekTo > 0 && videoRef.current) {
+        try {
+          videoRef.current.currentTime = seekTo;
+        } catch (err) {
+          console.warn('Failed to restore playhead position:', err);
+        }
+        pendingSeekTimeRef.current = null;
+      }
+    };
+
+    video.addEventListener('loadedmetadata', restoreTime, { once: true });
+    video.addEventListener('canplay', restoreTime, { once: true });
+
+    cleanupRestoreListenerRef.current = () => {
+      video.removeEventListener('loadedmetadata', restoreTime);
+      video.removeEventListener('canplay', restoreTime);
+      cleanupRestoreListenerRef.current = null;
+    };
+  }, []);
+
   const switchAudioTrack = useCallback(
     (track: AudioTrack) => {
       if (track.index === selectedAudioIndex) return;
@@ -199,37 +322,67 @@ export function VideoPlayerModal({
       const video = videoRef.current;
       if (!video || !jellyfinConfig || !itemId) return;
 
-      if (restoreTimeListenerRef.current) {
-        video.removeEventListener('loadedmetadata', restoreTimeListenerRef.current);
-        restoreTimeListenerRef.current = null;
-      }
+      const currentTime = video.currentTime;
+      prepareTimeRestoration(currentTime);
+
+      const mediaSourceId = activeVideo?.mediaSourceId || itemId;
+      const opt = QUALITY_OPTIONS.find((q) => q.id === selectedQualityId);
+      const newUrl = JellyfinService.getStreamUrl(
+        jellyfinConfig.serverUrl,
+        itemId,
+        jellyfinConfig.accessToken,
+        null,
+        {
+          videoBitrate: opt?.bitrate,
+          maxHeight: opt?.maxHeight,
+          audioStreamIndex: track.index,
+          mediaSourceId,
+        }
+      );
+      setOverrideSrc(newUrl);
+    },
+    [selectedAudioIndex, jellyfinConfig, itemId, activeVideo?.mediaSourceId, selectedQualityId, prepareTimeRestoration]
+  );
+
+  const changeQuality = useCallback(
+    (qualityId: QualityOptionId) => {
+      setSelectedQualityId(qualityId);
+      setStoredPlayerConfig({ preferredQuality: qualityId });
+
+      const video = videoRef.current;
+      if (!video || !jellyfinConfig || !itemId) return;
 
       const currentTime = video.currentTime;
-      const base = jellyfinConfig.serverUrl.replace(/\/$/, '');
+      prepareTimeRestoration(currentTime);
+
+      const opt = QUALITY_OPTIONS.find((q) => q.id === qualityId);
       const mediaSourceId = activeVideo?.mediaSourceId || itemId;
 
-      const newUrl = buildTranscodeUrl(base, itemId, mediaSourceId, track.index, jellyfinConfig.accessToken);
-      setOverrideSrc(newUrl);
-
-      const restoreTime = () => {
-        if (currentTime > 0 && video.duration && currentTime < video.duration) {
-          video.currentTime = currentTime;
-        }
-        video.removeEventListener('loadedmetadata', restoreTime);
-        restoreTimeListenerRef.current = null;
-      };
-
-      restoreTimeListenerRef.current = restoreTime;
-      video.addEventListener('loadedmetadata', restoreTime);
+      if (qualityId === 'auto' || !opt?.bitrate) {
+        setOverrideSrc(null);
+      } else {
+        const newUrl = JellyfinService.getStreamUrl(
+          jellyfinConfig.serverUrl,
+          itemId,
+          jellyfinConfig.accessToken,
+          null,
+          {
+            videoBitrate: opt.bitrate,
+            maxHeight: opt.maxHeight,
+            audioStreamIndex: selectedAudioIndex,
+            mediaSourceId,
+          }
+        );
+        setOverrideSrc(newUrl);
+      }
     },
-    [selectedAudioIndex, jellyfinConfig, itemId, activeVideo?.mediaSourceId]
+    [jellyfinConfig, itemId, activeVideo?.mediaSourceId, selectedAudioIndex, prepareTimeRestoration]
   );
 
   useEffect(() => {
     return () => {
-      const video = videoRef.current;
-      if (video && restoreTimeListenerRef.current) {
-        video.removeEventListener('loadedmetadata', restoreTimeListenerRef.current);
+      if (cleanupRestoreListenerRef.current) {
+        cleanupRestoreListenerRef.current();
       }
     };
   }, []);
@@ -310,8 +463,12 @@ export function VideoPlayerModal({
     const { volume, muted } = getStoredPlayerConfig();
     video.volume = volume;
     video.muted = muted;
-    if (initialTimeInSeconds > 0 && initialTimeInSeconds < video.duration) {
-      video.currentTime = initialTimeInSeconds;
+
+    if (!hasAppliedInitialTimeRef.current) {
+      hasAppliedInitialTimeRef.current = true;
+      if (initialTimeInSeconds > 0 && video.duration && initialTimeInSeconds < video.duration) {
+        video.currentTime = initialTimeInSeconds;
+      }
     }
   };
 
@@ -417,6 +574,14 @@ export function VideoPlayerModal({
                 onSelectTrack={switchAudioTrack}
               />
             )}
+
+            <JellyfinQualityBridge
+              selectedQualityId={selectedQualityId}
+              onSelectQuality={changeQuality}
+              sourceWidth={sourceWidth}
+              sourceHeight={sourceHeight}
+              sourceBitrate={sourceBitrate}
+            />
 
             <VideoSkin className="w-full h-full border-none rounded-none bg-black">
               <VideoComponent {...sharedVideoProps}>

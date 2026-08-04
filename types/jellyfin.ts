@@ -90,6 +90,7 @@ export interface JellyfinMediaSource {
   Protocol?: string;
   Container?: string;
   Size?: number;
+  Bitrate?: number;
   Name?: string;
   IsRemote?: boolean;
   ETag?: string;
