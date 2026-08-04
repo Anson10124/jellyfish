@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Play, RotateCcw } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { formatTimeLeft } from '@/lib/utils/media-format';
@@ -20,6 +20,35 @@ export function PlayButton({
   className = '',
 }: PlayButtonProps) {
   const { t } = useTranslation();
+
+  const targetEp = useMemo(() => {
+    if (episodes && episodes.length > 0) {
+      const resumeEp = episodes.find(
+        (ep) => (ep.UserData?.PlaybackPositionTicks ?? 0) > 0
+      );
+      const unwatchedEp = episodes.find((ep) => !ep.UserData?.Played);
+      return resumeEp || unwatchedEp || episodes[0];
+    }
+    if (
+      jellyfinItem &&
+      (jellyfinItem.Type === 'Episode' || jellyfinItem.IndexNumber !== undefined)
+    ) {
+      return jellyfinItem;
+    }
+    return null;
+  }, [episodes, jellyfinItem]);
+
+  const epTag = useMemo(() => {
+    if (!targetEp || targetEp.IndexNumber === undefined || targetEp.IndexNumber === null) {
+      return null;
+    }
+    const sNum = targetEp.ParentIndexNumber;
+    const eNum = targetEp.IndexNumber;
+    if (sNum !== undefined && sNum !== null) {
+      return `S${sNum}:E${eNum}`;
+    }
+    return `E${eNum}`;
+  }, [targetEp]);
 
   const getWatchStatus = () => {
     if (!jellyfinItem) return 'watchNow';
@@ -63,21 +92,33 @@ export function PlayButton({
 
   if (status === 'resume') {
     let timeLeft: string | null = null;
-    if (episodes && episodes.length > 0) {
-      // Find the episode in progress to get time left, if available
-      const resumeEp = episodes.find((ep) => (ep.UserData?.PlaybackPositionTicks ?? 0) > 0);
-      timeLeft = resumeEp?.RunTimeTicks && resumeEp.UserData?.PlaybackPositionTicks
-        ? formatTimeLeft(resumeEp.UserData.PlaybackPositionTicks, resumeEp.RunTimeTicks)
+    if (targetEp) {
+      timeLeft = targetEp.RunTimeTicks && targetEp.UserData?.PlaybackPositionTicks
+        ? formatTimeLeft(targetEp.UserData.PlaybackPositionTicks, targetEp.RunTimeTicks)
         : null;
     } else if (jellyfinItem) {
       timeLeft = jellyfinItem.RunTimeTicks && jellyfinItem.UserData?.PlaybackPositionTicks
         ? formatTimeLeft(jellyfinItem.UserData.PlaybackPositionTicks, jellyfinItem.RunTimeTicks)
         : null;
     }
-    label = timeLeft ? `${t('common.resume', 'Resume')} • ${timeLeft}` : t('common.resume', 'Resume');
+
+    const resumeStr = t('common.resume', 'Resume');
+    if (epTag && timeLeft) {
+      label = `${resumeStr} ${epTag} • ${timeLeft}`;
+    } else if (epTag) {
+      label = `${resumeStr} ${epTag}`;
+    } else if (timeLeft) {
+      label = `${resumeStr} • ${timeLeft}`;
+    } else {
+      label = resumeStr;
+    }
   } else if (status === 'watchAgain') {
     icon = <RotateCcw className="h-4 w-4" />;
-    label = t('common.watchAgain', 'Watch Again');
+    const watchAgainStr = t('common.watchAgain', 'Watch Again');
+    label = epTag ? `${watchAgainStr} • ${epTag}` : watchAgainStr;
+  } else if (status === 'watchNow') {
+    const watchNowStr = t('common.watchNow', 'Watch Now');
+    label = epTag ? `${watchNowStr} • ${epTag}` : watchNowStr;
   }
 
   const defaultClasses = "inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer";
@@ -95,3 +136,4 @@ export function PlayButton({
 }
 
 export default PlayButton;
+
