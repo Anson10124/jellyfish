@@ -5,6 +5,7 @@ import "./globals.css";
 import { I18nProvider } from "@/context/i18n-context";
 import { ServerProvider } from "@/context/server-context";
 import { Navbar } from "@/components/common";
+import { Toaster } from "@/components/ui/toast";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
 const geistSans = Geist({
@@ -52,6 +53,7 @@ export default async function RootLayout({
           <ServerProvider>
             <Navbar />
             {children}
+            <Toaster />
           </ServerProvider>
         </I18nProvider>
       </body>

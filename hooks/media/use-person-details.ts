@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { toast } from '@/components/ui/toast';
 import type { PersonDetails, PersonCastCredit, PersonCrewCredit } from '@/types/media';
 
 export interface UsePersonDetailsReturn {
@@ -16,7 +17,7 @@ export interface UsePersonDetailsReturn {
 }
 
 export function usePersonDetails(id: string | number | undefined): UsePersonDetailsReturn {
-  const { tmdbLanguage } = useTranslation();
+  const { t, tmdbLanguage } = useTranslation();
   const [person, setPerson] = useState<PersonDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -36,7 +37,12 @@ export function usePersonDetails(id: string | number | undefined): UsePersonDeta
       .catch((err) => {
         if (!isMounted) return;
         console.error('Failed to fetch person details:', err);
-        setError(err instanceof Error ? err : new Error('Failed to load person details'));
+        const errObj = err instanceof Error ? err : new Error('Failed to load person details');
+        setError(errObj);
+        toast.error(
+          t('errors.fetchFailed', 'Failed to load data'),
+          errObj.message
+        );
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -45,7 +51,7 @@ export function usePersonDetails(id: string | number | undefined): UsePersonDeta
     return () => {
       isMounted = false;
     };
-  }, [id, tmdbLanguage]);
+  }, [id, tmdbLanguage, t]);
 
   const allCast = person?.combined_credits?.cast || [];
   const allCrew = person?.combined_credits?.crew || [];

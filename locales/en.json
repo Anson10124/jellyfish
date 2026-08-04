@@ -231,5 +231,18 @@
   "player": {
     "closeTrailer": "Close trailer",
     "closeVideoPlayer": "Close video player"
+  },
+  "errors": {
+    "somethingWentWrong": "Something went wrong",
+    "tryAgain": "Try Again",
+    "unhandledError": "An unexpected error occurred. Please try again or refresh the page.",
+    "networkError": "Unable to connect to server. Please check your network connection and server URL.",
+    "serverUnreachable": "Server is unreachable. Please verify network access.",
+    "authExpired": "Session expired or invalid credentials. Please log in again.",
+    "unauthorized": "Access denied. You do not have permission for this resource.",
+    "notFound": "The requested resource was not found.",
+    "playbackError": "Failed to load video playback stream.",
+    "searchFailed": "Failed to perform search.",
+    "fetchFailed": "Failed to load data."
   }
 }

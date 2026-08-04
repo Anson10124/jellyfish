@@ -230,5 +230,18 @@
   "player": {
     "closeTrailer": "關閉預告片",
     "closeVideoPlayer": "關閉播放器"
+  },
+  "errors": {
+    "somethingWentWrong": "發生錯誤",
+    "tryAgain": "重試",
+    "unhandledError": "發生未預期的錯誤，請重試或重新整理頁面。",
+    "networkError": "無法連接伺服器，請檢查網路連線與伺服器位址。",
+    "serverUnreachable": "無法連線至伺服器，請檢查網路存取狀態。",
+    "authExpired": "登入金鑰過期或無效，請重新登入。",
+    "unauthorized": "存取被拒絕，您沒有權限存取此資源。",
+    "notFound": "找不到請求的資源。",
+    "playbackError": "無法載入影片播放串流。",
+    "searchFailed": "搜尋失敗。",
+    "fetchFailed": "無法載入資料。"
   }
 }

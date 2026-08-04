@@ -58,11 +58,17 @@ export async function tmdbFetch<T>(endpoint: string, options: RequestInit = {}):
         },
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        throw new Error(`TMDb API Error: ${response.status} ${response.statusText}`);
+        const errorDetail = data && typeof data === 'object' && 'error' in data ? String(data.error) : response.statusText;
+        throw new Error(`TMDb API Error (${response.status}): ${errorDetail || 'Failed to fetch media data'}`);
       }
 
-      const data = await response.json();
+      if (!data) {
+        throw new Error('Empty response from TMDb API');
+      }
+
       responseCache.set(cacheKey, data);
       return data;
     } finally {

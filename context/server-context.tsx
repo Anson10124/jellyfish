@@ -19,6 +19,7 @@ import { JellyfinService } from '@/services/jellyfin.service';
 import { JellyfinPublicSystemInfo } from '@/types/jellyfin';
 import { normalizeServerUrl } from '@/lib/api/fetch-client';
 import { getErrorMessage } from '@/lib/utils';
+import { toast } from '@/components/ui/toast';
 
 interface ServerContextType {
   servers: JellyfinConfig[];
@@ -342,17 +343,19 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
           });
         } catch (err) {
           setServerStatuses((prev) => ({ ...prev, [target.id]: 'offline' }));
+          const msg = t('errors.serverUnreachable', 'Server is unreachable. Please verify network access.');
           setConnectionState({
             status: 'offline',
             serverName: target.serverName,
             version: target.version,
-            error: 'Server is unreachable',
+            error: msg,
           });
+          toast.error(target.serverName || 'Server', msg);
         }
       };
       checkActive();
     },
-    [servers]
+    [servers, t]
   );
 
   const removeServerHandler = useCallback(

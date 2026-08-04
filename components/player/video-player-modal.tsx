@@ -14,6 +14,7 @@ import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
+import { toast } from '@/components/ui/toast';
 import { QUALITY_OPTIONS, getFilteredQualityOptions, type VideoPlayerModalProps, type AudioTrack, type QualityOptionId, type QualityOption } from '@/types/player';
 
 const Player = createPlayer({ features: videoFeatures });
@@ -502,12 +503,18 @@ export function VideoPlayerModal({
       onFallbackTranscode();
     } else if (jellyfinConfig && itemId && effectiveSrc && !effectiveSrc.includes('.m3u8')) {
       console.warn('DirectPlay failed in browser, attempting HLS transcode fallback...');
+      toast.info(title || 'Playback', 'DirectPlay failed, switching to transcoding fallback...');
       const transcodeUrl = JellyfinService.getStreamUrl(
         jellyfinConfig.serverUrl,
         itemId,
         jellyfinConfig.accessToken
       );
       setOverrideSrc(transcodeUrl);
+    } else {
+      toast.error(
+        t('errors.playbackError', 'Failed to load video playback stream.'),
+        e.currentTarget.error?.message
+      );
     }
   };
 

@@ -5,6 +5,7 @@ import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { ticksToSeconds } from '@/lib/utils/media-format';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
+import { toast } from '@/components/ui/toast';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 import type { ActiveVideo, PlayMovieOptions, PlayEpisodeOptions } from '@/types/player';
 
@@ -84,7 +85,14 @@ export function usePlayer() {
 
   const playMovie = useCallback(
     async ({ jellyfinItem, title, posterUrl }: PlayMovieOptions) => {
-      if (!jellyfinConfig || !jellyfinItem?.Id) return;
+      if (!jellyfinConfig) {
+        toast.error('Playback Error', 'No active Jellyfin server connected.');
+        return;
+      }
+      if (!jellyfinItem?.Id) {
+        toast.error('Playback Error', 'Media item unavailable on server.');
+        return;
+      }
 
       let targetItem: JellyfinBaseItem | null = jellyfinItem;
       let displayTitle = title;
@@ -111,7 +119,10 @@ export function usePlayer() {
         }
       }
 
-      if (!targetItem || !targetItem.Id) return;
+      if (!targetItem || !targetItem.Id) {
+        toast.error('Playback Error', 'Could not locate episode or movie stream.');
+        return;
+      }
       const initialTime = ticksToSeconds(targetItem.UserData?.PlaybackPositionTicks);
       await resolveAndPlayMedia(targetItem, displayTitle, posterUrl, initialTime);
     },
@@ -120,7 +131,14 @@ export function usePlayer() {
 
   const playEpisode = useCallback(
     async ({ jellyfinItem, seriesTitle, episode, posterUrl }: PlayEpisodeOptions) => {
-      if (!jellyfinConfig || !jellyfinItem?.Id) return;
+      if (!jellyfinConfig) {
+        toast.error('Playback Error', 'No active Jellyfin server connected.');
+        return;
+      }
+      if (!jellyfinItem?.Id) {
+        toast.error('Playback Error', 'Media item unavailable on server.');
+        return;
+      }
 
       let targetItem: JellyfinBaseItem | null = jellyfinItem;
 
@@ -138,7 +156,10 @@ export function usePlayer() {
         }
       }
 
-      if (!targetItem || !targetItem.Id) return;
+      if (!targetItem || !targetItem.Id) {
+        toast.error('Playback Error', `Episode S${episode.season_number} E${episode.episode_number} not found on server.`);
+        return;
+      }
 
       const title = `${seriesTitle} - S${episode.season_number} E${episode.episode_number}: ${episode.name || targetItem.Name || 'Episode'}`;
       const poster = getTmdbImage(episode.still_path || posterUrl, 'original');

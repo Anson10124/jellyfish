@@ -1,5 +1,19 @@
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 
+export class ApiError extends Error {
+  status?: number;
+  statusText?: string;
+  url?: string;
+
+  constructor(message: string, status?: number, statusText?: string, url?: string) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.statusText = statusText;
+    this.url = url;
+  }
+}
+
 export function normalizeServerUrl(rawUrl: string): string {
   let trimmed = rawUrl.trim();
   if (!trimmed) return '';
@@ -31,7 +45,7 @@ export async function serverFetch<T>(
 ): Promise<T> {
   const normalizedBase = normalizeServerUrl(baseUrl);
   if (!normalizedBase) {
-    throw new Error('Server URL is empty or invalid.');
+    throw new ApiError('Server URL is empty or invalid.');
   }
 
   const url = `${normalizedBase}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
@@ -61,7 +75,19 @@ export async function serverFetch<T>(
       } catch {
         errorText = response.statusText;
       }
-      throw new Error(`Server returned status ${response.status}: ${errorText || response.statusText}`);
+
+      let formattedMessage = `Server returned status ${response.status}: ${errorText || response.statusText}`;
+      if (response.status === 401) {
+        formattedMessage = `Server returned status 401: Authentication required or invalid credentials.`;
+      } else if (response.status === 403) {
+        formattedMessage = `Server returned status 403: Access forbidden to this resource.`;
+      } else if (response.status === 404) {
+        formattedMessage = `Server returned status 404: Resource not found.`;
+      } else if (response.status >= 500) {
+        formattedMessage = `Server error ${response.status}: Jellyfin server internal error.`;
+      }
+
+      throw new ApiError(formattedMessage, response.status, response.statusText, url);
     }
 
     if (response.status === 204) {
@@ -71,14 +97,20 @@ export async function serverFetch<T>(
     return await response.json();
   } catch (err: unknown) {
     clearTimeout(timeoutId);
+    if (err instanceof ApiError) {
+      throw err;
+    }
     if (err instanceof Error && err.name === 'AbortError') {
-      throw new Error('Connection timed out. Please verify your server URL and network accessibility.');
+      throw new ApiError('Connection timed out. Please verify your server URL and network accessibility.', 408, 'Timeout', url);
     }
     if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
-      throw new Error(
-        'Unable to connect to server. Please check that the URL is correct, the server is online, and CORS headers are configured.'
+      throw new ApiError(
+        'Unable to connect to server. Please check that the URL is correct, the server is online, and CORS headers are configured.',
+        0,
+        'NetworkError',
+        url
       );
     }
-    throw err;
+    throw new ApiError(err instanceof Error ? err.message : 'An unknown network error occurred.', undefined, undefined, url);
   }
 }

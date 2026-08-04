@@ -5,6 +5,7 @@ import { TmdbApi } from '@/lib/api/tmdb';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getOfficialTrailerKey } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { toast } from '@/components/ui/toast';
 import type { MovieDetails, VideoItem } from '@/types/media';
 
 export interface UseMediaDetailsReturn<T = MovieDetails> {
@@ -12,23 +13,26 @@ export interface UseMediaDetailsReturn<T = MovieDetails> {
   logoUrl: string | null;
   trailerKey: string | null;
   loading: boolean;
+  error: Error | null;
 }
 
 export function useMediaDetails<T = MovieDetails>(
   id: string | number | undefined,
   mediaType: 'movie' | 'tv' = 'movie'
 ): UseMediaDetailsReturn<T> {
-  const { tmdbLanguage } = useTranslation();
+  const { t, tmdbLanguage } = useTranslation();
   const [media, setMedia] = useState<T | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!id) return;
 
     let isMounted = true;
     setLoading(true);
+    setError(null);
 
     const isoLang = tmdbLanguage.split('-')[0];
 
@@ -44,7 +48,14 @@ export function useMediaDetails<T = MovieDetails>(
         }
       })
       .catch((err) => {
+        if (!isMounted) return;
         console.error(`Failed to fetch ${mediaType} details:`, err);
+        const errObj = err instanceof Error ? err : new Error(`Failed to load ${mediaType} details`);
+        setError(errObj);
+        toast.error(
+          t('errors.fetchFailed', 'Failed to load data'),
+          errObj.message
+        );
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -68,9 +79,9 @@ export function useMediaDetails<T = MovieDetails>(
     return () => {
       isMounted = false;
     };
-  }, [id, mediaType, tmdbLanguage]);
+  }, [id, mediaType, tmdbLanguage, t]);
 
-  return { media, logoUrl, trailerKey, loading };
+  return { media, logoUrl, trailerKey, loading, error };
 }
 
 export default useMediaDetails;
