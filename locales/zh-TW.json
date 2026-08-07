@@ -28,6 +28,8 @@
     "library": "媒體庫",
     "search": "搜尋",
     "connect": "連接",
+    "connectSeerr": "連接 Seerr",
+    "myRequests": "我的請求",
     "changeServer": "更換伺服器",
     "signOut": "登出",
     "back": "返回",
@@ -243,5 +245,30 @@
     "playbackError": "無法載入影片播放串流。",
     "searchFailed": "搜尋失敗。",
     "fetchFailed": "無法載入資料。"
+  },
+  "seerr": {
+    "settingsTitle": "Seerr 整合設定",
+    "enterServerUrl": "請輸入您的 Seerr 伺服器網址。",
+    "couldNotConnect": "無法連線至 Seerr 伺服器。",
+    "connectedSuccess": "成功連線至 Seerr 伺服器！",
+    "disconnected": "已中斷與 Seerr 伺服器的連線。",
+    "saveConnection": "儲存連線",
+    "disconnect": "中斷連線",
+    "useProxy": "透過伺服器代理",
+    "useProxyDescription": "透過應用程式伺服器轉發請求以避免 CORS 問題。如果您的 Seerr 允許直接連線，可以停用此選項。",
+    "directMode": "直連",
+    "proxyMode": "代理",
+    "serverStepTitle": "連線至 Seerr 伺服器",
+    "serverStepSubtitle": "整合您的 Seerr 服務，直接在 Jellyfish 中搜尋、請求及追蹤電影與節目。",
+    "authTitle": "驗證 Seerr 帳號",
+    "authSubtitle": "選擇登入 Seerr 伺服器的方式",
+    "jellyfinSignInTitle": "帳號密碼登入",
+    "jellyfinSignInDesc": "使用您的 Jellyfin 帳號或 Seerr 本地帳號密碼登入。",
+    "apiKeyTitle": "API Key 金鑰",
+
+    "apiKeyDesc": "使用 Seerr 設定 -> 一般 頁面中的 API Key 進行驗證。",
+    "jellyfinHostLabel": "Jellyfin 伺服器網址",
+    "backToServer": "變更 Seerr 伺服器"
   }
 }
+

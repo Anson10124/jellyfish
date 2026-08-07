@@ -119,7 +119,7 @@ export function AuthStep({
             </>
           ) : (
             <>
-              <span>{t('connect.letsStart', "Let's start")}</span>
+              <span>{t('connect.continue', 'Continue')}</span>
               <ArrowRight className="w-5 h-5" />
             </>
           )}

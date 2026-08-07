@@ -20,11 +20,9 @@ export interface MultiServerStore {
   activeServerId: string | null;
 }
 
-export interface SeerrConfig {
-  serverUrl: string;
-  apiKey?: string;
-  sessionToken?: string;
-}
+import type { SeerrConfig } from './seerr';
+export type { SeerrConfig };
+
 
 export interface ServerConnectionState {
   status: ConnectionStatus;

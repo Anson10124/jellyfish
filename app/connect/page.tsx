@@ -1,11 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { useConnectFlow } from '@/hooks/connect/use-connect-flow';
-import { ServerStep, AuthStep } from '@/components/connect';
+import { ServerStep, AuthStep, SeerrServerStep, SeerrAuthStep } from '@/components/connect';
 import { useTranslation } from '@/hooks/ui/use-translation';
 
-export default function ConnectPage() {
+function ConnectPageContent() {
   const flow = useConnectFlow();
   const { t } = useTranslation();
 
@@ -51,6 +52,49 @@ export default function ConnectPage() {
             onSubmit={flow.handleLetsStart}
           />
         )}
+
+        {!flow.isExiting && flow.step === 3 && (
+          <SeerrServerStep
+            direction={flow.direction}
+            seerrServerUrl={flow.seerrServerUrl}
+            setSeerrServerUrl={flow.setSeerrServerUrl}
+            seerrUseProxy={flow.seerrUseProxy}
+            setSeerrUseProxy={flow.setSeerrUseProxy}
+            isTestingSeerr={flow.isTestingSeerr}
+            seerrVerified={flow.seerrVerified}
+            seerrInfo={flow.seerrInfo}
+            seerrError={flow.seerrError}
+            setSeerrVerified={flow.setSeerrVerified}
+            setSeerrError={flow.setSeerrError}
+            onCheckSeerrServer={flow.handleCheckSeerrServer}
+            onContinue={flow.handleContinueToStep4}
+            onSkip={flow.handleSkipSeerr}
+            onBack={flow.handleBackToStep2}
+            hideBack={flow.isDirectSeerrStep}
+          />
+        )}
+
+
+        {!flow.isExiting && flow.step === 4 && (
+          <SeerrAuthStep
+            direction={flow.direction}
+            seerrServerUrl={flow.seerrServerUrl}
+            selectedMethod={flow.seerrAuthMethod}
+            onSelectMethod={flow.setSeerrAuthMethod}
+            seerrUsername={flow.seerrUsername}
+            setSeerrUsername={flow.setSeerrUsername}
+            seerrPassword={flow.seerrPassword}
+            setSeerrPassword={flow.setSeerrPassword}
+            seerrApiKey={flow.seerrApiKey}
+            setSeerrApiKey={flow.setSeerrApiKey}
+            isAuthenticating={flow.isAuthenticatingSeerr}
+            authError={flow.seerrAuthError}
+            canSubmit={flow.canSubmitStep4}
+            onBack={flow.handleBackToStep3}
+            onSubmit={flow.handleFinishSeerr}
+            onSkip={flow.handleSkipSeerr}
+          />
+        )}
       </AnimatePresence>
       <div className="fixed bottom-4 right-4 z-20">
         <a
@@ -72,5 +116,13 @@ export default function ConnectPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function ConnectPage() {
+  return (
+    <Suspense fallback={null}>
+      <ConnectPageContent />
+    </Suspense>
   );
 }

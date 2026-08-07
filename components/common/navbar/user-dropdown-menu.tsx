@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Server, LogOut, ChevronLeft, Plus, Check } from 'lucide-react';
+import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock } from 'lucide-react';
+
 import { JellyfinConfig } from '@/types/server';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 
@@ -27,7 +28,7 @@ export function UserDropdownMenu({
   t,
 }: UserDropdownMenuProps) {
   const router = useRouter();
-  const { servers, activeServerId, switchServer, removeServer, serverStatuses } = useServerConfig();
+  const { servers, activeServerId, switchServer, removeServer, serverStatuses, seerrConfig } = useServerConfig();
   const [view, setView] = useState<'main' | 'servers'>('main');
   const [direction, setDirection] = useState<number>(1);
   const [contentHeight, setContentHeight] = useState<number | 'auto'>('auto');
@@ -104,8 +105,10 @@ export function UserDropdownMenu({
   return (
     <AnimatePresence>
       <motion.div
+        key="user-dropdown-menu-card"
         ref={userMenuRef}
         initial={{ opacity: 0, y: -8, scale: 0.96 }}
+
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.96 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -148,6 +151,37 @@ export function UserDropdownMenu({
                   transition={slideTransition}
                   className="space-y-0.5 w-full"
                 >
+                {seerrConfig?.isConnected ? (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => {
+                      setUserDropdownOpen(false);
+                      router.push('/requests');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  >
+                    <Clock className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
+                    <span className="truncate">{t('nav.myRequests', 'My Requests')}</span>
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    type="button"
+                    onClick={() => {
+                      setUserDropdownOpen(false);
+                      router.push('/connect?step=seerr');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  >
+
+
+                    <Cable className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
+                    <span className="truncate">{t('nav.connectSeerr', 'Connect Seerr')}</span>
+                  </motion.button>
+                )}
+
+
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
@@ -268,8 +302,8 @@ export function UserDropdownMenu({
             )}
           </AnimatePresence>
         </div>
-        </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </motion.div>
+  </AnimatePresence>
   );
 }

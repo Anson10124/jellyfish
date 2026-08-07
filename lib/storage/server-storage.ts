@@ -89,24 +89,41 @@ export function setActiveStoredServerId(serverId: string | null): void {
   setStoredServers(store);
 }
 
-export function getStoredSeerrConfig(): SeerrConfig | null {
+function getSeerrStorageKey(serverId?: string | null): string {
+  return serverId ? `${SEERR_CONFIG_KEY}_${serverId}` : SEERR_CONFIG_KEY;
+}
+
+export function getStoredSeerrConfig(serverId?: string | null): SeerrConfig | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem(SEERR_CONFIG_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (serverId) {
+      const raw = localStorage.getItem(getSeerrStorageKey(serverId));
+      if (raw) return JSON.parse(raw);
+    }
+    // Fallback to legacy global key
+    const legacyRaw = localStorage.getItem(SEERR_CONFIG_KEY);
+    return legacyRaw ? JSON.parse(legacyRaw) : null;
   } catch (e) {
     console.error('Failed to parse stored Seerr config:', e);
     return null;
   }
 }
 
-export function setStoredSeerrConfig(config: SeerrConfig | null): void {
+export function setStoredSeerrConfig(config: SeerrConfig | null, serverId?: string | null): void {
   if (typeof window === 'undefined') return;
   try {
+    const key = getSeerrStorageKey(serverId);
     if (config) {
-      localStorage.setItem(SEERR_CONFIG_KEY, JSON.stringify(config));
+      const payload: SeerrConfig = { ...config, serverId: serverId || config.serverId };
+      localStorage.setItem(key, JSON.stringify(payload));
+      if (!serverId) {
+        localStorage.setItem(SEERR_CONFIG_KEY, JSON.stringify(payload));
+      }
     } else {
-      localStorage.removeItem(SEERR_CONFIG_KEY);
+      localStorage.removeItem(key);
+      if (!serverId) {
+        localStorage.removeItem(SEERR_CONFIG_KEY);
+      }
     }
   } catch (e) {
     console.error('Failed to save Seerr config:', e);

@@ -26,6 +26,7 @@ export function useServerConfig() {
     removeServer,
     disconnectJellyfin,
     saveSeerrConfig,
+    disconnectSeerr,
     checkServersStatus,
   } = useServerContext();
 
@@ -52,6 +53,7 @@ export function useServerConfig() {
     connectWithQuickConnect,
     disconnectJellyfin,
     saveSeerrConfig,
+    disconnectSeerr,
   };
 }
 

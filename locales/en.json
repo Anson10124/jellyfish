@@ -28,6 +28,8 @@
     "library": "Library",
     "search": "Search",
     "connect": "Connect",
+    "connectSeerr": "Connect Seerr",
+    "myRequests": "My Requests",
     "changeServer": "Change Server",
     "signOut": "Sign Out",
     "back": "Back",
@@ -244,5 +246,30 @@
     "playbackError": "Failed to load video playback stream.",
     "searchFailed": "Failed to perform search.",
     "fetchFailed": "Failed to load data."
+  },
+  "seerr": {
+    "settingsTitle": "Seerr Integration",
+    "enterServerUrl": "Please enter your Seerr server address.",
+    "couldNotConnect": "Could not connect to Seerr server.",
+    "connectedSuccess": "Successfully connected to Seerr server!",
+    "disconnected": "Disconnected from Seerr server.",
+    "saveConnection": "Save Connection",
+    "disconnect": "Disconnect",
+    "useProxy": "Proxy through server",
+    "useProxyDescription": "Route requests through the app server to avoid CORS issues. Disable for direct connection if your Seerr instance allows it.",
+    "directMode": "Direct",
+    "proxyMode": "Proxied",
+    "serverStepTitle": "Connect with Seerr",
+    "serverStepSubtitle": "Integrate your Seerr instance to search, request, and track movies & TV shows directly inside Jellyfish.",
+    "authTitle": "Authenticate with Seerr",
+    "authSubtitle": "Choose how to log in to your Seerr server",
+    "jellyfinSignInTitle": "Username & Password",
+    "jellyfinSignInDesc": "Log in using your Jellyfin account or local Seerr account credentials.",
+    "apiKeyTitle": "API Key",
+
+    "apiKeyDesc": "Authenticate using your Seerr API key found in Seerr Settings -> General.",
+    "jellyfinHostLabel": "Jellyfin Server URL",
+    "backToServer": "Change Seerr Server"
   }
 }
+

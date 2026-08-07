@@ -39,6 +39,7 @@ interface ServerContextType {
   removeServer: (serverId: string) => void;
   disconnectJellyfin: () => void;
   saveSeerrConfig: (config: SeerrConfig) => void;
+  disconnectSeerr: () => void;
   checkServersStatus: () => Promise<void>;
 }
 
@@ -105,7 +106,6 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const store = getStoredServers();
-    const storedSeerr = getStoredSeerrConfig();
 
     if (store.servers.length > 0) {
       Promise.resolve().then(() => {
@@ -126,12 +126,20 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     }
 
     Promise.resolve().then(() => {
+      const storedSeerr = getStoredSeerrConfig(store.activeServerId);
       if (storedSeerr) {
         setSeerrConfig(storedSeerr);
       }
       setIsInitialized(true);
     });
   }, [checkServersStatus]);
+
+  // Sync Seerr config whenever activeServerId changes
+  useEffect(() => {
+    if (!isInitialized) return;
+    const storedSeerr = getStoredSeerrConfig(activeServerId);
+    setSeerrConfig(storedSeerr);
+  }, [activeServerId, isInitialized]);
 
   // Check active server status on page navigation / pathname changes
   useEffect(() => {
@@ -397,10 +405,19 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeServerId, removeServerHandler]);
 
-  const saveSeerrConfig = useCallback((config: SeerrConfig) => {
-    setStoredSeerrConfig(config);
-    setSeerrConfig(config);
-  }, []);
+  const saveSeerrConfig = useCallback(
+    (config: SeerrConfig) => {
+      const payload: SeerrConfig = { ...config, serverId: activeServerId || undefined, isConnected: true };
+      setStoredSeerrConfig(payload, activeServerId);
+      setSeerrConfig(payload);
+    },
+    [activeServerId]
+  );
+
+  const disconnectSeerr = useCallback(() => {
+    setStoredSeerrConfig(null, activeServerId);
+    setSeerrConfig(null);
+  }, [activeServerId]);
 
   const value = useMemo<ServerContextType>(
     () => ({
@@ -419,6 +436,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       removeServer: removeServerHandler,
       disconnectJellyfin,
       saveSeerrConfig,
+      disconnectSeerr,
       checkServersStatus,
     }),
     [
@@ -436,6 +454,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
       removeServerHandler,
       disconnectJellyfin,
       saveSeerrConfig,
+      disconnectSeerr,
       checkServersStatus,
     ]
   );
