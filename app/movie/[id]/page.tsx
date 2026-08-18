@@ -181,7 +181,7 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
         <div className="relative z-10 space-y-8">
           {movie.recommendations?.results && movie.recommendations.results.length > 0 && (
             <Carousel
-              title={t('movies.recommendations', 'Recommended for You')}
+              title={t('movies.recommendations', 'You may also like')}
               mediaType="movie"
               items={movie.recommendations.results}
               infinite={false}

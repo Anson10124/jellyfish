@@ -312,7 +312,7 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
         <div className="relative z-10 space-y-8">
           {tvShow.recommendations?.results && tvShow.recommendations.results.length > 0 && (
             <Carousel
-              title={t('movies.recommendations', 'Recommended for You')}
+              title={t('movies.recommendations', 'You may also like')}
               mediaType="tv"
               items={tvShow.recommendations.results}
               infinite={false}
