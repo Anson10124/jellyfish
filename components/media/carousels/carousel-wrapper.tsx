@@ -7,6 +7,7 @@ import { CarouselHeader } from './carousel-header';
 export interface CarouselWrapperProps {
   title?: string;
   subtitle?: string;
+  titleHref?: string;
   isBeginning: boolean;
   isEnd: boolean;
   onPrev: () => void;
@@ -18,6 +19,7 @@ export interface CarouselWrapperProps {
 export function CarouselWrapper({
   title,
   subtitle,
+  titleHref,
   isBeginning,
   isEnd,
   onPrev,
@@ -30,6 +32,7 @@ export function CarouselWrapper({
       <CarouselHeader
         title={title}
         subtitle={subtitle}
+        titleHref={titleHref}
         onPrev={onPrev}
         onNext={onNext}
         isPrevDisabled={isBeginning}
@@ -44,3 +47,4 @@ export function CarouselWrapper({
 }
 
 export default CarouselWrapper;
+

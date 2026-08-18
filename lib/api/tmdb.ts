@@ -201,4 +201,9 @@ export const TmdbApi = {
       `/person/${id}?append_to_response=combined_credits,external_ids,images&language=${language}`
     );
   },
+
+  // Collection Details
+  getCollection: <T = Record<string, unknown>>(id: number | string, language = 'en-US') => {
+    return tmdbFetch<T>(`/collection/${id}?language=${language}`);
+  },
 };

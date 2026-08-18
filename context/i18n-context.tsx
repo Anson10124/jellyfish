@@ -17,7 +17,7 @@ interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   tmdbLanguage: string;
-  t: (key: string, defaultText?: string) => string;
+  t: (key: string, defaultText?: string, params?: Record<string, string | number>) => string;
   formatDate: (dateInput?: string | number | Date | null, options?: FormatDateOptions) => string | null;
 }
 
@@ -52,8 +52,8 @@ export function I18nProvider({
   }, [locale]);
 
   const t = useCallback(
-    (key: string, defaultText?: string): string => {
-      return translateKey(locale, key, defaultText);
+    (key: string, defaultText?: string, params?: Record<string, string | number>): string => {
+      return translateKey(locale, key, defaultText, params);
     },
     [locale]
   );

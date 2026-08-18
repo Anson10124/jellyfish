@@ -78,6 +78,9 @@
     "production": "製作公司",
     "similarMovies": "相似電影",
     "recommendations": "為你推薦",
+    "collection": "系列電影",
+    "moreFromCollection": "更多來自 {name}",
+    "allMoviesInCollection": "系列作品清單",
     "movieNotFound": "未找到電影資料",
     "backToMovies": "返回電影"
   },

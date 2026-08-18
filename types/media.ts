@@ -64,6 +64,22 @@ export interface ProductionCountry {
   name: string;
 }
 
+export interface MediaCollectionInfo {
+  id: number;
+  name: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+}
+
+export interface CollectionDetails {
+  id: number;
+  name: string;
+  overview?: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+  parts: MediaItem[];
+}
+
 export interface MovieDetails extends MediaItem {
   tagline?: string;
   runtime?: number;
@@ -74,6 +90,7 @@ export interface MovieDetails extends MediaItem {
   origin_country?: string[];
   production_countries?: ProductionCountry[];
   production_companies?: ProductionCompany[];
+  belongs_to_collection?: MediaCollectionInfo | null;
   credits?: {
     cast: CastMember[];
     crew: CrewMember[];

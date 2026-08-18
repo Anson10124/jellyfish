@@ -78,6 +78,9 @@
     "production": "Production Companies",
     "similarMovies": "Similar Movies",
     "recommendations": "You may also like",
+    "collection": "Collection",
+    "moreFromCollection": "More from the {name}",
+    "allMoviesInCollection": "All Movies in this Collection",
     "movieNotFound": "Movie not found",
     "backToMovies": "Back to Movies"
   },

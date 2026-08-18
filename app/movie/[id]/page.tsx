@@ -17,7 +17,14 @@ import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
-import { CastCarousel, Carousel, MediaDetailHero, MediaFactsGrid, JellyfinMediaInfo } from '@/components/media';
+import {
+  CastCarousel,
+  Carousel,
+  CollectionCarousel,
+  MediaDetailHero,
+  MediaFactsGrid,
+  JellyfinMediaInfo,
+} from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import type { MovieDetails } from '@/types/media';
@@ -176,6 +183,14 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
 
         {/* Facts */}
         <MediaFactsGrid items={factItems} title={t('movies.details', 'Details')} />
+
+        {/* Collection */}
+        {movie.belongs_to_collection && (
+          <CollectionCarousel
+            collectionId={movie.belongs_to_collection.id}
+            collectionName={movie.belongs_to_collection.name}
+          />
+        )}
 
         {/* Similar & Recommended */}
         <div className="relative z-10 space-y-8">
