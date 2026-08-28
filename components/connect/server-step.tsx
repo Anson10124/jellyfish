@@ -79,6 +79,7 @@ export function ServerStep({
             <Globe className="w-5 h-5 text-white/60 shrink-0" />
             <input
               type="url"
+              data-focusable="true"
               placeholder={t('connect.serverUrlPlaceholder', 'http://localhost:8096')}
               value={serverUrl}
               onChange={(e) => {
@@ -98,9 +99,11 @@ export function ServerStep({
 
           <button
             type="button"
+            data-focusable="true"
+            tabIndex={0}
             onClick={() => onCheckServer()}
             disabled={isVerifying || !serverUrl.trim()}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 disabled:opacity-50 text-white font-medium text-sm transition-all duration-200 shrink-0 flex items-center justify-center gap-2 cursor-pointer border border-white/10"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 disabled:opacity-50 text-white font-medium text-sm transition-all duration-200 shrink-0 flex items-center justify-center gap-2 cursor-pointer border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             {isVerifying ? (
               <>
@@ -145,9 +148,11 @@ export function ServerStep({
 
       <button
         type="button"
+        data-focusable="true"
+        tabIndex={0}
         onClick={onContinue}
         disabled={!serverVerified}
-        className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer ${
+        className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${
           serverVerified
             ? 'bg-white text-black scale-100 hover:scale-105 active:scale-95'
             : 'bg-white/10 text-white/50 cursor-not-allowed scale-95 opacity-50'

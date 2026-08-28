@@ -268,7 +268,9 @@ export function Banner({
                   <Link
                     href={href}
                     prefetch={false}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
+                    data-focusable="true"
+                    tabIndex={0}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -276,7 +278,9 @@ export function Banner({
                 ) : (
                   <button
                     type="button"
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer"
+                    data-focusable="true"
+                    tabIndex={0}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -287,7 +291,9 @@ export function Banner({
                   <Link
                     href={href}
                     prefetch={false}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
+                    data-focusable="true"
+                    tabIndex={0}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -295,7 +301,9 @@ export function Banner({
                 ) : (
                   <button
                     type="button"
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer"
+                    data-focusable="true"
+                    tabIndex={0}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -312,8 +320,10 @@ export function Banner({
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
+                  data-focusable="true"
+                  tabIndex={0}
                   aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${
                     idx === currentIndex
                       ? 'w-7 bg-foreground'
                       : 'w-2 bg-foreground/40 hover:bg-foreground/70'

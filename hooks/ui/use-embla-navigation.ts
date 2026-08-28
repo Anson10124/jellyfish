@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import type { EmblaOptionsType, EmblaPluginType, EmblaCarouselType } from 'embla-carousel';
 
+import { getLayoutOffsetPx } from '@/constants/carousel';
+
 export interface UseEmblaNavigationOptions {
   options?: EmblaOptionsType;
   plugins?: EmblaPluginType[];
@@ -14,7 +16,7 @@ export function useEmblaNavigation(config?: UseEmblaNavigationOptions) {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       dragFree: true,
-      align: 'start',
+      align: () => getLayoutOffsetPx(),
       containScroll: 'trimSnaps',
       ...config?.options,
     },
@@ -58,6 +60,19 @@ export function useEmblaNavigation(config?: UseEmblaNavigationOptions) {
       emblaApi.off('scroll', updateEdgeState);
     };
   }, [emblaApi, updateEdgeState]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const rootNode = emblaApi.rootNode();
+    if (rootNode) {
+      (rootNode as unknown as { __emblaApi?: EmblaCarouselType }).__emblaApi = emblaApi;
+      const carouselParent = rootNode.closest<HTMLElement>('[data-carousel-container="true"]');
+      if (carouselParent) {
+        (carouselParent as unknown as { __emblaApi?: EmblaCarouselType }).__emblaApi = emblaApi;
+      }
+    }
+  }, [emblaApi]);
 
   return {
     emblaRef,

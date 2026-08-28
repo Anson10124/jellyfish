@@ -14,6 +14,12 @@ import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { getStoredPlayerConfig, setStoredPlayerConfig } from '@/lib/storage/player-storage';
 import { toast } from '@/components/ui/toast';
+import {
+  isBackKey,
+  isPlayPauseKey,
+  isFastForwardKey,
+  isRewindKey,
+} from '@/lib/spatial-navigation';
 import { QUALITY_OPTIONS, getFilteredQualityOptions, type VideoPlayerModalProps, type AudioTrack, type QualityOptionId, type QualityOption } from '@/types/player';
 
 const Player = createPlayer({ features: videoFeatures });
@@ -248,6 +254,23 @@ export function VideoPlayerModal({
     return getStoredPlayerConfig().preferredQuality;
   });
 
+  const [osdMessage, setOsdMessage] = useState<string | null>(null);
+  const osdTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showOsd = useCallback((text: string) => {
+    if (osdTimerRef.current) clearTimeout(osdTimerRef.current);
+    setOsdMessage(text);
+    osdTimerRef.current = setTimeout(() => {
+      setOsdMessage(null);
+    }, 1200);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (osdTimerRef.current) clearTimeout(osdTimerRef.current);
+    };
+  }, []);
+
   const hasAppliedInitialTimeRef = useRef(false);
   const pendingSeekTimeRef = useRef<number | null>(null);
   const cleanupRestoreListenerRef = useRef<(() => void) | null>(null);
@@ -462,15 +485,91 @@ export function VideoPlayerModal({
     if (!isPlayerOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      const video = videoRef.current;
+      if (!video) return;
+
+      if (isBackKey(e) || e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
         handleStop();
+        if (typeof document !== 'undefined' && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
         onClose();
+        return;
+      }
+
+      if (isPlayPauseKey(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (video.paused) {
+          video.play().catch(() => {});
+          showOsd('Play');
+        } else {
+          video.pause();
+          showOsd('Pause');
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' || isRewindKey(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = Math.max(0, video.currentTime - 10);
+        video.currentTime = target;
+        showOsd('-10s');
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || isFastForwardKey(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        const target = Math.min(video.duration || Infinity, video.currentTime + 10);
+        video.currentTime = target;
+        showOsd('+10s');
+        return;
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        e.stopPropagation();
+        const newVol = Math.min(1, Math.round((video.volume + 0.05) * 100) / 100);
+        video.volume = newVol;
+        if (video.muted) video.muted = false;
+        showOsd(`Volume ${Math.round(newVol * 100)}%`);
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        e.stopPropagation();
+        const newVol = Math.max(0, Math.round((video.volume - 0.05) * 100) / 100);
+        video.volume = newVol;
+        showOsd(`Volume ${Math.round(newVol * 100)}%`);
+        return;
+      }
+
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          containerRef.current?.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+        return;
+      }
+
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        video.muted = !video.muted;
+        showOsd(video.muted ? 'Muted' : 'Unmuted');
+        return;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlayerOpen, onClose, handleStop]);
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+    return () => window.removeEventListener('keydown', handleKeyDown, { capture: true });
+  }, [isPlayerOpen, onClose, handleStop, showOsd]);
 
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
@@ -572,12 +671,22 @@ export function VideoPlayerModal({
 
           <button
             onClick={handleClose}
-            className="flex items-center justify-center h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer backdrop-blur-md"
+            data-close-modal="true"
+            data-focusable="true"
+            tabIndex={0}
+            className="flex items-center justify-center h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer backdrop-blur-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={t('player.closeVideoPlayer', 'Close video player')}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
+
+        {/* TV Remote OSD Indicator */}
+        {osdMessage && (
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 text-white font-medium text-sm shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            {osdMessage}
+          </div>
+        )}
 
         <motion.div
           initial={{ opacity: 0 }}

@@ -62,10 +62,18 @@ export function LandscapeMediaCard({
 
   return (
     <div
+      tabIndex={0}
+      data-focusable="true"
       onClick={() => onPlay?.(item)}
-      className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onPlay?.(item);
+        }
+      }}
+      className={`group/land w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/5 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/5 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/land:scale-[1.025] group-hover/land:ring-foreground/40 group-focus-visible/land:scale-[1.03] group-focus-visible/land:ring-2 group-focus-visible/land:ring-white">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -107,7 +115,7 @@ export function LandscapeMediaCard({
           </div>
         )}
 
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center z-30">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/land:opacity-100 group-focus-visible/land:opacity-100 transition duration-200 flex items-center justify-center z-30">
           <div className="flex items-center justify-center h-11 w-11 rounded-full bg-primary text-primary-foreground shadow-xl">
             <Play className="h-5 w-5 fill-current ml-0.5" />
           </div>
@@ -115,7 +123,7 @@ export function LandscapeMediaCard({
       </div>
 
       <div className="mt-2.5 min-w-0">
-        <p className="truncate text-[13px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[14px] text-foreground/90">
+        <p className="truncate text-[13px] font-semibold transition-colors duration-200 group-hover/land:text-foreground group-focus-visible/land:text-foreground sm:text-[14px] text-foreground/90">
           {title}
         </p>
         {subtitle && (

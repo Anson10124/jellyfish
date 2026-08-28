@@ -44,8 +44,8 @@ export function Poster({
   const targetHref = href || getMediaHref(id, mediaType);
 
   const content = (
-    <div className="group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none">
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
+    <div className="w-full shrink-0 text-left focus:outline-none select-none">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/card:scale-[1.025] group-hover/card:ring-foreground/40 group-focus-visible/card:scale-[1.03] group-focus-visible/card:ring-2 group-focus-visible/card:ring-white">
         <img
           src={getTmdbImage(posterPath, 'w342')}
           alt={title}
@@ -57,7 +57,7 @@ export function Poster({
       </div>
       {showDetails && (
         <div className="mt-2 min-w-0">
-          <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[13px] text-foreground/80">
+          <p className="truncate text-[12px] font-semibold transition-colors duration-200 group-hover/card:text-foreground group-focus-visible/card:text-foreground sm:text-[13px] text-foreground/80">
             {title}
           </p>
           {subtitle && (
@@ -72,13 +72,27 @@ export function Poster({
 
   if (targetHref) {
     return (
-      <Link href={targetHref} prefetch={false} className="block w-full focus:outline-none">
+      <Link
+        href={targetHref}
+        prefetch={false}
+        data-focusable="true"
+        tabIndex={0}
+        className="block w-full focus:outline-none focus-visible:outline-none cursor-pointer rounded-xl group/card"
+      >
         {content}
       </Link>
     );
   }
 
-  return content;
+  return (
+    <div
+      tabIndex={0}
+      data-focusable="true"
+      className="block w-full focus:outline-none focus-visible:outline-none cursor-pointer rounded-xl group/card"
+    >
+      {content}
+    </div>
+  );
 }
 
 export default Poster;

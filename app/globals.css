@@ -111,3 +111,46 @@
 .media-overlay {
   display: none !important;
 }
+
+/* TV & Remote Spatial Navigation Styles */
+body.tv-navigation-active *:focus {
+  outline: none;
+}
+
+/* Card wrappers: do not put outline or shadow around the outer wrapper & text */
+body.tv-navigation-active a.group\/card:focus-visible,
+body.tv-navigation-active div.group\/card:focus-visible,
+body.tv-navigation-active a.group\/land:focus-visible,
+body.tv-navigation-active div.group\/land:focus-visible,
+body.tv-navigation-active a.group\/ep:focus-visible,
+body.tv-navigation-active div.group\/ep:focus-visible,
+body.tv-navigation-active a.group\/season:focus-visible,
+body.tv-navigation-active div.group\/season:focus-visible,
+body.tv-navigation-active a.group\/cast:focus-visible,
+body.tv-navigation-active div.group\/cast:focus-visible,
+body.tv-navigation-active a.group\/lib:focus-visible,
+body.tv-navigation-active div.group\/lib:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Only the poster/media image box gets the single crisp 2px border and subtle scale with no glow */
+body.tv-navigation-active .group\/card:focus-visible .relative.aspect-\[2\/3\],
+body.tv-navigation-active .group\/land:focus-visible .relative.aspect-\[16\/9\],
+body.tv-navigation-active .group\/ep:focus-visible .relative.aspect-\[16\/9\],
+body.tv-navigation-active .group\/season:focus-visible .relative.aspect-\[2\/3\],
+body.tv-navigation-active .group\/cast:focus-visible .relative.aspect-\[2\/3\],
+body.tv-navigation-active .group\/lib:focus-visible .relative.aspect-\[16\/9\] {
+  transform: scale(1.03);
+  box-shadow: 0 0 0 2px #ffffff;
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 30;
+}
+
+/* Standalone buttons, pills, inputs, and navigation links (clean crisp 2px ring, no glow) */
+body.tv-navigation-active button[data-focusable="true"]:focus-visible,
+body.tv-navigation-active input[data-focusable="true"]:focus-visible,
+body.tv-navigation-active a[data-focusable="true"]:not(.group\/card):not(.group\/land):not(.group\/ep):not(.group\/season):not(.group\/cast):not(.group\/lib):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ffffff;
+}

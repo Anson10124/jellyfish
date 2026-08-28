@@ -40,6 +40,7 @@ export function SearchDropdown({
     <AnimatePresence>
       <motion.div
         ref={dropdownRef}
+        data-search-dropdown="true"
         initial={{ opacity: 0, y: -8, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
@@ -61,8 +62,11 @@ export function SearchDropdown({
             {results.map((item) => (
               <button
                 key={`${item.media_type}-${item.id}`}
+                type="button"
+                data-focusable="true"
+                tabIndex={0}
                 onClick={() => handleResultClick(item.media_type, item.id)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-foreground/8 transition-colors duration-150 cursor-pointer group"
+                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-foreground/8 focus:bg-foreground/15 focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-colors duration-150 cursor-pointer group rounded-lg"
               >
                 {/* Poster */}
                 <div className="relative w-10 h-[60px] rounded-lg overflow-hidden bg-foreground/5 shrink-0">
@@ -87,7 +91,7 @@ export function SearchDropdown({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-medium text-foreground truncate group-hover:text-foreground/90">
+                  <p className="text-sm font-medium text-foreground truncate group-hover:text-foreground/90 group-focus:text-foreground">
                     {item.title}
                   </p>
                   <p className="text-[12px] text-foreground/50 mt-0.5">

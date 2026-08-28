@@ -25,10 +25,18 @@ export function EpisodeCard({ episode, className = '', onPlay }: EpisodeCardProp
 
   return (
     <div
+      tabIndex={0}
+      data-focusable="true"
       onClick={() => onPlay?.(episode)}
-      className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onPlay?.(episode);
+        }
+      }}
+      className={`group/ep w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/ep:scale-[1.025] group-hover/ep:ring-foreground/40 group-focus-visible/ep:scale-[1.03] group-focus-visible/ep:ring-2 group-focus-visible/ep:ring-white">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -46,7 +54,7 @@ export function EpisodeCard({ episode, className = '', onPlay }: EpisodeCardProp
         )}
 
         {/* Hover Overlay with Play Button */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/ep:opacity-100 group-focus-visible/ep:opacity-100 transition duration-200 flex items-center justify-center">
           <div className="flex items-center justify-center h-11 w-11 rounded-full bg-primary text-primary-foreground shadow-xl">
             <Play className="h-5 w-5 fill-current ml-0.5" />
           </div>
@@ -54,7 +62,7 @@ export function EpisodeCard({ episode, className = '', onPlay }: EpisodeCardProp
       </div>
 
       <div className="mt-2.5 min-w-0">
-        <p className="truncate text-[13px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[14px] text-foreground/90">
+        <p className="truncate text-[13px] font-semibold transition-colors duration-200 group-hover/ep:text-foreground group-focus-visible/ep:text-foreground sm:text-[14px] text-foreground/90">
           {episode.episode_number}. {episode.name}
         </p>
         {subtitle && (

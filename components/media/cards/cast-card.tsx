@@ -38,8 +38,8 @@ export function CastCard({
     : `https://placehold.co/342x513/18181b/a1a1aa?text=${encodeURIComponent(displayName)}`;
 
   const cardContent = (
-    <div className={`group w-full shrink-0 text-left focus:outline-none cursor-pointer select-none ${className}`}>
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition duration-300 group-hover:scale-[1.025] group-hover:ring-foreground/40">
+    <div className={`group/cast w-full shrink-0 text-left focus:outline-none select-none ${className}`}>
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/cast:scale-[1.025] group-hover/cast:ring-foreground/40 group-focus-visible/cast:scale-[1.03] group-focus-visible/cast:ring-2 group-focus-visible/cast:ring-white">
         <img
           src={imageUrl}
           alt={displayName}
@@ -50,7 +50,7 @@ export function CastCard({
         />
       </div>
       <div className="mt-2 min-w-0">
-        <p className="truncate text-[12px] font-semibold transition-colors duration-300 group-hover:text-foreground sm:text-[13px] text-foreground/80">
+        <p className="truncate text-[12px] font-semibold transition-colors duration-200 group-hover/cast:text-foreground group-focus-visible/cast:text-foreground sm:text-[13px] text-foreground/80">
           {displayName}
         </p>
         {displayRole && (
@@ -64,13 +64,27 @@ export function CastCard({
 
   if (personId) {
     return (
-      <Link href={`/person/${personId}`} prefetch={false} className="block w-full focus:outline-none">
+      <Link
+        href={`/person/${personId}`}
+        prefetch={false}
+        data-focusable="true"
+        tabIndex={0}
+        className="block w-full focus:outline-none focus-visible:outline-none cursor-pointer rounded-xl group/cast"
+      >
         {cardContent}
       </Link>
     );
   }
 
-  return cardContent;
+  return (
+    <div
+      tabIndex={0}
+      data-focusable="true"
+      className="block w-full focus:outline-none focus-visible:outline-none cursor-pointer rounded-xl group/cast"
+    >
+      {cardContent}
+    </div>
+  );
 }
 
 export default CastCard;

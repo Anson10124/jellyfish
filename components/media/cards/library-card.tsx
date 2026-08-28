@@ -25,8 +25,14 @@ export function LibraryCard({ library, serverUrl, className = '' }: LibraryCardP
     (library.CollectionType ? `/${library.CollectionType.toLowerCase()}` : `/${library.Name.toLowerCase()}`);
 
   return (
-    <Link href={`/library/${library.Id}`} prefetch={false} className={`block group w-full shrink-0 text-left select-none cursor-pointer ${className}`}>
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 transition-all duration-300 group-hover:scale-[1.025] group-hover:ring-white/40">
+    <Link
+      href={`/library/${library.Id}`}
+      prefetch={false}
+      data-focusable="true"
+      tabIndex={0}
+      className={`block group/lib w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
+    >
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl shadow-lg ring-1 ring-white/10 transition-all duration-200 group-hover/lib:scale-[1.025] group-hover/lib:ring-white/40 group-focus-visible/lib:scale-[1.03] group-focus-visible/lib:ring-2 group-focus-visible/lib:ring-white">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -50,7 +56,7 @@ export function LibraryCard({ library, serverUrl, className = '' }: LibraryCardP
         )}
       </div>
       <div className="mt-2.5 min-w-0">
-        <p className="truncate text-[13px] font-semibold transition-colors duration-300 group-hover:text-white sm:text-[14px] text-white/90">
+        <p className="truncate text-[13px] font-semibold transition-colors duration-200 group-hover/lib:text-white group-focus-visible/lib:text-white sm:text-[14px] text-white/90">
           {library.Name}
         </p>
         <p className="mt-0.5 truncate text-[11px] font-medium leading-none text-white/50">

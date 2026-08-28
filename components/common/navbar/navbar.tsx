@@ -259,8 +259,10 @@ export function Navbar() {
               <div ref={userDropdownRef} className="relative z-10">
                 <button
                   type="button"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={() => setUserDropdownOpen((prev) => !prev)}
-                  className={`flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                  className={`flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20 ${
                     userDropdownOpen
                       ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
                       : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
@@ -294,7 +296,9 @@ export function Navbar() {
             ) : (
               <Link
                 href="/connect"
-                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-colors duration-200 ${
+                data-focusable="true"
+                tabIndex={0}
+                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20 ${
                   pathname === '/connect'
                     ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
                     : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'

@@ -107,6 +107,7 @@ export function UserDropdownMenu({
       <motion.div
         key="user-dropdown-menu-card"
         ref={userMenuRef}
+        data-user-menu="true"
         initial={{ opacity: 0, y: -8, scale: 0.96 }}
 
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -155,11 +156,13 @@ export function UserDropdownMenu({
                   <motion.button
                     whileTap={{ scale: 0.98 }}
                     type="button"
+                    data-focusable="true"
+                    tabIndex={0}
                     onClick={() => {
                       setUserDropdownOpen(false);
                       router.push('/requests');
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer group"
                   >
                     <Clock className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
                     <span className="truncate">{t('nav.myRequests', 'My Requests')}</span>
@@ -168,28 +171,29 @@ export function UserDropdownMenu({
                   <motion.button
                     whileTap={{ scale: 0.98 }}
                     type="button"
+                    data-focusable="true"
+                    tabIndex={0}
                     onClick={() => {
                       setUserDropdownOpen(false);
                       router.push('/connect?step=seerr');
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer group"
                   >
-
-
                     <Cable className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
                     <span className="truncate">{t('nav.connectSeerr', 'Connect Seerr')}</span>
                   </motion.button>
                 )}
 
-
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={() => {
                     setDirection(1);
                     setView('servers');
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Server className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
@@ -206,8 +210,10 @@ export function UserDropdownMenu({
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={handleSignOut}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-150 ease-out cursor-pointer group"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 focus:bg-rose-500/15 focus:text-rose-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-rose-400 transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <LogOut className="w-4 h-4 text-rose-400 shrink-0 group-hover:scale-105 transition-transform duration-150" />
                   <span>{t('nav.signOut', 'Sign Out')}</span>
@@ -227,11 +233,13 @@ export function UserDropdownMenu({
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={() => {
                     setDirection(-1);
                     setView('main');
                   }}
-                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium text-foreground/50 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer mb-1 group"
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium text-foreground/50 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer mb-1 group"
                 >
                   <ChevronLeft className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-transform duration-150 shrink-0" />
                   <span>{t('nav.back', 'Back')}</span>
@@ -245,11 +253,13 @@ export function UserDropdownMenu({
                         key={server.id}
                         whileTap={{ scale: 0.98 }}
                         type="button"
+                        data-focusable="true"
+                        tabIndex={0}
                         onClick={() => handleSwitchServer(server.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 ease-out cursor-pointer group ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-150 ease-out cursor-pointer group focus:outline-none focus-visible:ring-1 focus-visible:ring-white ${
                           isActive
                             ? 'bg-foreground/10 text-foreground shadow-sm'
-                            : 'text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08]'
+                            : 'text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15]'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0 text-left">
@@ -290,8 +300,10 @@ export function UserDropdownMenu({
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   type="button"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={handleAddServer}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] transition-all duration-150 ease-out cursor-pointer group"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer group"
                 >
                   <div className="w-4 h-4 rounded-md bg-foreground/10 group-hover:bg-foreground/20 flex items-center justify-center transition-colors duration-150 shrink-0">
                     <Plus className="w-3 h-3 text-foreground" />

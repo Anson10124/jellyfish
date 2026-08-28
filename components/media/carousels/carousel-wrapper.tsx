@@ -28,7 +28,7 @@ export function CarouselWrapper({
   children,
 }: CarouselWrapperProps) {
   return (
-    <div className="w-full overflow-x-clip">
+    <div className="w-full overflow-x-clip" data-carousel-container="true">
       <CarouselHeader
         title={title}
         subtitle={subtitle}

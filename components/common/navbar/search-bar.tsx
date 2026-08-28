@@ -50,7 +50,15 @@ export function SearchBar({
           onClick={() => {
             if (!searchOpen) setSearchOpen(true);
           }}
-          className="relative flex items-center h-9 rounded-full border px-3.5 overflow-hidden cursor-pointer shadow-sm group"
+          onKeyDown={(e) => {
+            if (!searchOpen && e.key === 'Enter') {
+              e.preventDefault();
+              setSearchOpen(true);
+            }
+          }}
+          tabIndex={searchOpen ? -1 : 0}
+          data-focusable={!searchOpen ? 'true' : undefined}
+          className="relative flex items-center h-9 rounded-full border px-3.5 overflow-hidden cursor-pointer shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20"
         >
           <Search className="w-4 h-4 text-foreground/80 shrink-0 transition-colors group-hover:text-foreground" />
 
@@ -68,6 +76,7 @@ export function SearchBar({
                   ref={inputRef}
                   type="text"
                   autoFocus
+                  data-focusable="true"
                   placeholder={`${t('common.search', 'Search')}...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -78,6 +87,9 @@ export function SearchBar({
                   className="bg-transparent border-none outline-none text-foreground text-sm w-full placeholder:text-foreground/40"
                 />
                 <button
+                  data-search-clear="true"
+                  data-focusable="true"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (searchQuery) {
@@ -89,7 +101,7 @@ export function SearchBar({
                       setDropdownVisible(false);
                     }
                   }}
-                  className="text-foreground/50 hover:text-foreground cursor-pointer ml-1 p-0.5 shrink-0"
+                  className="text-foreground/50 hover:text-foreground cursor-pointer ml-1 p-0.5 shrink-0 focus:outline-none focus-visible:text-foreground"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -111,7 +123,9 @@ export function SearchBar({
       ) : (
         <button
           onClick={() => setSearchOpen((prev) => !prev)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-foreground transition-all text-sm cursor-pointer"
+          data-focusable="true"
+          tabIndex={0}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-foreground transition-all text-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <Search className="w-4 h-4" />
           <span className="hidden sm:inline font-medium">{t('nav.search', 'Search')}</span>

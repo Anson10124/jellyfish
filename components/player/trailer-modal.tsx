@@ -29,6 +29,7 @@ export function TrailerModal({ isOpen, onClose, videoKey, title }: TrailerModalP
 
         {/* Modal Content */}
         <motion.div
+          data-modal="true"
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -42,7 +43,10 @@ export function TrailerModal({ isOpen, onClose, videoKey, title }: TrailerModalP
             </h3>
             <button
               onClick={onClose}
-              className="rounded-full p-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              data-close-modal="true"
+              data-focusable="true"
+              tabIndex={0}
+              className="rounded-full p-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label={t('player.closeTrailer', 'Close trailer')}
             >
               <X className="h-5 w-5" />

@@ -61,8 +61,10 @@ export function GenreBar({
       {onSelectGenre ? (
         <button
           type="button"
+          data-focusable="true"
+          tabIndex={0}
           onClick={() => onSelectGenre(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
             activeGenreId === null
               ? 'bg-white text-black shadow-md scale-[1.02]'
               : 'bg-[#3b3b45]/65 text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
@@ -74,7 +76,9 @@ export function GenreBar({
         <Link
           href={baseUrl}
           prefetch={false}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl ${
+          data-focusable="true"
+          tabIndex={0}
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
             activeGenreId === null
               ? 'bg-white text-black shadow-md scale-[1.02]'
               : 'bg-[#3b3b45]/65 text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
@@ -87,7 +91,7 @@ export function GenreBar({
       {genres.map((genre) => {
         const isSelected = activeGenreId === genre.id;
         const genreName = getGenreName(genre.id, t) || genre.name;
-        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer bg-[#121215]/65 backdrop-blur-xl ${
+        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer bg-[#121215]/65 backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
           isSelected
             ? 'bg-white text-black shadow-md scale-[1.02]'
             : 'text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
@@ -98,6 +102,8 @@ export function GenreBar({
             <button
               key={genre.id}
               type="button"
+              data-focusable="true"
+              tabIndex={0}
               onClick={() => onSelectGenre(genre.id)}
               className={buttonClasses}
             >
@@ -111,6 +117,8 @@ export function GenreBar({
             key={genre.id}
             href={`${baseUrl}/genre/${genre.id}`}
             prefetch={false}
+            data-focusable="true"
+            tabIndex={0}
             className={buttonClasses}
           >
             {genreName}

@@ -33,14 +33,22 @@ export function SeasonCard({
 
   return (
     <div
+      tabIndex={0}
+      data-focusable="true"
       onClick={onClick}
-      className={`group w-full shrink-0 text-left select-none cursor-pointer ${className}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      className={`group/season w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
     >
       <div
-        className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg transition duration-300 ${
+        className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg transition-all duration-200 ${
           isSelected
-            ? 'ring-2 ring-foreground scale-[1.04] shadow-foreground/10 shadow-2xl'
-            : 'ring-1 ring-border group-hover:scale-[1.025] group-hover:ring-foreground/40'
+            ? 'ring-2 ring-white scale-[1.03]'
+            : 'ring-1 ring-border group-hover/season:scale-[1.025] group-hover/season:ring-foreground/40 group-focus-visible/season:scale-[1.03] group-focus-visible/season:ring-2 group-focus-visible/season:ring-white'
         }`}
       >
         {imageUrl ? (
@@ -62,8 +70,10 @@ export function SeasonCard({
 
       <div className="mt-2 min-w-0">
         <p
-          className={`truncate text-[12px] font-semibold transition-colors duration-300 sm:text-[13px] ${
-            isSelected ? 'text-foreground font-bold' : 'text-foreground/80 group-hover:text-foreground'
+          className={`truncate text-[12px] font-semibold transition-colors duration-200 sm:text-[13px] ${
+            isSelected
+              ? 'text-foreground font-bold'
+              : 'text-foreground/80 group-hover/season:text-foreground group-focus-visible/season:text-foreground'
           }`}
         >
           {season.name}

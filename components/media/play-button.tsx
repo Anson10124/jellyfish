@@ -121,11 +121,13 @@ export function PlayButton({
     label = epTag ? `${watchNowStr} • ${epTag}` : watchNowStr;
   }
 
-  const defaultClasses = "inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer";
+  const defaultClasses = "inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg";
 
   return (
     <button
       type="button"
+      data-focusable="true"
+      tabIndex={0}
       onClick={onClick}
       className={className || defaultClasses}
     >

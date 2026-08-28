@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/context/i18n-context";
 import { ServerProvider } from "@/context/server-context";
-import { Navbar } from "@/components/common";
+import { Navbar, TVNavigationProvider } from "@/components/common";
 import { Toaster } from "@/components/ui/toast";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
@@ -51,9 +51,11 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-foreground">
         <I18nProvider initialLocale={initialLocale}>
           <ServerProvider>
-            <Navbar />
-            {children}
-            <Toaster />
+            <TVNavigationProvider>
+              <Navbar />
+              {children}
+              <Toaster />
+            </TVNavigationProvider>
           </ServerProvider>
         </I18nProvider>
       </body>

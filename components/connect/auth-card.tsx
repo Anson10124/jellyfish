@@ -55,6 +55,7 @@ export function AuthCard({
             <User className="absolute left-3.5 w-4 h-4 text-white/60" />
             <input
               type="text"
+              data-focusable="true"
               placeholder={t('connect.usernamePlaceholder', 'Username')}
               value={username}
               onChange={(e) => {
@@ -62,7 +63,7 @@ export function AuthCard({
                 setUsername(e.target.value);
               }}
               onFocus={() => onSelectMethod('credentials')}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
             />
           </div>
 
@@ -70,6 +71,7 @@ export function AuthCard({
             <Lock className="absolute left-3.5 w-4 h-4 text-white/60" />
             <input
               type="password"
+              data-focusable="true"
               placeholder={t('connect.passwordPlaceholder', 'Password (optional if none set)')}
               value={password}
               onChange={(e) => {
@@ -77,7 +79,7 @@ export function AuthCard({
                 setPassword(e.target.value);
               }}
               onFocus={() => onSelectMethod('credentials')}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
             />
           </div>
 
@@ -131,12 +133,14 @@ export function AuthCard({
           ) : (
             <button
               type="button"
+              data-focusable="true"
+              tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
                 onSelectMethod('quickconnect');
                 onStartQuickConnect();
               }}
-              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 text-white text-sm font-medium transition-all duration-200 cursor-pointer border border-white/10"
+              className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 text-white text-sm font-medium transition-all duration-200 cursor-pointer border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               {t('connect.generateQcCode', 'Generate Quick Connect Code')}
             </button>
