@@ -13,6 +13,11 @@ export function getErrorMessage(err: unknown): string {
   return String(err);
 }
 
+export function formatServerAddress(url?: string | null): string {
+  if (!url) return '';
+  return url.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+}
+
 export * from './date-format';
 export * from './format-genres';
 export * from './language';

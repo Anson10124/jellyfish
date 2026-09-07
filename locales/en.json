@@ -268,10 +268,8 @@
     "jellyfinSignInTitle": "Username & Password",
     "jellyfinSignInDesc": "Log in using your Jellyfin account or local Seerr account credentials.",
     "apiKeyTitle": "API Key",
-
     "apiKeyDesc": "Authenticate using your Seerr API key found in Seerr Settings -> General.",
     "jellyfinHostLabel": "Jellyfin Server URL",
     "backToServer": "Change Seerr Server"
   }
 }
-

@@ -4,10 +4,11 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Cable, LogOut, Clock } from 'lucide-react';
+import { X, Cable, LogOut, Clock, Server, Check } from 'lucide-react';
 
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { useServerContext } from '@/context/server-context';
+import { formatServerAddress } from '@/lib/utils';
 import { UserAvatar } from './user-avatar';
 import { NavItemDef } from './nav-items';
 
@@ -32,7 +33,7 @@ export function MobileSidebar({
   const { jellyfinConfig, isInitialized, connectionState } = useServerContext();
   const isOffline = isInitialized && connectionState.status === 'offline';
   const isConnected = isInitialized && Boolean(jellyfinConfig?.username);
-  const { activeServerId, removeServer, seerrConfig } = useServerConfig();
+  const { servers, activeServerId, switchServer, removeServer, seerrConfig } = useServerConfig();
 
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -93,12 +94,21 @@ export function MobileSidebar({
     router.push('/requests');
   };
 
+  const handleSwitchServer = (serverId: string) => {
+    if (serverId !== activeServerId) {
+      switchServer(serverId);
+    }
+    onClose();
+  };
+
   const handleSignOut = () => {
     if (activeServerId) {
       removeServer(activeServerId);
     }
     onClose();
-    router.push('/connect');
+    if (servers.length <= 1) {
+      router.push('/connect');
+    }
   };
 
   return (
@@ -191,7 +201,56 @@ export function MobileSidebar({
                 </button>
               )}
             </div>
-            <div className="p-3 border-t border-border/80 bg-foreground/[0.02]">
+            <div className="shrink-0 p-3 border-t border-border/80 bg-foreground/[0.02] space-y-3">
+              {servers && servers.length > 1 && (
+                <div className="space-y-1">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {servers.map((server) => {
+                      const isActive = activeServerId === server.id;
+                      const cleanAddress = formatServerAddress(server.serverUrl);
+
+                      return (
+                        <button
+                          key={server.id}
+                          type="button"
+                          onClick={() => handleSwitchServer(server.id)}
+                          className={`w-full flex items-center justify-between gap-3 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer ${
+                            isActive
+                              ? 'bg-foreground/15 text-foreground font-semibold shadow-sm'
+                              : 'text-foreground/75 hover:text-foreground hover:bg-foreground/[0.08] active:scale-[0.98]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 text-left flex-1">
+                            <Server
+                              className={`w-4 h-4 shrink-0 ${
+                                isActive ? 'text-foreground' : 'text-foreground/60'
+                              }`}
+                            />
+                            <div className="min-w-0 flex-1">
+                              <span className="block truncate leading-tight">
+                                {server.serverName && server.serverName !== server.serverUrl
+                                  ? server.serverName
+                                  : server.serverName || t('nav.server', 'Server')}
+                              </span>
+                              {cleanAddress && (
+                                <span
+                                  className={`block truncate text-[11px] font-normal leading-tight mt-0.5 ${
+                                    isActive ? 'text-foreground/60' : 'text-foreground/45'
+                                  }`}
+                                >
+                                  {cleanAddress}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {isActive && <Check className="w-4 h-4 text-foreground shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {isConnected && jellyfinConfig ? (
                 <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-foreground/5 border border-border/50">
                   <div className="flex items-center gap-2.5 min-w-0">

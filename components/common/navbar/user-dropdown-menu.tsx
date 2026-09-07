@@ -7,6 +7,7 @@ import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock } from 'lucide-r
 
 import { JellyfinConfig } from '@/types/server';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { formatServerAddress } from '@/lib/utils';
 
 interface UserDropdownMenuProps {
   userDropdownOpen: boolean;
@@ -248,6 +249,8 @@ export function UserDropdownMenu({
                 <div className="space-y-0.5">
                   {servers.map((server) => {
                     const isActive = activeServerId === server.id;
+                    const cleanAddress = formatServerAddress(server.serverUrl);
+
                     return (
                       <motion.button
                         key={server.id}
@@ -274,15 +277,19 @@ export function UserDropdownMenu({
                                 isActive ? 'text-foreground' : 'text-foreground/90 group-hover:text-foreground'
                               }`}
                             >
-                              {server.serverName || server.serverUrl}
+                              {server.serverName && server.serverName !== server.serverUrl
+                                ? server.serverName
+                                : server.serverName || t('nav.server', 'Server')}
                             </span>
-                            <span
-                              className={`block truncate text-[11px] leading-tight mt-0.5 ${
-                                isActive ? 'text-foreground/70' : 'text-foreground/50 group-hover:text-foreground/70'
-                              }`}
-                            >
-                              {server.username}
-                            </span>
+                            {cleanAddress && (
+                              <span
+                                className={`block truncate text-[11px] leading-tight mt-0.5 ${
+                                  isActive ? 'text-foreground/70' : 'text-foreground/50 group-hover:text-foreground/70'
+                                }`}
+                              >
+                                {cleanAddress}
+                              </span>
+                            )}
                           </div>
                         </div>
                         {isActive && (

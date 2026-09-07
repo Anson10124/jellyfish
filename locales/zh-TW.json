@@ -267,10 +267,8 @@
     "jellyfinSignInTitle": "帳號密碼登入",
     "jellyfinSignInDesc": "使用您的 Jellyfin 帳號或 Seerr 本地帳號密碼登入。",
     "apiKeyTitle": "API Key 金鑰",
-
     "apiKeyDesc": "使用 Seerr 設定 -> 一般 頁面中的 API Key 進行驗證。",
     "jellyfinHostLabel": "Jellyfin 伺服器網址",
     "backToServer": "變更 Seerr 伺服器"
   }
 }
-
