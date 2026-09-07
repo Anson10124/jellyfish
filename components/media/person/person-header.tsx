@@ -41,6 +41,19 @@ export function PersonHeader({ person }: PersonHeaderProps) {
   const bioText = person.biography || '';
   const isLongBio = bioText.length > 380;
 
+  const lifespanLabel = (() => {
+    if (formattedBirthday && formattedDeathday) {
+      return `${formattedBirthday} - ${formattedDeathday}${age !== null ? ` (${age} yrs)` : ''}`;
+    }
+    if (formattedBirthday) {
+      return `${formattedBirthday}${age !== null ? ` (${age} yrs)` : ''}`;
+    }
+    if (formattedDeathday) {
+      return formattedDeathday;
+    }
+    return null;
+  })();
+
   return (
     <div className={`max-w-7xl mx-auto ${PADDING_X_CLASSES}`}>
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center lg:items-start">
@@ -84,15 +97,10 @@ export function PersonHeader({ person }: PersonHeaderProps) {
                 {genderLabel}
               </span>
             )}
-            {formattedBirthday && (
+            {lifespanLabel && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground/8 ring-1 ring-border">
                 <Calendar className="w-3.5 h-3.5 text-foreground/50" />
-                {formattedBirthday} {age !== null && `(${age} yrs)`}
-              </span>
-            )}
-            {formattedDeathday && (
-              <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/30">
-                {t('person.deathday', 'Died')}: {formattedDeathday}
+                {lifespanLabel}
               </span>
             )}
             {person.place_of_birth && (
