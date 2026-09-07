@@ -1,10 +1,8 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { Search, X, Film, Tv, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
-import { NavItemDef } from './nav-items';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
@@ -15,17 +13,12 @@ interface MobileNavProps {
   setSearchQuery: (query: string) => void;
   searchLoading: boolean;
   results: SearchResult[];
-  mobileMenuOpen: boolean;
-  setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   mobileSearchRef: React.RefObject<HTMLDivElement | null>;
   mobileInputRef: React.RefObject<HTMLInputElement | null>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleResultClick: (mediaType: string, id: number) => void;
   setDropdownVisible: (visible: boolean) => void;
   clearResults: () => void;
-  navItems: NavItemDef[];
-  activeIndex: number;
-  setActivePath: (href: string) => void;
   t: (key: string, fallback: string) => string;
 }
 
@@ -36,17 +29,12 @@ export function MobileNav({
   setSearchQuery,
   searchLoading,
   results,
-  mobileMenuOpen,
-  setMobileMenuOpen,
   mobileSearchRef,
   mobileInputRef,
   handleKeyDown,
   handleResultClick,
   setDropdownVisible,
   clearResults,
-  navItems,
-  activeIndex,
-  setActivePath,
   t,
 }: MobileNavProps) {
   const getYear = (dateStr?: string) => {
@@ -146,34 +134,6 @@ export function MobileNav({
               )}
             </div>
           )}
-        </div>
-      )}
-
-      {mobileMenuOpen && (
-        <div className="md:hidden mt-3 rounded-2xl bg-background/65 backdrop-blur-2xl border border-border p-3 shadow-2xl flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
-          {navItems.map((item, index) => {
-            const Icon = item.icon;
-            const isActive = activeIndex === index;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => {
-                  setActivePath(item.href);
-                  setMobileMenuOpen(false);
-                }}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  isActive
-                    ? 'bg-foreground/15 text-foreground font-semibold'
-                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
         </div>
       )}
     </>

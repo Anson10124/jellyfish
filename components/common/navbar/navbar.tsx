@@ -16,6 +16,7 @@ import { SearchBar } from './search-bar';
 import { SearchDropdown } from './search-dropdown';
 import { UserDropdownMenu } from './user-dropdown-menu';
 import { MobileNav } from './mobile-nav';
+import { MobileSidebar } from './mobile-sidebar';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -103,8 +104,17 @@ export function Navbar() {
     Promise.resolve().then(() => {
       setActivePath(pathname);
       setUserDropdownOpen(false);
+      setMobileMenuOpen(false);
     });
   }, [pathname]);
+
+  useEffect(() => {
+    if (!isMobile && mobileMenuOpen) {
+      Promise.resolve().then(() => {
+        setMobileMenuOpen(false);
+      });
+    }
+  }, [isMobile, mobileMenuOpen]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -343,20 +353,24 @@ export function Navbar() {
           setSearchQuery={setSearchQuery}
           searchLoading={searchLoading}
           results={results}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
           mobileSearchRef={mobileSearchRef}
           mobileInputRef={mobileInputRef}
           handleKeyDown={handleKeyDown}
           handleResultClick={handleResultClick}
           setDropdownVisible={setDropdownVisible}
           clearResults={clearResults}
-          navItems={navItems}
-          activeIndex={activeIndex}
-          setActivePath={setActivePath}
           t={t}
         />
       </header>
+
+      <MobileSidebar
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        navItems={navItems}
+        activeIndex={activeIndex}
+        setActivePath={setActivePath}
+        t={t}
+      />
 
       {isOffline && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/65 backdrop-blur-xl text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300">
