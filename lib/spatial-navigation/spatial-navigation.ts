@@ -198,7 +198,7 @@ export function navigateSpatial(direction: NavigationDirection): boolean {
 
   if (candidates.length === 0) return false;
 
-  let currentEl = document.activeElement as HTMLElement | null;
+  const currentEl = document.activeElement as HTMLElement | null;
 
   // Validate if current activeElement is a valid focusable candidate
   if (!currentEl || currentEl === document.body || !candidates.includes(currentEl)) {

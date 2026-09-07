@@ -30,14 +30,19 @@ export function useConnectFlow() {
     saveSeerrConfig,
   } = useServerConfig();
 
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-
-  useEffect(() => {
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(() => {
     const stepParam = searchParams?.get('step');
-    if (stepParam === 'seerr' || stepParam === '3') {
+    return stepParam === 'seerr' || stepParam === '3' ? 3 : 1;
+  });
+
+  const [prevStepParam, setPrevStepParam] = useState(() => searchParams?.get('step'));
+  const currentStepParam = searchParams?.get('step');
+  if (currentStepParam !== prevStepParam) {
+    setPrevStepParam(currentStepParam);
+    if (currentStepParam === 'seerr' || currentStepParam === '3') {
       setStep(3);
     }
-  }, [searchParams]);
+  }
 
 
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -72,7 +77,9 @@ export function useConnectFlow() {
 
   // Step 4 Seerr Auth
   const [seerrAuthMethod, setSeerrAuthMethod] = useState<SeerrAuthMethod>('jellyfin');
-  const [seerrUsername, setSeerrUsername] = useState('');
+  const [customSeerrUsername, setCustomSeerrUsername] = useState<string | null>(null);
+  const seerrUsername = customSeerrUsername ?? username;
+  const setSeerrUsername = useCallback((val: string) => setCustomSeerrUsername(val), []);
   const [seerrPassword, setSeerrPassword] = useState('');
   const [seerrApiKey, setSeerrApiKey] = useState('');
   const [isAuthenticatingSeerr, setIsAuthenticatingSeerr] = useState(false);
@@ -80,13 +87,6 @@ export function useConnectFlow() {
 
   const [isExiting, setIsExiting] = useState(false);
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Pre-fill Seerr username from Jellyfin credentials when username changes or steps advance
-  useEffect(() => {
-    if (username && !seerrUsername) {
-      setSeerrUsername(username);
-    }
-  }, [username, seerrUsername]);
 
   const handleCheckServer = useCallback(
     async (urlToCheck?: string) => {

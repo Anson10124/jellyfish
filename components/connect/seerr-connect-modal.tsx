@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Sparkles, Key, Loader2, CheckCircle2, AlertCircle, LogOut, User, Lock } from 'lucide-react';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
@@ -16,31 +16,25 @@ interface SeerrConnectModalProps {
 }
 
 export function SeerrConnectModal({ isOpen, onClose }: SeerrConnectModalProps) {
+  return (
+    <AnimatePresence>
+      {isOpen && <SeerrConnectModalContent onClose={onClose} />}
+    </AnimatePresence>
+  );
+}
+
+function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const { seerrConfig, saveSeerrConfig, disconnectSeerr, activeServer } = useServerConfig();
 
-  const [serverUrl, setServerUrl] = useState('');
-  const [authMethod, setAuthMethod] = useState<SeerrAuthMethod>('jellyfin');
-  const [username, setUsername] = useState('');
+  const [serverUrl, setServerUrl] = useState(seerrConfig?.serverUrl || '');
+  const [authMethod, setAuthMethod] = useState<SeerrAuthMethod>(seerrConfig?.authMethod || 'jellyfin');
+  const [username, setUsername] = useState(seerrConfig?.username || activeServer?.username || '');
   const [password, setPassword] = useState('');
-  const [apiKey, setApiKey] = useState('');
-  const [useProxy, setUseProxy] = useState(true);
+  const [apiKey, setApiKey] = useState(seerrConfig?.apiKey || '');
+  const [useProxy, setUseProxy] = useState(seerrConfig?.useProxy ?? true);
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (isOpen) {
-      setServerUrl(seerrConfig?.serverUrl || '');
-      setAuthMethod(seerrConfig?.authMethod || 'jellyfin');
-      setUsername(seerrConfig?.username || activeServer?.username || '');
-      setPassword('');
-      setApiKey(seerrConfig?.apiKey || '');
-      setUseProxy(seerrConfig?.useProxy ?? true);
-      setError(null);
-    }
-  }, [isOpen, seerrConfig, activeServer]);
-
-  if (!isOpen) return null;
 
   const handleTestAndSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,8 +119,7 @@ export function SeerrConnectModal({ isOpen, onClose }: SeerrConnectModalProps) {
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -312,6 +305,5 @@ export function SeerrConnectModal({ isOpen, onClose }: SeerrConnectModalProps) {
           </form>
         </motion.div>
       </div>
-    </AnimatePresence>
   );
 }

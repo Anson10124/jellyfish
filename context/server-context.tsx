@@ -137,8 +137,10 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
   // Sync Seerr config whenever activeServerId changes
   useEffect(() => {
     if (!isInitialized) return;
-    const storedSeerr = getStoredSeerrConfig(activeServerId);
-    setSeerrConfig(storedSeerr);
+    Promise.resolve().then(() => {
+      const storedSeerr = getStoredSeerrConfig(activeServerId);
+      setSeerrConfig(storedSeerr);
+    });
   }, [activeServerId, isInitialized]);
 
   // Check active server status on page navigation / pathname changes
