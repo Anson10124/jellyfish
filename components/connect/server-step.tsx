@@ -5,6 +5,9 @@ import { motion } from 'motion/react';
 import { Globe, Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { ServerInfo } from '@/hooks/connect/use-connect-flow';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { UrlPrefillOptions } from './url-prefill-options';
+
+const JELLYFIN_URL_PRESETS = ['http://localhost:8096', 'https://jellyfin.example.com'];
 
 export const slideVariants = {
   enter: (dir: number) => ({
@@ -50,6 +53,12 @@ export function ServerStep({
 }: ServerStepProps) {
   const { t } = useTranslation();
 
+  const updateServerUrl = (url: string) => {
+    setServerUrl(url);
+    setServerVerified(false);
+    setVerifyError(null);
+  };
+
   return (
     <motion.main
       key="step-1"
@@ -82,11 +91,7 @@ export function ServerStep({
               data-focusable="true"
               placeholder={t('connect.serverUrlPlaceholder', 'http://localhost:8096')}
               value={serverUrl}
-              onChange={(e) => {
-                setServerUrl(e.target.value);
-                setServerVerified(false);
-                setVerifyError(null);
-              }}
+              onChange={(e) => updateServerUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -120,6 +125,13 @@ export function ServerStep({
             )}
           </button>
         </div>
+
+        <UrlPrefillOptions
+          urls={JELLYFIN_URL_PRESETS}
+          value={serverUrl}
+          onSelect={updateServerUrl}
+          label={t('connect.serverUrlPresets', 'Suggested Jellyfin server URLs')}
+        />
 
         {serverVerified && serverInfo && (
           <motion.div

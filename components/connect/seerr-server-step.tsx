@@ -5,6 +5,9 @@ import { Globe, Loader2, CheckCircle2, AlertCircle, ArrowRight, ArrowLeft } from
 import { slideVariants } from './server-step';
 import { SeerrProxyToggle } from './seerr-proxy-toggle';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { UrlPrefillOptions } from './url-prefill-options';
+
+const SEERR_URL_PRESETS = ['http://localhost:5055', 'https://seerr.example.com'];
 
 interface SeerrServerStepProps {
   direction: number;
@@ -44,6 +47,12 @@ export function SeerrServerStep({
   hideBack = false,
 }: SeerrServerStepProps) {
   const { t } = useTranslation();
+
+  const updateSeerrServerUrl = (url: string) => {
+    setSeerrServerUrl(url);
+    setSeerrVerified(false);
+    setSeerrError(null);
+  };
 
   return (
     <motion.main
@@ -93,11 +102,7 @@ export function SeerrServerStep({
               type="url"
               placeholder={t('connect.seerrUrlPlaceholder', 'http://localhost:5055')}
               value={seerrServerUrl}
-              onChange={(e) => {
-                setSeerrServerUrl(e.target.value);
-                setSeerrVerified(false);
-                setSeerrError(null);
-              }}
+              onChange={(e) => updateSeerrServerUrl(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -129,6 +134,13 @@ export function SeerrServerStep({
             )}
           </button>
         </div>
+
+        <UrlPrefillOptions
+          urls={SEERR_URL_PRESETS}
+          value={seerrServerUrl}
+          onSelect={updateSeerrServerUrl}
+          label={t('connect.seerrUrlPresets', 'Suggested Seerr server URLs')}
+        />
 
         <SeerrProxyToggle useProxy={seerrUseProxy} onToggle={setSeerrUseProxy} variant="glass" />
 
