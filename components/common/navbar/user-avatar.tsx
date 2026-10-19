@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { normalizeServerUrl } from '@/lib/api/fetch-client';
+import { getJellyfinBaseUrl } from '@/lib/api/jellyfin-url';
 
 interface UserAvatarProps {
   serverUrl?: string;
@@ -20,7 +20,7 @@ export function UserAvatar({ serverUrl, userId, tag, username }: UserAvatarProps
   }, [serverUrl, userId, tag]);
 
   if (serverUrl && userId && !hasError) {
-    const base = normalizeServerUrl(serverUrl);
+    const base = getJellyfinBaseUrl(serverUrl);
     const avatarUrl = `${base}/Users/${userId}/Images/Primary${tag ? `?tag=${tag}` : ''}`;
     return (
       <img

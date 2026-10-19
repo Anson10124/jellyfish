@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:proxy": "node --test tests/jellyfin-proxy.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

@@ -3,17 +3,21 @@
 import { Router, Cable } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 
-interface SeerrProxyToggleProps {
+interface ConnectionProxyToggleProps {
+  service?: 'Seerr' | 'Jellyfin';
+  disabled?: boolean;
   useProxy: boolean;
   onToggle: (useProxy: boolean) => void;
-  variant?: 'glass' | 'modal';
+  variant?: 'glass' | 'modal' | 'embedded';
 }
 
-export function SeerrProxyToggle({
+export function ConnectionProxyToggle({
+  service = 'Seerr',
+  disabled = false,
   useProxy,
   onToggle,
   variant = 'glass',
-}: SeerrProxyToggleProps) {
+}: ConnectionProxyToggleProps) {
   const { t } = useTranslation();
 
   const isModal = variant === 'modal';
@@ -38,18 +42,20 @@ export function SeerrProxyToggle({
     ? 'text-foreground/80 font-semibold'
     : 'text-white/70 font-medium';
 
-  const descClass = isModal ? 'text-foreground/40' : 'text-white/40';
+  const descClass = isModal ? 'text-foreground/60' : 'text-white/60';
 
   return (
-    <div className={`p-3 rounded-2xl ${containerBg} backdrop-blur-xl space-y-2 border`}>
-      <label className={`block text-xs ${labelClass}`}>
-        {t('seerr.useProxy', 'Connection Mode')}
-      </label>
-      <div className={`flex items-center gap-1 p-1 rounded-xl ${containerBg} border`}>
+    <div className={variant === 'embedded' ? 'space-y-3' : `p-4 rounded-2xl ${containerBg} backdrop-blur-xl space-y-3 border`}>
+      <p className={`text-xs ${labelClass}`}>
+        {t('connect.connectionMode', 'Connection mode')}
+      </p>
+      <div role="group" aria-label={t('connect.connectionMode', 'Connection mode')} className={`flex items-center gap-1 p-1 rounded-xl ${containerBg} border`}>
         <button
           type="button"
+          disabled={disabled}
+          aria-pressed={!useProxy}
           onClick={() => onToggle(false)}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-all cursor-pointer border disabled:cursor-wait focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
             !useProxy ? activeDirectClass : inactiveClass
           }`}
         >
@@ -58,8 +64,10 @@ export function SeerrProxyToggle({
         </button>
         <button
           type="button"
+          disabled={disabled}
+          aria-pressed={useProxy}
           onClick={() => onToggle(true)}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
+          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-medium transition-all cursor-pointer border disabled:cursor-wait focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
             useProxy ? activeProxyClass : inactiveClass
           }`}
         >
@@ -67,12 +75,14 @@ export function SeerrProxyToggle({
           <span>{t('seerr.proxyMode', 'Proxied')}</span>
         </button>
       </div>
-      <p className={`text-[11px] ${descClass} px-0.5`}>
+      <p className={`text-xs leading-5 ${descClass}`}>
         {t(
-          'seerr.useProxyDescription',
-          'Route requests through the app server to avoid CORS issues. Disable for direct connection if your Seerr instance allows it.'
+          `${service.toLowerCase()}.useProxyDescription`,
+          `Use Proxied if your ${service} server’s CORS settings block a direct connection. Your ${service} server handles sign-in.`
         )}
       </p>
     </div>
   );
 }
+
+export const SeerrProxyToggle = ConnectionProxyToggle;

@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { Globe, Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { ServerInfo } from '@/hooks/connect/use-connect-flow';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { ConnectionProxyToggle } from './seerr-proxy-toggle';
 import { UrlPrefillOptions } from './url-prefill-options';
 
 const JELLYFIN_URL_PRESETS = ['http://localhost:8096', 'https://jellyfin.example.com'];
@@ -27,6 +28,8 @@ export const slideVariants = {
 interface ServerStepProps {
   direction: number;
   serverUrl: string;
+  useProxy: boolean;
+  onProxyChange: (useProxy: boolean) => void;
   setServerUrl: (url: string) => void;
   isVerifying: boolean;
   serverVerified: boolean;
@@ -41,6 +44,8 @@ interface ServerStepProps {
 export function ServerStep({
   direction,
   serverUrl,
+  useProxy,
+  onProxyChange,
   setServerUrl,
   isVerifying,
   serverVerified,
@@ -70,19 +75,21 @@ export function ServerStep({
       transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
       className="w-full max-w-3xl flex flex-col items-center z-10"
     >
-      <div className="text-center max-w-2xl mb-8 space-y-3">
+      <div className="text-center max-w-2xl mb-8 space-y-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
           {t('connect.title', 'Connect with your Jellyfin server to get started')}
         </h1>
 
-        <div className="flex items-center justify-center gap-2 text-sm text-white/60 font-normal max-w-lg mx-auto">
+        <div className="flex min-h-12 items-center justify-center text-sm leading-6 text-white/60 font-normal max-w-lg mx-auto">
           <span>
-            {t('connect.subtitle', 'Jellyfish runs in your browser. Your server address and credentials stay safely on your local device.')}
+            {useProxy
+              ? t('connect.proxySubtitle', 'Proxied mode helps you connect when your server’s CORS settings block direct browser access.')
+              : t('connect.subtitle', 'Jellyfish runs in your browser. Your server address and credentials stay safely on your local device.')}
           </span>
         </div>
       </div>
 
-      <div className="w-full max-w-xl mb-10">
+      <div className="w-full max-w-xl mb-8 rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
         <div className="relative flex flex-col sm:flex-row items-center gap-2 p-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl transition-all focus-within:border-white/30">
           <div className="flex items-center gap-3 px-3 py-2 w-full">
             <Globe className="w-5 h-5 text-white/60 shrink-0" />
@@ -132,6 +139,10 @@ export function ServerStep({
           onSelect={updateServerUrl}
           label={t('connect.serverUrlPresets', 'Suggested Jellyfin server URLs')}
         />
+
+        <div className="mt-6 border-t border-white/10 pt-6">
+          <ConnectionProxyToggle service="Jellyfin" useProxy={useProxy} onToggle={onProxyChange} disabled={isVerifying} variant="embedded" />
+        </div>
 
         {serverVerified && serverInfo && (
           <motion.div

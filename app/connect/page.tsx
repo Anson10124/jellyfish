@@ -18,6 +18,8 @@ function ConnectPageContent() {
             direction={flow.direction}
             serverUrl={flow.serverUrl}
             setServerUrl={flow.setServerUrl}
+            useProxy={flow.jellyfinUseProxy}
+            onProxyChange={flow.setJellyfinUseProxy}
             isVerifying={flow.isVerifying}
             serverVerified={flow.serverVerified}
             serverInfo={flow.serverInfo}

@@ -1,4 +1,5 @@
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
+import { getJellyfinBaseUrl } from './jellyfin-url';
 
 export class ApiError extends Error {
   status?: number;
@@ -14,14 +15,7 @@ export class ApiError extends Error {
   }
 }
 
-export function normalizeServerUrl(rawUrl: string): string {
-  let trimmed = rawUrl.trim();
-  if (!trimmed) return '';
-  if (!/^https?:\/\//i.test(trimmed)) {
-    trimmed = `http://${trimmed}`;
-  }
-  return trimmed.replace(/\/+$/, '');
-}
+export { normalizeJellyfinUrl as normalizeServerUrl } from './jellyfin-url';
 
 export function buildEmbyAuthHeader(token?: string, deviceId?: string): string {
   const devId = deviceId || getStoredDeviceId();
@@ -36,6 +30,7 @@ export interface ApiFetchOptions extends RequestInit {
   token?: string;
   deviceId?: string;
   timeoutMs?: number;
+  useProxy?: boolean;
 }
 
 export async function serverFetch<T>(
@@ -43,14 +38,13 @@ export async function serverFetch<T>(
   endpoint: string,
   options: ApiFetchOptions = {}
 ): Promise<T> {
-  const normalizedBase = normalizeServerUrl(baseUrl);
+  const { token, deviceId, useProxy, timeoutMs = 12000, headers = {}, ...restOptions } = options;
+  const normalizedBase = getJellyfinBaseUrl(baseUrl, useProxy, token);
   if (!normalizedBase) {
     throw new ApiError('Server URL is empty or invalid.');
   }
 
   const url = `${normalizedBase}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
-  const { token, deviceId, timeoutMs = 12000, headers = {}, ...restOptions } = options;
-
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 

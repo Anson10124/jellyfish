@@ -49,6 +49,7 @@ export function useConnectFlow() {
 
   // Step 1: Jellyfin Server URL
   const [serverUrl, setServerUrl] = useState('');
+  const [jellyfinUseProxy, setJellyfinUseProxyState] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [serverVerified, setServerVerified] = useState(false);
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
@@ -102,7 +103,7 @@ export function useConnectFlow() {
       setServerVerified(false);
       setServerInfo(null);
 
-      const res = await verifyServerUrl(targetUrl);
+      const res = await verifyServerUrl(targetUrl, jellyfinUseProxy);
       setIsVerifying(false);
 
       if (res.success && res.info) {
@@ -116,7 +117,7 @@ export function useConnectFlow() {
         setVerifyError(res.error || t('connect.errors.couldNotConnect', 'Could not connect to Jellyfin server.'));
       }
     },
-    [serverUrl, t, verifyServerUrl]
+    [serverUrl, jellyfinUseProxy, t, verifyServerUrl]
   );
 
   useEffect(() => {
@@ -145,7 +146,7 @@ export function useConnectFlow() {
     if (pollTimerRef.current) clearInterval(pollTimerRef.current);
 
     try {
-      const qcRes = await JellyfinService.initiateQuickConnect(serverUrl);
+      const qcRes = await JellyfinService.initiateQuickConnect(serverUrl, jellyfinUseProxy);
       setQuickConnectCode(qcRes.Code);
       setQuickConnectSecret(qcRes.Secret);
       setQcStatus('waiting');
@@ -153,7 +154,7 @@ export function useConnectFlow() {
 
       pollTimerRef.current = setInterval(async () => {
         try {
-          const status = await JellyfinService.checkQuickConnect(serverUrl, qcRes.Secret);
+          const status = await JellyfinService.checkQuickConnect(serverUrl, qcRes.Secret, jellyfinUseProxy);
           if (status.Authenticated && status.Authentication) {
             if (pollTimerRef.current) clearInterval(pollTimerRef.current);
             setQcStatus('authorized');
@@ -167,6 +168,18 @@ export function useConnectFlow() {
       setQcStatus('error');
       setQcError(getErrorMessage(err) || t('connect.errors.quickConnectFailed', 'Failed to initiate Quick Connect on server.'));
     }
+  };
+
+  const setJellyfinUseProxy = (value: boolean) => {
+    setJellyfinUseProxyState(value);
+    setServerVerified(false);
+    setVerifyError(null);
+    setServerInfo(null);
+    setQuickConnectCode(null);
+    setQuickConnectSecret(null);
+    setQcStatus('idle');
+    setQcError(null);
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
   };
 
   const handleContinueToStep2 = () => {
@@ -214,7 +227,7 @@ export function useConnectFlow() {
 
       setIsAuthenticating(true);
       try {
-        await connectWithPassword(serverUrl, username, password);
+        await connectWithPassword(serverUrl, username, password, jellyfinUseProxy);
         setIsAuthenticating(false);
         setDirection(1);
         setStep(3);
@@ -230,7 +243,7 @@ export function useConnectFlow() {
 
       setIsAuthenticating(true);
       try {
-        await connectWithQuickConnect(serverUrl, quickConnectSecret);
+        await connectWithQuickConnect(serverUrl, quickConnectSecret, jellyfinUseProxy);
         setIsAuthenticating(false);
         setDirection(1);
         setStep(3);
@@ -396,6 +409,8 @@ export function useConnectFlow() {
 
     serverUrl,
     setServerUrl,
+    jellyfinUseProxy,
+    setJellyfinUseProxy,
     isVerifying,
     serverVerified,
     serverInfo,

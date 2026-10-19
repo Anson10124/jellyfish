@@ -143,7 +143,12 @@
     "10767": "脫口秀",
     "10768": "戰爭與政治"
   },
+  "jellyfin": {
+    "useProxyDescription": "如果您的 Jellyfin 伺服器因 CORS 設定而阻擋直接連線，請使用代理模式。登入由您的 Jellyfin 伺服器處理。"
+  },
   "connect": {
+    "connectionMode": "連線模式",
+    "proxySubtitle": "當伺服器的 CORS 設定阻擋瀏覽器直接存取時，可使用代理模式連線。",
     "title": "連接你的 Jellyfin 伺服器",
     "subtitle": "Jellyfish 直接在你的瀏覽器中運行。你的伺服器位址與憑據皆安全地保留在你的本機裝置上。",
     "serverUrlPlaceholder": "http://localhost:8096",
@@ -264,7 +269,7 @@
     "saveConnection": "儲存連線",
     "disconnect": "中斷連線",
     "useProxy": "透過伺服器代理",
-    "useProxyDescription": "透過應用程式伺服器轉發請求以避免 CORS 問題。如果您的 Seerr 允許直接連線，可以停用此選項。",
+    "useProxyDescription": "如果您的 Seerr 伺服器因 CORS 設定而阻擋直接連線，請使用代理模式。登入由您的 Seerr 伺服器處理。",
     "directMode": "直連",
     "proxyMode": "代理",
     "serverStepTitle": "連線至 Seerr 伺服器",

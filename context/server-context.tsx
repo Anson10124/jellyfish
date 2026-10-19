@@ -16,8 +16,8 @@ import {
   generateServerId,
 } from '@/lib/storage/server-storage';
 import { JellyfinService } from '@/services/jellyfin.service';
-import { JellyfinPublicSystemInfo } from '@/types/jellyfin';
-import { normalizeServerUrl } from '@/lib/api/fetch-client';
+import { JellyfinPublicSystemInfo, JellyfinUser } from '@/types/jellyfin';
+import { normalizeServerUrl, serverFetch } from '@/lib/api/fetch-client';
 import { getErrorMessage } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
@@ -32,9 +32,9 @@ interface ServerContextType {
   seerrConfig: SeerrConfig | null;
   serverStatuses: Record<string, 'online' | 'offline' | 'checking'>;
 
-  verifyServerUrl: (url: string) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string }>;
-  connectWithPassword: (serverUrl: string, username: string, password?: string) => Promise<boolean>;
-  connectWithQuickConnect: (serverUrl: string, secret: string) => Promise<boolean>;
+  verifyServerUrl: (url: string, useProxy?: boolean) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string }>;
+  connectWithPassword: (serverUrl: string, username: string, password?: string, useProxy?: boolean) => Promise<boolean>;
+  connectWithQuickConnect: (serverUrl: string, secret: string, useProxy?: boolean) => Promise<boolean>;
   switchServer: (serverId: string) => void;
   removeServer: (serverId: string) => void;
   disconnectJellyfin: () => void;
@@ -77,7 +77,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     await Promise.all(
       store.servers.map(async (server) => {
         try {
-          await JellyfinService.testConnection(server.serverUrl);
+          await JellyfinService.testConnection(server.serverUrl, server.useProxy ?? false);
           setServerStatuses((prev) => ({ ...prev, [server.id]: 'online' }));
           
           if (server.id === store.activeServerId) {
@@ -149,7 +149,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
     const checkActive = async () => {
       try {
-        await JellyfinService.testConnection(activeServer.serverUrl);
+        await JellyfinService.testConnection(activeServer.serverUrl, activeServer.useProxy ?? false);
         setServerStatuses((prev) => ({ ...prev, [activeServer.id]: 'online' }));
         setConnectionState({
           status: 'connected',
@@ -177,7 +177,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     setStoredServers({ servers: newServers, activeServerId: newActiveId });
   }, []);
 
-  const verifyServerUrl = useCallback(async (url: string) => {
+  const verifyServerUrl = useCallback(async (url: string, useProxy?: boolean) => {
     const normalized = normalizeServerUrl(url);
     if (!normalized) {
       return { success: false, error: 'Please enter a valid server URL.' };
@@ -186,7 +186,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
     setConnectionState((prev) => ({ ...prev, status: 'testing', error: null }));
 
     try {
-      const info = await JellyfinService.testConnection(normalized);
+      const info = await JellyfinService.testConnection(normalized, useProxy);
       setConnectionState({
         status: 'disconnected',
         serverName: info.ServerName,
@@ -206,13 +206,13 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const connectWithPassword = useCallback(
-    async (serverUrl: string, username: string, password?: string) => {
+    async (serverUrl: string, username: string, password?: string, useProxy?: boolean) => {
       const normalized = normalizeServerUrl(serverUrl);
       setConnectionState((prev) => ({ ...prev, status: 'testing', error: null }));
 
       try {
-        const authResult = await JellyfinService.authenticateByName(normalized, username, password);
-        const info = await JellyfinService.testConnection(normalized).catch(() => undefined);
+        const authResult = await JellyfinService.authenticateByName(normalized, username, password, useProxy);
+        const info = await JellyfinService.testConnection(normalized, useProxy).catch(() => undefined);
         const existingServer = servers.find(
           (s) => s.serverUrl === normalized && s.userId === authResult.User.Id
         );
@@ -220,6 +220,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         const newConfig: JellyfinConfig = {
           id: existingServer?.id || generateServerId(),
           serverUrl: normalized,
+          useProxy,
           username: authResult.User.Name,
           accessToken: authResult.AccessToken,
           userId: authResult.User.Id,
@@ -262,31 +263,21 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
   );
 
   const connectWithQuickConnect = useCallback(
-    async (serverUrl: string, secret: string) => {
+    async (serverUrl: string, secret: string, useProxy?: boolean) => {
       const normalized = normalizeServerUrl(serverUrl);
       setConnectionState((prev) => ({ ...prev, status: 'testing', error: null }));
 
       try {
-        const check = await JellyfinService.checkQuickConnect(normalized, secret);
+        const check = await JellyfinService.checkQuickConnect(normalized, secret, useProxy);
         if (!check.Authenticated || !check.Authentication) {
           throw new Error('Quick connect is not yet authorized on your Jellyfin server.');
         }
 
         const token = check.Authentication;
-        const info = await JellyfinService.testConnection(normalized).catch(() => undefined);
+        const info = await JellyfinService.testConnection(normalized, useProxy).catch(() => undefined);
         const deviceId = getStoredDeviceId();
 
-        const userRes = await fetch(`${normalized}/Users/Me`, {
-          headers: {
-            'X-Emby-Authorization': `MediaBrowser Client="Jellyfish", Device="Web", DeviceId="${deviceId}", Version="0.1.0", Token="${token}"`,
-          },
-        });
-
-        if (!userRes.ok) {
-          throw new Error('Failed to retrieve user profile after Quick Connect.');
-        }
-
-        const userData = await userRes.json();
+        const userData = await serverFetch<JellyfinUser>(normalized, '/Users/Me', { token, deviceId, useProxy });
         const existingServer = servers.find(
           (s) => s.serverUrl === normalized && s.userId === userData.Id
         );
@@ -294,6 +285,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         const newConfig: JellyfinConfig = {
           id: existingServer?.id || generateServerId(),
           serverUrl: normalized,
+          useProxy,
           username: userData.Name,
           accessToken: token,
           userId: userData.Id,
@@ -347,7 +339,7 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
 
       const checkActive = async () => {
         try {
-          await JellyfinService.testConnection(target.serverUrl);
+          await JellyfinService.testConnection(target.serverUrl, target.useProxy ?? false);
           setServerStatuses((prev) => ({ ...prev, [target.id]: 'online' }));
           setConnectionState({
             status: 'connected',

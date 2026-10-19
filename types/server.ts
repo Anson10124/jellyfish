@@ -4,6 +4,7 @@ export type ConnectionStatus = 'disconnected' | 'testing' | 'connected' | 'error
 export interface JellyfinConfig {
   id: string;
   serverUrl: string;
+  useProxy?: boolean;
   username: string;
   accessToken: string;
   userId: string;

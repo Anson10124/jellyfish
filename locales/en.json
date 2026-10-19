@@ -143,7 +143,12 @@
     "10767": "Talk Show",
     "10768": "War & Politics"
   },
+  "jellyfin": {
+    "useProxyDescription": "Use Proxied if your Jellyfin server’s CORS settings block a direct connection. Your Jellyfin server handles sign-in."
+  },
   "connect": {
+    "connectionMode": "Connection mode",
+    "proxySubtitle": "Proxied mode helps you connect when your server’s CORS settings block direct browser access.",
     "title": "Connect with your Jellyfin server to get started",
     "subtitle": "Jellyfish runs in your browser. Your server address and credentials stay safely on your local device.",
     "serverUrlPlaceholder": "http://localhost:8096",
@@ -265,7 +270,7 @@
     "saveConnection": "Save Connection",
     "disconnect": "Disconnect",
     "useProxy": "Proxy through server",
-    "useProxyDescription": "Route requests through the app server to avoid CORS issues. Disable for direct connection if your Seerr instance allows it.",
+    "useProxyDescription": "Use Proxied if your Seerr server’s CORS settings block a direct connection. Your Seerr server handles sign-in.",
     "directMode": "Direct",
     "proxyMode": "Proxied",
     "serverStepTitle": "Connect with Seerr",

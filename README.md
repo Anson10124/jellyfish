@@ -8,4 +8,12 @@ Video playback and library integration have been implemented. The Seerr integrat
 
 The proxy blocks private and reserved network destinations by default. Production deployments must set `SEERR_PROXY_ALLOWED_ORIGINS` to the exact Seerr origin or origins they expect to use. Trusted self-hosted deployments that need to reach a LAN-hosted Seerr instance can explicitly set `SEERR_PROXY_ALLOW_PRIVATE_NETWORKS=true`. See `.env.example` for the available settings and the explicit unlisted-origin escape hatch.
 
+## Jellyfin proxy configuration
+
+Choose **Proxied** when connecting to a Jellyfin server that blocks browser requests through CORS. The selection is saved for that server and covers authentication, library requests, artwork, subtitles, and video playback. Existing connections continue to use Direct mode; reconnect with Proxied selected to change a saved connection.
+
+Production deployments must set `JELLYFIN_PROXY_ALLOWED_ORIGINS` to the exact comma-separated Jellyfin origins they support, for example `https://jellyfin.example.com`. For a trusted self-hosted deployment accessing a LAN server, also set `JELLYFIN_PROXY_ALLOW_PRIVATE_NETWORKS=true`. These settings are independent of the Seerr settings.
+
+The Jellyfish app server must be able to reach the configured Jellyfin address. In proxy mode, credentials and media pass through that app server, and `localhost` refers to the app server's machine. Video is streamed, including byte-range seeking and HLS playlists; hosting must support long-lived streaming responses and the associated bandwidth. Redirects and media URLs outside the configured Jellyfin server are rejected.
+
 if you want to try it out you can use the online version at [Jellyfish](https://jellyfish.kollod.dev) or deploy yourself using npm.

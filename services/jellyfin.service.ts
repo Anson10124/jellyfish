@@ -1,4 +1,5 @@
-import { serverFetch, normalizeServerUrl } from '@/lib/api/fetch-client';
+import { getJellyfinBaseUrl, getJellyfinResourceUrl } from '@/lib/api/jellyfin-url';
+import { serverFetch } from '@/lib/api/fetch-client';
 import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView, JellyfinMediaSource, JellyfinMediaStream } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 import { getErrorMessage } from '@/lib/utils';
@@ -44,9 +45,10 @@ interface PlaybackInfoResponse {
 
 export const JellyfinService = {
   // Test connection
-  async testConnection(serverUrl: string): Promise<JellyfinPublicSystemInfo> {
+  async testConnection(serverUrl: string, useProxy?: boolean): Promise<JellyfinPublicSystemInfo> {
     return serverFetch<JellyfinPublicSystemInfo>(serverUrl, '/System/Info/Public', {
       timeoutMs: 8000,
+      useProxy,
     });
   },
 
@@ -54,12 +56,14 @@ export const JellyfinService = {
   async authenticateByName(
     serverUrl: string,
     username: string,
-    password?: string
+    password?: string,
+    useProxy?: boolean
   ): Promise<JellyfinAuthResult> {
     const deviceId = getStoredDeviceId();
     try {
       return await serverFetch<JellyfinAuthResult>(serverUrl, '/Users/AuthenticateByName', {
         method: 'POST',
+        useProxy,
         deviceId,
         body: JSON.stringify({
           Username: username,
@@ -75,22 +79,24 @@ export const JellyfinService = {
   },
 
   // Initiate Quick Connect session
-  async initiateQuickConnect(serverUrl: string): Promise<JellyfinQuickConnectResult> {
+  async initiateQuickConnect(serverUrl: string, useProxy?: boolean): Promise<JellyfinQuickConnectResult> {
     const deviceId = getStoredDeviceId();
     return serverFetch<JellyfinQuickConnectResult>(serverUrl, '/QuickConnect/Initiate', {
       method: 'POST',
+      useProxy,
       deviceId,
     });
   },
 
   // Check status of Quick Connect session
-  async checkQuickConnect(serverUrl: string, secret: string): Promise<JellyfinQuickConnectResult> {
+  async checkQuickConnect(serverUrl: string, secret: string, useProxy?: boolean): Promise<JellyfinQuickConnectResult> {
     const deviceId = getStoredDeviceId();
     return serverFetch<JellyfinQuickConnectResult>(
       serverUrl,
       `/QuickConnect/Connect?secret=${encodeURIComponent(secret)}`,
       {
         method: 'GET',
+        useProxy,
         deviceId,
       }
     );
@@ -331,7 +337,7 @@ export const JellyfinService = {
     token: string,
     userId?: string
   ): Promise<PlaybackSourceResult> {
-    const base = normalizeServerUrl(serverUrl);
+    const base = getJellyfinBaseUrl(serverUrl, undefined, token);
     const deviceProfile = createWebDeviceProfile();
 
     const endpoint = userId ? `/Items/${itemId}/PlaybackInfo?UserId=${userId}` : `/Items/${itemId}/PlaybackInfo`;
@@ -392,7 +398,7 @@ export const JellyfinService = {
 
       if (mediaSource?.TranscodingUrl) {
         return {
-          url: `${base}${mediaSource.TranscodingUrl}`,
+          url: getJellyfinResourceUrl(serverUrl, mediaSource.TranscodingUrl, token),
           isHls: true,
           playMethod: 'Transcode',
           mediaSourceId,
@@ -433,7 +439,7 @@ export const JellyfinService = {
     item?: JellyfinBaseItem | null,
     options: { videoBitrate?: number; maxHeight?: number; audioStreamIndex?: number; mediaSourceId?: string } = {}
   ): string {
-    const base = normalizeServerUrl(serverUrl);
+    const base = getJellyfinBaseUrl(serverUrl, undefined, token);
     const deviceId = getStoredDeviceId();
 
     const { primaryMediaSource, mediaSourceId, container, audioStreamIndex: defaultAudioIndex, audioCodec } = extractAudioStreamInfo(item);
@@ -490,7 +496,7 @@ export const JellyfinService = {
 
   // Construct primary image URL
   getImageUrl(serverUrl: string, itemId: string, options: { width?: number; height?: number; tag?: string; type?: 'Primary' | 'Backdrop' | 'Thumb' | 'Logo' } = {}): string {
-    const base = normalizeServerUrl(serverUrl);
+    const base = getJellyfinBaseUrl(serverUrl);
     const imgType = options.type || 'Primary';
     const url = `${base}/Items/${itemId}/Images/${imgType}`;
     const params = new URLSearchParams();
