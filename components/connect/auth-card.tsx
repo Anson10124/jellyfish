@@ -1,7 +1,9 @@
 'use client';
 
+import { ConnectionStatus } from './connection-status';
+
 import React from 'react';
-import { User, Lock, Zap, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { User, Lock, CheckCircle2, Loader2 } from 'lucide-react';
 import { AuthMethod, QuickConnectStatus } from '@/hooks/connect/use-connect-flow';
 import { useTranslation } from '@/hooks/ui/use-translation';
 
@@ -41,7 +43,7 @@ export function AuthCard({
       {/* Username & Password Card */}
       <div
         onClick={() => onSelectMethod('credentials')}
-        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer min-h-[300px]"
+        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${selectedMethod === 'credentials' ? 'border-white/30 bg-white/[0.08] shadow-2xl' : 'border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl'}`}
       >
         <h2 className="text-xl font-bold text-white mb-2">
           {t('connect.credentialsTitle', 'Username and password')}
@@ -84,10 +86,7 @@ export function AuthCard({
           </div>
 
           {authError && (
-            <p className="text-xs text-rose-400 flex items-center gap-1.5 pt-1">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{authError}</span>
-            </p>
+            <ConnectionStatus>{authError}</ConnectionStatus>
           )}
         </div>
       </div>
@@ -95,7 +94,7 @@ export function AuthCard({
       {/* Quick Connect Card */}
       <div
         onClick={() => onSelectMethod('quickconnect')}
-        className="group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl backdrop-blur-xl cursor-pointer min-h-[300px]"
+        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${selectedMethod === 'quickconnect' ? 'border-white/30 bg-white/[0.08] shadow-2xl' : 'border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl'}`}
       >
         <h2 className="text-xl font-bold text-white mb-2">
           {t('connect.quickConnectTitle', 'Quick Connect')}
@@ -137,8 +136,8 @@ export function AuthCard({
               tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
-                onSelectMethod('quickconnect');
-                onStartQuickConnect();
+                if (selectedMethod === 'quickconnect') onStartQuickConnect();
+                else onSelectMethod('quickconnect');
               }}
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 active:scale-95 text-white text-sm font-medium transition-all duration-200 cursor-pointer border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
@@ -147,10 +146,7 @@ export function AuthCard({
           )}
 
           {qcError && (
-            <p className="text-xs text-rose-400 flex items-center gap-1.5 pt-1">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{qcError}</span>
-            </p>
+            <ConnectionStatus>{qcError}</ConnectionStatus>
           )}
         </div>
       </div>

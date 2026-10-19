@@ -98,7 +98,7 @@ function ConnectPageContent() {
           />
         )}
       </AnimatePresence>
-      <div className="fixed bottom-4 right-4 z-20">
+      <div className="absolute bottom-4 right-4 z-20">
         <a
           href="https://github.com/Anson10124/jellyfish"
           target="_blank"

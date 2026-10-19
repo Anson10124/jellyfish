@@ -5,9 +5,10 @@ interface UrlPrefillOptionsProps {
   value: string;
   onSelect: (url: string) => void;
   label: string;
+  disabled?: boolean;
 }
 
-export function UrlPrefillOptions({ urls, value, onSelect, label }: UrlPrefillOptionsProps) {
+export function UrlPrefillOptions({ urls, value, onSelect, label, disabled }: UrlPrefillOptionsProps) {
   return (
     <div role="group" aria-label={label} className="mt-2 flex flex-wrap gap-2">
       {urls.map((url) => {
@@ -17,6 +18,7 @@ export function UrlPrefillOptions({ urls, value, onSelect, label }: UrlPrefillOp
           <button
             key={url}
             type="button"
+            disabled={disabled}
             data-focusable="true"
             aria-pressed={isSelected}
             onClick={() => onSelect(url)}

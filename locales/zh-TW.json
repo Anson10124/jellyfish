@@ -147,6 +147,8 @@
     "useProxyDescription": "如果您的 Jellyfin 伺服器因 CORS 設定而阻擋直接連線，請使用代理模式。登入由您的 Jellyfin 伺服器處理。"
   },
   "connect": {
+    "serverAddress": "伺服器位址",
+    "suggestedAddresses": "建議的伺服器位址",
     "connectionMode": "連線模式",
     "proxySubtitle": "當伺服器的 CORS 設定阻擋瀏覽器直接存取時，可使用代理模式連線。",
     "title": "連接你的 Jellyfin 伺服器",

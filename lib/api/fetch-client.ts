@@ -1,5 +1,6 @@
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
 import { getJellyfinBaseUrl } from './jellyfin-url';
+import { readApiError } from './error-message';
 
 export class ApiError extends Error {
   status?: number;
@@ -63,25 +64,18 @@ export async function serverFetch<T>(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      let errorText = '';
-      try {
-        errorText = await response.text();
-      } catch {
-        errorText = response.statusText;
-      }
-
-      let formattedMessage = `Server returned status ${response.status}: ${errorText || response.statusText}`;
+      let formattedMessage = `Jellyfin could not complete this request (HTTP ${response.status}). Please check the server address and try again.`;
       if (response.status === 401) {
-        formattedMessage = `Server returned status 401: Authentication required or invalid credentials.`;
+        formattedMessage = 'Authentication required. Please check your username and password.';
       } else if (response.status === 403) {
-        formattedMessage = `Server returned status 403: Access forbidden to this resource.`;
+        formattedMessage = 'Access denied. Please check your account permissions.';
       } else if (response.status === 404) {
-        formattedMessage = `Server returned status 404: Resource not found.`;
+        formattedMessage = 'Jellyfin could not find this resource. Please check the server address, including its base path.';
       } else if (response.status >= 500) {
-        formattedMessage = `Server error ${response.status}: Jellyfin server internal error.`;
+        formattedMessage = 'Jellyfin is unavailable. Please check that the server is online and try again.';
       }
 
-      throw new ApiError(formattedMessage, response.status, response.statusText, url);
+      throw new ApiError(await readApiError(response, formattedMessage), response.status, response.statusText, url);
     }
 
     if (response.status === 204) {
@@ -99,7 +93,9 @@ export async function serverFetch<T>(
     }
     if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
       throw new ApiError(
-        'Unable to connect to server. Please check that the URL is correct, the server is online, and CORS headers are configured.',
+        normalizedBase.startsWith('/api/jellyfin/')
+          ? 'Unable to connect through the proxy. Please check the server address and try again.'
+          : 'Unable to connect directly. Check the server address and that it is online, or try Proxied mode if CORS blocks browser access.',
         0,
         'NetworkError',
         url

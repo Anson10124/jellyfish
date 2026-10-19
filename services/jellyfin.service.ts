@@ -1,8 +1,7 @@
 import { getJellyfinBaseUrl, getJellyfinResourceUrl } from '@/lib/api/jellyfin-url';
-import { serverFetch } from '@/lib/api/fetch-client';
+import { ApiError, serverFetch } from '@/lib/api/fetch-client';
 import { JellyfinAuthResult, JellyfinBaseItem, JellyfinPublicSystemInfo, JellyfinQuickConnectResult, JellyfinUserView, JellyfinMediaSource, JellyfinMediaStream } from '@/types/jellyfin';
 import { getStoredDeviceId } from '@/lib/storage/server-storage';
-import { getErrorMessage } from '@/lib/utils';
 import { createWebDeviceProfile } from '@/lib/jellyfin/device-profile';
 import type { SubtitleTrack, AudioTrack, PlaybackSourceResult } from '@/types/player';
 export type { PlaybackSourceResult };
@@ -71,7 +70,7 @@ export const JellyfinService = {
         }),
       });
     } catch (err: unknown) {
-      if (getErrorMessage(err).includes('Server returned status 401')) {
+      if (err instanceof ApiError && err.status === 401) {
         throw new Error('AUTH_INVALID_CREDENTIALS');
       }
       throw err;

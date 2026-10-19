@@ -147,6 +147,8 @@
     "useProxyDescription": "Use Proxied if your Jellyfin server’s CORS settings block a direct connection. Your Jellyfin server handles sign-in."
   },
   "connect": {
+    "serverAddress": "Server address",
+    "suggestedAddresses": "Suggested server addresses",
     "connectionMode": "Connection mode",
     "proxySubtitle": "Proxied mode helps you connect when your server’s CORS settings block direct browser access.",
     "title": "Connect with your Jellyfin server to get started",

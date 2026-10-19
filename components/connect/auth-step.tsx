@@ -33,7 +33,6 @@ interface AuthStepProps {
 export function AuthStep({
   direction,
   serverUrl,
-  serverInfo,
   selectedMethod,
   username,
   setUsername,
@@ -75,18 +74,18 @@ export function AuthStep({
         </button>
       </div>
 
-      <div className="text-center max-w-2xl mb-8 space-y-3">
+      <div className="text-center max-w-2xl mb-8 space-y-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
           {t('connect.loginTitle', 'How would you like to log in?')}
         </h1>
-        <p className="text-white/60 text-sm font-normal">
+        <p className="text-white/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
           {t('connect.loginSubtitle', 'Choose your preferred login method for')}{' '}
           <strong className="text-white">{serverUrl}</strong>
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="w-full flex flex-col items-center">
-        <div className="w-full mb-10">
+        <div className="w-full mb-8">
           <AuthCard
             selectedMethod={selectedMethod}
             onSelectMethod={onSelectMethod}
@@ -106,7 +105,7 @@ export function AuthStep({
         <button
           type="submit"
           disabled={!canSubmit || isAuthenticating}
-          className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer ${
+          className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
             canSubmit && !isAuthenticating
               ? 'bg-white text-black scale-100 hover:scale-105 active:scale-95'
               : 'bg-white/10 text-white/50 cursor-not-allowed scale-95 opacity-50'

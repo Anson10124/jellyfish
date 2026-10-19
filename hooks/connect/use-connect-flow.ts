@@ -48,7 +48,7 @@ export function useConnectFlow() {
   const [direction, setDirection] = useState<1 | -1>(1);
 
   // Step 1: Jellyfin Server URL
-  const [serverUrl, setServerUrl] = useState('');
+  const [serverUrl, setServerUrlState] = useState('');
   const [jellyfinUseProxy, setJellyfinUseProxyState] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [serverVerified, setServerVerified] = useState(false);
@@ -89,6 +89,17 @@ export function useConnectFlow() {
   const [isExiting, setIsExiting] = useState(false);
   const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const setServerUrl = useCallback((value: string) => {
+    setServerUrlState(value);
+    setServerVerified(false);
+    setVerifyError(null);
+    setQuickConnectCode(null);
+    setQuickConnectSecret(null);
+    setQcStatus('idle');
+    setQcError(null);
+    if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+  }, []);
+
   const handleCheckServer = useCallback(
     async (urlToCheck?: string) => {
       const targetUrl = urlToCheck || serverUrl;
@@ -128,7 +139,7 @@ export function useConnectFlow() {
         handleCheckServer(url);
       });
     }
-  }, [jellyfinConfig, servers.length, handleCheckServer]);
+  }, [jellyfinConfig, servers.length, handleCheckServer, setServerUrl]);
 
   useEffect(() => {
     return () => {
@@ -325,7 +336,7 @@ export function useConnectFlow() {
       try {
         const user = await SeerrService.authenticateWithJellyfin(
           seerrServerUrl.trim(),
-          serverUrl.trim(),
+          serverUrl.trim() || jellyfinConfig?.serverUrl || '',
           seerrUsername.trim(),
           seerrPassword,
           seerrUseProxy

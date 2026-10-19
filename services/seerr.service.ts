@@ -1,3 +1,4 @@
+import { readApiError } from '@/lib/api/error-message';
 import { normalizeServerUrl } from '@/lib/api/fetch-client';
 import type {
   SeerrServerStatus,
@@ -17,14 +18,7 @@ export class SeerrApiError extends Error {
   }
 }
 
-async function extractErrorMessage(res: Response, fallback: string): Promise<string> {
-  try {
-    const data = await res.json();
-    return data.error || data.message || fallback;
-  } catch {
-    return fallback;
-  }
-}
+const extractErrorMessage = readApiError;
 
 function buildHeaders(
   serverUrl: string,
@@ -86,16 +80,9 @@ export class SeerrService {
             error: 'Authentication failed. Please verify your API Key.',
           };
         }
-        let detail = '';
-        try {
-          const body = await statusRes.json();
-          detail = body?.error || '';
-        } catch {
-          // ignore
-        }
         return {
           success: false,
-          error: detail || `Seerr server returned status ${statusRes.status}`,
+          error: await readApiError(statusRes, `Seerr could not complete this request (HTTP ${statusRes.status}). Please check the server address and try again.`),
         };
       }
 
@@ -108,11 +95,12 @@ export class SeerrService {
             headers: buildHeaders(serverUrl, apiKey, useProxy),
             signal: AbortSignal.timeout(8000),
           });
-          if (userRes.ok) {
-            user = await userRes.json();
+          if (!userRes.ok) {
+            return { success: false, error: await readApiError(userRes, 'Authentication failed. Please verify your API key.') };
           }
+          user = await userRes.json();
         } catch {
-          // ignore
+          return { success: false, error: 'Unable to verify your API key. Please try again.' };
         }
       }
 
@@ -128,7 +116,9 @@ export class SeerrService {
         success: false,
         error:
           msg.includes('fetch') || msg.includes('timeout') || msg.includes('Timeout')
-            ? 'Unable to connect to Seerr server. Please check the URL and ensure the server is reachable.'
+            ? useProxy
+              ? 'Unable to connect through the proxy. Please check the server address and try again.'
+              : 'Unable to connect directly. Check the server address and that it is online, or try Proxied mode if CORS blocks browser access.'
             : msg,
       };
     }

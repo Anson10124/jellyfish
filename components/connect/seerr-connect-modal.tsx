@@ -1,8 +1,10 @@
 'use client';
 
+import { ConnectionStatus } from './connection-status';
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Sparkles, Key, Loader2, CheckCircle2, AlertCircle, LogOut, User, Lock } from 'lucide-react';
+import { X, Sparkles, Key, Loader2, CheckCircle2, LogOut, User, Lock } from 'lucide-react';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { SeerrService } from '@/services/seerr.service';
 import { useTranslation } from '@/hooks/ui/use-translation';
@@ -257,10 +259,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
             )}
 
             {error && (
-              <div className="flex items-center gap-2 text-xs text-rose-400 font-medium px-1">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{error}</span>
-              </div>
+              <ConnectionStatus>{error}</ConnectionStatus>
             )}
 
             <div className="pt-2 flex items-center justify-between gap-3">

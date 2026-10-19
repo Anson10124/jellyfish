@@ -1,8 +1,10 @@
 'use client';
 
+import { ConnectionStatus } from './connection-status';
+
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight, Loader2, User, Lock, Key, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Loader2, User, Lock, Key, CheckCircle2 } from 'lucide-react';
 import { slideVariants } from './server-step';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { SeerrAuthMethod } from '@/types/seerr';
@@ -71,18 +73,18 @@ export function SeerrAuthStep({
         </button>
       </div>
 
-      <div className="text-center max-w-2xl mb-8 space-y-3">
+      <div className="text-center max-w-2xl mb-8 space-y-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
           {t('seerr.authTitle', 'Authenticate with Seerr')}
         </h1>
-        <p className="text-white/60 text-sm font-normal">
+        <p className="text-white/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
           {t('seerr.authSubtitle', 'Choose how to log in to your Seerr server')}{' '}
           <strong className="text-white">{seerrServerUrl}</strong>
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="w-full flex flex-col items-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-8">
           <div
             onClick={() => onSelectMethod('jellyfin')}
             className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${
@@ -116,7 +118,7 @@ export function SeerrAuthStep({
                     setSeerrUsername(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('jellyfin')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
                 />
               </div>
 
@@ -131,15 +133,12 @@ export function SeerrAuthStep({
                     setSeerrPassword(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('jellyfin')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
                 />
               </div>
 
               {selectedMethod === 'jellyfin' && authError && (
-                <p className="text-xs text-rose-400 flex items-center gap-1.5 pt-1">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span>{authError}</span>
-                </p>
+                <ConnectionStatus>{authError}</ConnectionStatus>
               )}
             </div>
           </div>
@@ -177,25 +176,22 @@ export function SeerrAuthStep({
                     setSeerrApiKey(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('apikey')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
                 />
               </div>
 
               {selectedMethod === 'apikey' && authError && (
-                <p className="text-xs text-rose-400 flex items-center gap-1.5 pt-1">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span>{authError}</span>
-                </p>
+                <ConnectionStatus>{authError}</ConnectionStatus>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3">
+        <div className="flex flex-col items-center gap-3">
           <button
             type="submit"
             disabled={!canSubmit || isAuthenticating}
-            className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer ${
+            className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
               canSubmit && !isAuthenticating
                 ? 'bg-white text-black scale-100 hover:scale-105 active:scale-95'
                 : 'bg-white/10 text-white/50 cursor-not-allowed scale-95 opacity-50'

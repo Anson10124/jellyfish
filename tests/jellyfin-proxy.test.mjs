@@ -35,6 +35,39 @@ const { serverFetch } = load('lib/api/fetch-client.ts');
 const { NextRequest } = createRequire(import.meta.url)('next/server');
 const route = load('app/api/jellyfin/[server]/[...path]/route.ts');
 
+test('connection errors preserve useful JSON messages and hide HTML or error objects', async () => {
+  const { readApiError } = load('lib/api/error-message.ts');
+  for (const body of ['<html>Bad gateway</html>', '{"error":{"stack":"internal details"}}', '{"error":"<h1>Bad gateway</h1>"}']) {
+    assert.equal(await readApiError(new Response(body), 'Please check the server address.'), 'Please check the server address.');
+  }
+  assert.match(await readApiError(Response.json({ error: 'This server is not allowed by the proxy configuration.' }), 'fallback'), /not enabled for proxy access/);
+  assert.match(await readApiError(Response.json({ error: 'The Jellyfin proxy requires JELLYFIN_PROXY_ALLOWED_ORIGINS in production.' }), 'fallback'), /Try Direct mode/);
+  const nativeFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => Response.json({ error: 'Configure the allowed Jellyfin origin.' }, { status: 400 });
+    await assert.rejects(serverFetch('https://jellyfin.example', '/System/Info/Public'), { message: 'Configure the allowed Jellyfin origin.', status: 400 });
+    globalThis.fetch = async () => new Response('<html>Internal stack trace</html>', { status: 502 });
+    await assert.rejects(serverFetch('https://jellyfin.example', '/System/Info/Public'), (error) => error.status === 502 && !error.message.includes('<html>'));
+  } finally { globalThis.fetch = nativeFetch; }
+});
+
+test('Seerr requires a valid API key even when the public status endpoint succeeds', async () => {
+  const { SeerrService } = load('services/seerr.service.ts');
+  const nativeFetch = globalThis.fetch;
+  try {
+    globalThis.fetch = async (url) => url.endsWith('/status')
+      ? Response.json({ appName: 'Seerr', version: '1.0' })
+      : Response.json({ message: 'Invalid API key.' }, { status: 401 });
+    const result = await SeerrService.testConnection('https://seerr.example', 'invalid-key');
+    assert.equal(result.success, false);
+    assert.equal(result.error, 'Invalid API key.');
+    globalThis.fetch = async () => Response.json({ error: { message: 'internal' } }, { status: 400 });
+    const failed = await SeerrService.testConnection('https://seerr.example');
+    assert.equal(typeof failed.error, 'string');
+    assert.match(failed.error, /check the server address/);
+  } finally { globalThis.fetch = nativeFetch; }
+});
+
 test('proxy rejects private targets, mapped addresses, credentials, and unlisted origins', async () => {
   for (const address of ['127.0.0.1', '10.0.0.1', '169.254.169.254', '::1', '::ffff:127.0.0.1', '::ffff:7f00:1']) {
     assert.equal(isBlockedProxyAddress(address), true, address);
