@@ -13,6 +13,10 @@
     "back": "返回",
     "githubRepo": "檢視 Jellyfish GitHub 儲存庫",
     "request": "請求",
+    "requestAll": "請求全部",
+    "requestMovie": "請求 {title}",
+    "requested": "已請求",
+    "available": "可觀看",
     "requestMore": "請求更多",
     "searching": "搜尋中",
     "noResults": "未找到結果",
@@ -249,6 +253,9 @@
     "fetchFailed": "無法載入資料。"
   },
   "seerr": {
+    "connectToRequest": "請從使用者選單連線至 Seerr，以請求電影。",
+    "collectionRequestFailed": "無法請求 {count} 部電影，請再試一次。",
+    "collectionRequestSuccess": "已請求電影，並略過可觀看及已請求的電影。",
     "settingsTitle": "Seerr 整合設定",
     "enterServerUrl": "請輸入您的 Seerr 伺服器網址。",
     "couldNotConnect": "無法連線至 Seerr 伺服器。",

@@ -2,11 +2,12 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { Film, Bookmark, CloudDownload } from 'lucide-react';
+import { Film, Bookmark } from 'lucide-react';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { Skeleton } from '@/components/ui';
 import { MediaBadges } from './media-badges';
 import { PlayButton } from './play-button';
+import { RequestButton } from './request-button';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
@@ -115,15 +116,7 @@ export function MediaDetailHero({
               ) : isAvailable ? (
                 <PlayButton jellyfinItem={jellyfinItem} onClick={onWatchNow} />
               ) : (
-                <button
-                  type="button"
-                  data-focusable="true"
-                  tabIndex={0}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
-                >
-                  <CloudDownload className="h-4 w-4" />
-                  {t('common.request', 'Request')}
-                </button>
+                <RequestButton />
               )}
 
               {trailerKey && onWatchTrailer && (

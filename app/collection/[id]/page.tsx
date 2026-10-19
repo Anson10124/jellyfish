@@ -6,6 +6,8 @@ import { ArrowLeft, Star, Calendar, Film } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useCollection } from '@/hooks/media/use-collection';
+import { useCollectionRequests } from '@/hooks/media/use-collection-requests';
+import { RequestButton } from '@/components/media/request-button';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getMediaTitle, getMediaYear } from '@/lib/utils/media-format';
 import { getGenreName } from '@/constants/genres';
@@ -22,6 +24,7 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
   const { t, formatDate } = useTranslation();
 
   const { collection, parts, loading, error } = useCollection(collectionId);
+  const { getStatus, requestMovies, isRequesting, isRequestingMovie } = useCollectionRequests(collectionId);
 
   // Derive franchise metadata from parts
   const { backdropUrl, posterUrl, yearRange, avgRating, genreNames } = useMemo(() => {
@@ -153,7 +156,7 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
             )}
 
             {/* Collection Details */}
-            <div className="flex-1 space-y-4 max-w-3xl">
+            <div className="flex flex-1 flex-col gap-4 md:self-stretch max-w-3xl">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground drop-shadow-md">
                 {collection.name}
               </h1>
@@ -195,6 +198,17 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
                   {collection.overview}
                 </p>
               )}
+              {parts.length > 0 && (
+                <div className="mt-auto flex flex-wrap items-center justify-center md:justify-start gap-2.5 pt-2">
+                  <RequestButton
+                    onClick={() => requestMovies(parts)}
+                    isRequesting={isRequesting}
+                    disabled={parts.every((item) => !!getStatus(item.id))}
+                  >
+                    {t('common.requestAll', 'Request All')}
+                  </RequestButton>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -208,19 +222,19 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
           </div>
 
           <div className="flex flex-col gap-4 sm:gap-5">
-            {parts.map((item, index) => {
+            {parts.map((item) => {
               const itemTitle = getMediaTitle(item);
               const dateStr = item.release_date ? formatDate(item.release_date) : null;
               const posterPath = item.poster_path ? getTmdbImage(item.poster_path, 'w342') : null;
+              const requestStatus = getStatus(item.id);
 
               return (
-                <Link
+                <div
                   key={item.id}
-                  href={`/movie/${item.id}`}
-                  className="group relative flex flex-row overflow-hidden rounded-2xl border border-transparent hover:bg-foreground/3 hover:border-border/40 transition-all duration-300 p-3 sm:p-4 md:p-5 gap-4 sm:gap-6 items-start select-none cursor-pointer"
+                  className="group relative flex flex-row overflow-hidden rounded-2xl border border-transparent hover:bg-foreground/3 hover:border-border/40 transition-all duration-300 p-3 sm:p-4 md:p-5 gap-4 sm:gap-6 items-start select-none"
                 >
                   {/* Poster Image */}
-                  <div className="relative aspect-[2/3] w-20 sm:w-28 md:w-32 lg:w-36 rounded-xl overflow-hidden shadow-md ring-1 ring-border/60 shrink-0 group-hover:scale-[1.02] transition-transform duration-300 bg-foreground/5">
+                  <Link href={`/movie/${item.id}`} aria-label={itemTitle} className="relative aspect-[2/3] w-20 sm:w-28 md:w-32 lg:w-36 rounded-xl overflow-hidden shadow-md ring-1 ring-border/60 shrink-0 group-hover:scale-[1.02] transition-transform duration-300 bg-foreground/5">
                     {posterPath ? (
                       <img
                         src={posterPath}
@@ -234,13 +248,13 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
                         {itemTitle}
                       </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Content / Info */}
-                  <div className="flex-1 min-w-0 flex flex-col justify-start py-0.5 sm:py-1">
+                  <div className="flex-1 min-w-0 flex flex-col self-stretch py-0.5 sm:py-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h3 className="text-base sm:text-lg md:text-xl font-bold tracking-tight text-foreground transition-colors duration-200 group-hover:text-primary">
-                        {itemTitle}
+                        <Link href={`/movie/${item.id}`} className="after:absolute after:inset-0">{itemTitle}</Link>
                       </h3>
                     </div>
 
@@ -255,8 +269,22 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
                         {item.overview}
                       </p>
                     )}
+                    <div className="relative z-10 mt-auto pt-3 sm:pt-4 w-fit">
+                      <RequestButton
+                        onClick={() => requestMovies([item])}
+                        isRequesting={isRequestingMovie(item.id)}
+                        disabled={isRequesting || !!requestStatus}
+                        aria-label={t('common.requestMovie', 'Request {title}', { title: itemTitle })}
+                      >
+                        {requestStatus === 'available'
+                          ? t('common.available', 'Available')
+                          : requestStatus === 'requested'
+                            ? t('common.requested', 'Requested')
+                            : t('common.request', 'Request')}
+                      </RequestButton>
+                    </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

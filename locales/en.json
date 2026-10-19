@@ -13,6 +13,10 @@
     "back": "Back",
     "githubRepo": "View the Jellyfish GitHub repository",
     "request": "Request",
+    "requestAll": "Request All",
+    "requestMovie": "Request {title}",
+    "requested": "Requested",
+    "available": "Available",
     "requestMore": "Request More",
     "searching": "Searching",
     "noResults": "No results found",
@@ -250,6 +254,9 @@
     "fetchFailed": "Failed to load data."
   },
   "seerr": {
+    "connectToRequest": "Connect to Seerr from the user menu to request movies.",
+    "collectionRequestFailed": "Could not request {count} movie(s). Please try again.",
+    "collectionRequestSuccess": "Movies requested. Available and previously requested movies were skipped.",
     "settingsTitle": "Seerr Integration",
     "enterServerUrl": "Please enter your Seerr server address.",
     "couldNotConnect": "Could not connect to Seerr server.",
