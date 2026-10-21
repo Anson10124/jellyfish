@@ -48,9 +48,8 @@ export function MobileNav({
       {isMobile && searchOpen && (
         <LiquidGlass
           ref={mobileSearchRef}
-          radius={18}
-          className="mt-3 w-full rounded-2xl p-4 shadow-2xl animate-in fade-in duration-150"
-          fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border zoom-in-95"
+          className="mt-3 w-full rounded-2xl p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+          fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
           glassClassName="bg-background/55"
         >
           <div className="flex items-center gap-3 bg-foreground/5 border border-border rounded-xl px-3 py-2">

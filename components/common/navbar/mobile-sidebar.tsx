@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Cable, LogOut, Clock, Server, Check } from 'lucide-react';
 
 import { useServerConfig } from '@/hooks/connect/use-server-config';
-import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useServerContext } from '@/context/server-context';
 import { formatServerAddress } from '@/lib/utils';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
@@ -61,10 +60,11 @@ export function MobileSidebar({
     touchStartY.current = null;
   };
 
-  useScrollLock(open);
-
   useEffect(() => {
     if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -75,6 +75,7 @@ export function MobileSidebar({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
+      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, onClose]);

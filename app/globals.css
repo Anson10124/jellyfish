@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* Layered so Tailwind utilities can override the glass defaults (unlayered rules would always win) */
-@import "@glass-sdk/liquid-glass/styles.css" layer(components);
 
 @custom-variant dark (&:is(.dark *));
 
@@ -197,21 +195,6 @@ body.tv-navigation-active input[data-focusable="true"]:focus-visible,
 body.tv-navigation-active a[data-focusable="true"]:not(.group\/card):not(.group\/land):not(.group\/ep):not(.group\/season):not(.group\/cast):not(.group\/lib):focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--foreground);
-}
-
-/* Liquid Glass: the page scrolls inside the glass content (see LiquidGlassContent), not the window */
-html.liquid-glass {
-  overflow: hidden !important;
-}
-
-.liquid-glass-scroll-root {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--foreground) 30%, transparent) transparent;
-}
-
-/* Keep the body's flex column layout without squeezing pages to the scrollport's height */
-.liquid-glass-scroll-root > * {
-  flex-shrink: 0;
 }
 
 /* In-app "Reduce motion" setting: effectively disable CSS animations, transitions and smooth scrolling */

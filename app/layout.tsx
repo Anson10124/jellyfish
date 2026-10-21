@@ -5,14 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { I18nProvider } from "@/context/i18n-context";
 import { ServerProvider } from "@/context/server-context";
-import {
-  LiquidGlassContent,
-  LiquidGlassScene,
-  Navbar,
-  ReduceMotionProvider,
-  SettingsModalProvider,
-  TVNavigationProvider,
-} from "@/components/common";
+import { Navbar, ReduceMotionProvider, TVNavigationProvider } from "@/components/common";
 import { Toaster } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LOCALE_COOKIE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
@@ -60,12 +53,8 @@ export default async function RootLayout({
               <ReduceMotionProvider>
                 <TooltipProvider>
                   <TVNavigationProvider>
-                    <SettingsModalProvider>
-                      <LiquidGlassScene>
-                        <Navbar />
-                        <LiquidGlassContent>{children}</LiquidGlassContent>
-                      </LiquidGlassScene>
-                    </SettingsModalProvider>
+                    <Navbar />
+                    {children}
                     <Toaster />
                   </TVNavigationProvider>
                 </TooltipProvider>

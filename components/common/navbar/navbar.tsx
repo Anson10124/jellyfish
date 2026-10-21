@@ -9,7 +9,8 @@ import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
-import { LiquidGlass, useLiquidGlassActive } from '@/components/ui/liquid-glass';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { useLiquidGlass } from '@/hooks/ui/use-liquid-glass';
 
 import { UserAvatar } from './user-avatar';
 import { NavItems } from './nav-items';
@@ -18,14 +19,14 @@ import { SearchDropdown } from './search-dropdown';
 import { UserDropdownMenu } from './user-dropdown-menu';
 import { MobileNav } from './mobile-nav';
 import { MobileSidebar } from './mobile-sidebar';
-import { SettingsModal, useSettingsModal } from '../settings-modal';
+import { SettingsModal } from '../settings-modal';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const liquidGlass = useLiquidGlassActive();
+  const [liquidGlass] = useLiquidGlass();
   const { jellyfinConfig, isInitialized, connectionState } = useServerContext();
   const isOffline = isInitialized && connectionState.status === 'offline';
 
@@ -37,7 +38,8 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const { isOpen: settingsOpen, openSettings, closeSettings } = useSettingsModal();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -227,12 +229,12 @@ export function Navbar() {
       {/* Blurring the page under the bar would also blur away the glass refraction */}
       {!liquidGlass && <ProgressiveBlur position="top" height="6rem" fade="var(--top-fade)" />}
 
-      <header ref={headerRef} className="fixed top-4 inset-x-0 mx-auto z-50 w-[94%] max-w-4xl transition-all duration-300">
+      <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <LiquidGlass
           render={<nav />}
           radius="capsule"
           className="relative flex items-center justify-between rounded-full px-3 py-2 shadow-2xl text-foreground/80"
-          glassClassName="bg-background/20"
+          glassClassName="bg-background/40"
           fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
         >
           <NavItems
@@ -354,7 +356,7 @@ export function Navbar() {
           userMenuRef={userMenuRef}
           userDropdownPos={userDropdownPos}
           setUserDropdownOpen={setUserDropdownOpen}
-          onOpenSettings={openSettings}
+          onOpenSettings={() => setSettingsOpen(true)}
           t={t}
         />
 
@@ -389,9 +391,9 @@ export function Navbar() {
       {isOffline && (
         <LiquidGlass
           radius="capsule"
-          className="fixed bottom-6 inset-x-0 mx-auto w-fit z-50 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium select-none animate-in fade-in duration-300"
-          glassClassName="bg-background/30"
-          fallbackClassName="bg-muted/65 backdrop-blur-xl slide-in-from-bottom-4"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300"
+          glassClassName="bg-background/40"
+          fallbackClassName="bg-muted/65 backdrop-blur-xl"
         >
           <WifiOff className="w-3.5 h-3.5 text-foreground shrink-0 animate-pulse" />
           <span>

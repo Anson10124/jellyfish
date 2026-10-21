@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Film, Tv, User, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
-import { LiquidGlass, useLiquidGlassActive } from '@/components/ui/liquid-glass';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
@@ -29,7 +29,6 @@ export function SearchDropdown({
   handleResultClick,
   t,
 }: SearchDropdownProps) {
-  const liquidGlass = useLiquidGlassActive();
   const showDropdown = dropdownVisible && searchQuery.trim().length >= 2;
   if (!showDropdown) return null;
 
@@ -41,18 +40,16 @@ export function SearchDropdown({
   return (
     <AnimatePresence>
       <LiquidGlass
-        // Glass is measured from layout, so skip the slide and scale while it is on
         render={
           <motion.div
-            initial={liquidGlass ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
-            animate={liquidGlass ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-            exit={liquidGlass ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.97 }}
+            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
           />
         }
         ref={dropdownRef}
         data-search-dropdown="true"
-        radius={18}
         className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl shadow-2xl z-[100]"
         fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
         glassClassName="bg-background/55"
