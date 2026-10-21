@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
@@ -13,6 +13,7 @@ import {
 } from '@/lib/utils/media-format';
 import { formatLanguageName } from '@/lib/utils/language';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
@@ -24,6 +25,7 @@ import {
   MediaDetailHero,
   MediaFactsGrid,
   JellyfinMediaInfo,
+  NsfwWarning,
 } from '@/components/media';
 import { TrailerModal, VideoPlayerModal } from '@/components/player';
 import { useIsMobile } from '@/hooks/device/use-mobile';
@@ -38,6 +40,9 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
   const movieId = resolvedParams.id;
   const { t, formatDate, locale } = useTranslation();
   const isMobile = useIsMobile();
+  const [showNsfw] = useShowNsfw();
+  // Continuing past the NSFW warning only applies to this visit of this title
+  const [nsfwAcceptedId, setNsfwAcceptedId] = useState<string | null>(null);
 
   const {
     activeVideo,
@@ -81,6 +86,10 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
         </Link>
       </div>
     );
+  }
+
+  if (movie.adult && !showNsfw && nsfwAcceptedId !== movieId) {
+    return <NsfwWarning onContinue={() => setNsfwAcceptedId(movieId)} />;
   }
 
   const title = getMediaTitle(movie);

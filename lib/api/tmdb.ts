@@ -1,4 +1,5 @@
 import { getImageLanguageParam } from '@/lib/i18n/config';
+import { getShowNsfw } from '@/lib/storage/content-preferences';
 
 const API_BASE_URL = '/api/tmdb';
 
@@ -37,7 +38,38 @@ class BoundedCache<K, V> {
 const responseCache = new BoundedCache<string, unknown>();
 const pendingRequests = new Map<string, Promise<unknown>>();
 
+// Endpoints that accept TMDb's include_adult flag
+const ADULT_FILTERABLE_PREFIXES = ['/search/', '/discover/'];
+
+function withAdultParam(endpoint: string, includeAdult: boolean): string {
+  if (!ADULT_FILTERABLE_PREFIXES.some((prefix) => endpoint.startsWith(prefix))) return endpoint;
+  const separator = endpoint.includes('?') ? '&' : '?';
+  return `${endpoint}${separator}include_adult=${includeAdult}`;
+}
+
+// Drops adult entries from every nested list (results, credits, parts, ...) while keeping
+// the top-level object intact, so detail pages can still see that a title is adult.
+function stripAdultEntries<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => !(item && typeof item === 'object' && (item as { adult?: unknown }).adult === true))
+      .map((item) => stripAdultEntries(item)) as T;
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, stripAdultEntries(child)])
+    ) as T;
+  }
+  return value;
+}
+
 export async function tmdbFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const showNsfw = getShowNsfw();
+  const data = await tmdbFetchRaw<T>(withAdultParam(endpoint, showNsfw), options);
+  return showNsfw ? data : stripAdultEntries(data);
+}
+
+async function tmdbFetchRaw<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const cacheKey = `${options.method || 'GET'}:${endpoint}`;
 
   if (responseCache.has(cacheKey)) {
@@ -206,4 +238,4 @@ export const TmdbApi = {
   getCollection: <T = Record<string, unknown>>(id: number | string, language = 'en-US') => {
     return tmdbFetch<T>(`/collection/${id}?language=${language}`);
   },
-};
+};

@@ -3,6 +3,7 @@ import { TmdbApi, type TmdbPaginatedResponse } from '@/lib/api/tmdb';
 import type { MediaItem } from '@/types/media';
 import { MOVIE_TO_TV_GENRE_MAP, TV_TO_MOVIE_GENRE_MAP } from '@/constants/genres';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { interleaveMediaItems } from '@/lib/utils/media-format';
 
 export interface UseTmdbMediaOptions {
@@ -22,6 +23,7 @@ export function useTmdbMedia({
   initialItems,
 }: UseTmdbMediaOptions) {
   const { tmdbLanguage } = useTranslation();
+  const [showNsfw] = useShowNsfw();
   const [fetchedSlides, setFetchedSlides] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(() => !initialItems || initialItems.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -110,7 +112,9 @@ export function useTmdbMedia({
 
       return res;
     },
-    [type, mediaType, timeWindow, genreId, tmdbLanguage]
+    // showNsfw changes what TmdbApi returns, so refetch when it flips
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [type, mediaType, timeWindow, genreId, tmdbLanguage, showNsfw]
   );
 
   useEffect(() => {

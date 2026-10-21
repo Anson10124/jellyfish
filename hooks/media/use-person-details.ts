@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { toast } from '@/components/ui/toast';
 import type { PersonDetails, PersonCastCredit, PersonCrewCredit } from '@/types/media';
 
@@ -18,6 +19,7 @@ export interface UsePersonDetailsReturn {
 
 export function usePersonDetails(id: string | number | undefined): UsePersonDetailsReturn {
   const { t, tmdbLanguage } = useTranslation();
+  const [showNsfw] = useShowNsfw();
   const [person, setPerson] = useState<PersonDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -55,7 +57,7 @@ export function usePersonDetails(id: string | number | undefined): UsePersonDeta
     return () => {
       isMounted = false;
     };
-  }, [id, tmdbLanguage, t]);
+  }, [id, tmdbLanguage, t, showNsfw]);
 
   const allCast = person?.combined_credits?.cast || [];
   const allCrew = person?.combined_credits?.crew || [];

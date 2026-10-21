@@ -307,6 +307,14 @@
     "display": "Display",
     "language": "Language",
     "languageDescription": "Language used for the interface and media info.",
+    "nsfw": "Show NSFW content",
+    "nsfwDescription": "Include adult titles from TMDb in browse, search and recommendations.",
     "close": "Close settings"
+  },
+  "nsfw": {
+    "title": "Adult content",
+    "description": "This title is marked as adult (NSFW) content. You can enable NSFW content in Settings to stop seeing this warning.",
+    "goBack": "Go back",
+    "continue": "Continue anyway"
   }
 }

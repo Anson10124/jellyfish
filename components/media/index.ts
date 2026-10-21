@@ -13,3 +13,4 @@ export * from './jellyfin-media-info';
 export * from './media-detail-hero';
 export * from './media-facts-grid';
 export * from './person';
+export * from './nsfw-warning';

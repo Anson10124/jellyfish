@@ -18,6 +18,7 @@ export interface MediaItem {
   budget?: number;
   revenue?: number;
   original_language?: string;
+  adult?: boolean;
   images?: {
     backdrops?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];
     posters?: { file_path: string; width?: number; height?: number; vote_average?: number; iso_639_1?: string | null }[];

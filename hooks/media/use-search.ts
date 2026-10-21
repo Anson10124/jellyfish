@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import type { MediaItem } from '@/types/media';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 
 export interface SearchResult {
   id: number;
@@ -14,6 +15,7 @@ export interface SearchResult {
 
 export function useSearch(query: string, debounceMs = 300) {
   const { tmdbLanguage } = useTranslation();
+  const [showNsfw] = useShowNsfw();
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -75,7 +77,7 @@ export function useSearch(query: string, debounceMs = 300) {
     return () => {
       clearTimeout(timer);
     };
-  }, [query, tmdbLanguage, debounceMs]);
+  }, [query, tmdbLanguage, debounceMs, showNsfw]);
 
   const clearResults = () => {
     setResults([]);

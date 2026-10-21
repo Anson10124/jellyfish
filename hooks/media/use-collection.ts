@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { TmdbApi } from '@/lib/api/tmdb';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import type { CollectionDetails, MediaItem } from '@/types/media';
 
 export interface UseCollectionReturn {
@@ -17,6 +18,7 @@ export function useCollection(
   initialCollection?: CollectionDetails
 ): UseCollectionReturn {
   const { tmdbLanguage } = useTranslation();
+  const [showNsfw] = useShowNsfw();
   const [collection, setCollection] = useState<CollectionDetails | null>(
     initialCollection || null
   );
@@ -67,7 +69,7 @@ export function useCollection(
     return () => {
       isMounted = false;
     };
-  }, [collectionId, tmdbLanguage]);
+  }, [collectionId, tmdbLanguage, showNsfw]);
 
   return { collection, parts, loading, error };
 }

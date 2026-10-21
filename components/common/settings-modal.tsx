@@ -17,6 +17,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { SUPPORTED_LANGUAGES, Locale } from '@/lib/i18n/config';
 
 type SettingsCategory = 'general';
@@ -124,6 +125,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 function GeneralSettings() {
   const { t, locale, setLocale } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const [showNsfw, setShowNsfw] = useShowNsfw();
   const currentLanguage = SUPPORTED_LANGUAGES.find((lang) => lang.code === locale)?.label ?? 'English';
 
   return (
@@ -200,8 +202,48 @@ function GeneralSettings() {
             </DropdownMenuContent>
           </DropdownMenu>
         </SettingsRow>
+        <SettingsRow
+          label={t('settings.nsfw', 'Show NSFW content')}
+          description={t('settings.nsfwDescription', 'Include adult titles from TMDb in browse, search and recommendations.')}
+        >
+          <SettingsSwitch
+            checked={showNsfw}
+            onCheckedChange={setShowNsfw}
+            label={t('settings.nsfw', 'Show NSFW content')}
+          />
+        </SettingsRow>
       </SettingsSection>
     </div>
+  );
+}
+
+function SettingsSwitch({
+  checked,
+  onCheckedChange,
+  label,
+}: {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      data-focusable="true"
+      onClick={() => onCheckedChange(!checked)}
+      className={`relative inline-flex h-6 w-10 items-center rounded-full border border-border transition-colors duration-150 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground ${
+        checked ? 'bg-tint' : 'bg-foreground/[0.12]'
+      }`}
+    >
+      <span
+        className={`inline-block h-4.5 w-4.5 rounded-full shadow-sm transition-transform duration-150 ${
+          checked ? 'translate-x-[18px] bg-background' : 'translate-x-[3px] bg-foreground/70'
+        }`}
+      />
+    </button>
   );
 }
 

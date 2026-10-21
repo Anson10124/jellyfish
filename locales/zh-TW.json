@@ -307,6 +307,14 @@
     "display": "顯示",
     "language": "語言",
     "languageDescription": "介面與媒體資訊所使用的語言。",
+    "nsfw": "顯示 NSFW 內容",
+    "nsfwDescription": "在瀏覽、搜尋與推薦中包含 TMDb 的成人內容。",
     "close": "關閉設定"
+  },
+  "nsfw": {
+    "title": "成人內容",
+    "description": "此作品被標記為成人（NSFW）內容。你可以在設定中啟用 NSFW 內容，以後就不會再看到此警告。",
+    "goBack": "返回",
+    "continue": "仍要繼續"
   }
 }

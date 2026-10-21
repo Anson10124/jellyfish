@@ -5,6 +5,7 @@ import { TmdbApi } from '@/lib/api/tmdb';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getOfficialTrailerKey } from '@/lib/utils/media-format';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { toast } from '@/components/ui/toast';
 import type { MovieDetails, VideoItem } from '@/types/media';
 
@@ -21,6 +22,7 @@ export function useMediaDetails<T = MovieDetails>(
   mediaType: 'movie' | 'tv' = 'movie'
 ): UseMediaDetailsReturn<T> {
   const { t, tmdbLanguage } = useTranslation();
+  const [showNsfw] = useShowNsfw();
   const [media, setMedia] = useState<T | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export function useMediaDetails<T = MovieDetails>(
     return () => {
       isMounted = false;
     };
-  }, [id, mediaType, tmdbLanguage, t]);
+  }, [id, mediaType, tmdbLanguage, t, showNsfw]);
 
   return { media, logoUrl, trailerKey, loading, error };
 }
