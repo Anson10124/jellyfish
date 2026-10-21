@@ -8,7 +8,7 @@ import { ServerProvider } from "@/context/server-context";
 import { Navbar, TVNavigationProvider } from "@/components/common";
 import { Toaster } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
+import { LOCALE_COOKIE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +35,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const rawLocale = cookieStore.get(LOCAL_STORAGE_KEY)?.value;
+  const rawLocale = cookieStore.get(LOCALE_COOKIE_KEY)?.value;
   const initialLocale: Locale =
     rawLocale === "zh-TW" || rawLocale === "en" ? rawLocale : DEFAULT_LOCALE;
 

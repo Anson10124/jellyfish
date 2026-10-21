@@ -113,13 +113,13 @@ test('saved mode selects each server and account, and setup overrides saved sett
   const previousWindow = globalThis.window;
   const previousStorage = globalThis.localStorage;
   const values = new Map();
-  globalThis.window = {};
+  globalThis.window = { dispatchEvent() {} };
   globalThis.localStorage = { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
   try {
-    values.set('jellyfish_servers', JSON.stringify({ activeServerId: 'proxy', servers: [
+    values.set('jellyfish_config', JSON.stringify({ servers: { activeServerId: 'proxy', servers: [
       { id: 'direct', serverUrl: 'https://jellyfin.example', accessToken: 'direct-token' },
       { id: 'proxy', serverUrl: 'https://jellyfin.example', accessToken: 'proxy-token', useProxy: true },
-    ] }));
+    ] } }));
     assert.equal(getJellyfinBaseUrl('https://jellyfin.example'), '/api/jellyfin/https%3A%2F%2Fjellyfin.example');
     assert.equal(getJellyfinBaseUrl('https://jellyfin.example', undefined, 'direct-token'), 'https://jellyfin.example');
     assert.equal(getJellyfinBaseUrl('https://jellyfin.example', false), 'https://jellyfin.example');

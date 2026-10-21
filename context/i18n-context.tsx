@@ -3,11 +3,12 @@
 import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from 'react';
 import {
   Locale,
-  LOCAL_STORAGE_KEY,
+  LOCALE_COOKIE_KEY,
   TMDB_LANGUAGE_MAP,
   DEFAULT_LOCALE,
   getInitialLocale,
 } from '@/lib/i18n/config';
+import { updateStoredConfig } from '@/lib/storage/app-config';
 import { translateKey } from '@/lib/i18n/translate';
 import { formatDate, FormatDateOptions } from '@/lib/utils/date-format';
 
@@ -35,8 +36,8 @@ export function I18nProvider({
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     if (typeof window !== 'undefined') {
-      localStorage.setItem(LOCAL_STORAGE_KEY, newLocale);
-      document.cookie = `${LOCAL_STORAGE_KEY}=${newLocale}; path=/; max-age=31536000`;
+      updateStoredConfig({ locale: newLocale });
+      document.cookie = `${LOCALE_COOKIE_KEY}=${newLocale}; path=/; max-age=31536000`;
     }
   }, []);
 
@@ -47,7 +48,7 @@ export function I18nProvider({
         setLocaleState(savedLocale);
       });
     } else if (typeof window !== 'undefined') {
-      document.cookie = `${LOCAL_STORAGE_KEY}=${locale}; path=/; max-age=31536000`;
+      document.cookie = `${LOCALE_COOKIE_KEY}=${locale}; path=/; max-age=31536000`;
     }
   }, [locale]);
 
