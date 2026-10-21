@@ -10,7 +10,6 @@ import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
-import { useLiquidGlass } from '@/hooks/ui/use-liquid-glass';
 
 import { UserAvatar } from './user-avatar';
 import { NavItems } from './nav-items';
@@ -26,7 +25,6 @@ export function Navbar() {
   const router = useRouter();
   const { t } = useTranslation();
   const isMobile = useIsMobile();
-  const [liquidGlass] = useLiquidGlass();
   const { jellyfinConfig, isInitialized, connectionState } = useServerContext();
   const isOffline = isInitialized && connectionState.status === 'offline';
 
@@ -226,8 +224,7 @@ export function Navbar() {
 
   return (
     <>
-      {/* Blurring the page under the bar would also blur away the glass refraction */}
-      {!liquidGlass && <ProgressiveBlur position="top" height="6rem" fade="var(--top-fade)" />}
+      <ProgressiveBlur position="top" height="6rem" fade="var(--top-fade)" />
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <LiquidGlass
