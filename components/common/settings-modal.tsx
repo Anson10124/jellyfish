@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from 'next-themes';
@@ -14,11 +14,13 @@ import {
   DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip } from '@/components/ui/tooltip';
+import { LiquidGlass, useLiquidGlassPortalContainer } from '@/components/ui/liquid-glass';
 
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { useReduceMotion } from '@/hooks/ui/use-reduce-motion';
+import { useLiquidGlass } from '@/hooks/ui/use-liquid-glass';
 import { SUPPORTED_LANGUAGES, Locale } from '@/lib/i18n/config';
 
 type SettingsCategory = 'general';
@@ -34,10 +36,37 @@ const THEME_OPTIONS = [
   { value: 'dark', icon: Moon, labelKey: 'settings.themeDark', fallback: 'Dark' },
 ] as const;
 
+interface SettingsModalState {
+  isOpen: boolean;
+  openSettings: () => void;
+  closeSettings: () => void;
+}
+
+const SettingsModalContext = createContext<SettingsModalState>({
+  isOpen: false,
+  openSettings: () => {},
+  closeSettings: () => {},
+});
+
+export function useSettingsModal() {
+  return useContext(SettingsModalContext);
+}
+
+// Keeps the open state above the glass scene, so toggling Liquid Glass (which remounts the scene) keeps the modal open.
+export function SettingsModalProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const openSettings = useCallback(() => setIsOpen(true), []);
+  const closeSettings = useCallback(() => setIsOpen(false), []);
+  const value = useMemo(() => ({ isOpen, openSettings, closeSettings }), [isOpen, openSettings, closeSettings]);
+
+  return <SettingsModalContext.Provider value={value}>{children}</SettingsModalContext.Provider>;
+}
+
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [category, setCategory] = useState<SettingsCategory>('general');
+  const portalContainer = useLiquidGlassPortalContainer();
 
   useScrollLock(isOpen);
 
@@ -45,7 +74,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     Promise.resolve().then(() => setMounted(true));
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || !portalContainer) return null;
 
   const categories = [
     { id: 'general' as const, icon: Settings, label: t('settings.general', 'General') },
@@ -65,15 +94,22 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             if (event.target === event.currentTarget) onClose();
           }}
         >
-          <motion.div
+          <LiquidGlass
+            render={
+              <motion.div
+                initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.97 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              />
+            }
             role="dialog"
             aria-modal="true"
             aria-labelledby="settings-modal-title"
-            initial={{ opacity: 0, y: 12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex flex-col md:flex-row w-full max-w-3xl h-[min(560px,calc(100dvh-2rem))] rounded-2xl bg-popover border border-border shadow-2xl overflow-hidden"
+            radius={18}
+            className="relative flex flex-col md:flex-row w-full max-w-3xl h-[min(560px,calc(100dvh-2rem))] rounded-2xl shadow-2xl overflow-hidden"
+            fallbackClassName="bg-popover border border-border"
+            glassClassName="bg-background/55"
           >
             {/* Category sidebar */}
             <aside className="shrink-0 md:w-52 border-b md:border-b-0 md:border-r border-border p-3 md:p-4">
@@ -115,11 +151,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             >
               <X className="w-4 h-4" />
             </button>
-          </motion.div>
+          </LiquidGlass>
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    portalContainer
   );
 }
 
@@ -128,6 +164,7 @@ function GeneralSettings() {
   const { theme, setTheme } = useTheme();
   const [showNsfw, setShowNsfw] = useShowNsfw();
   const [reduceMotion, setReduceMotion] = useReduceMotion();
+  const [liquidGlass, setLiquidGlass] = useLiquidGlass();
   const currentLanguage = SUPPORTED_LANGUAGES.find((lang) => lang.code === locale)?.label ?? 'English';
 
   return (
@@ -175,6 +212,16 @@ function GeneralSettings() {
             checked={reduceMotion}
             onCheckedChange={setReduceMotion}
             label={t('settings.reduceMotion', 'Reduce motion')}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label={t('settings.liquidGlass', 'Liquid Glass')}
+          description={t('settings.liquidGlassDescription', 'Use refractive glass for the navigation bar, menus and panels. Uses more GPU.')}
+        >
+          <SettingsSwitch
+            checked={liquidGlass}
+            onCheckedChange={setLiquidGlass}
+            label={t('settings.liquidGlass', 'Liquid Glass')}
           />
         </SettingsRow>
       </SettingsSection>

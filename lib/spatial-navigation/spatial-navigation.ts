@@ -1,6 +1,7 @@
 import { NavigationDirection } from './tv-remote-keys';
 import { getLayoutOffsetPx } from '@/constants/carousel';
 import { getReduceMotion } from '@/lib/storage/content-preferences';
+import { scrollPageBy } from '@/lib/utils/scroll-root';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -265,9 +266,9 @@ export function navigateSpatial(direction: NavigationDirection): boolean {
     const scrollBehavior: ScrollBehavior = getReduceMotion() ? 'auto' : 'smooth';
 
     if (newRect.top < topMargin) {
-      window.scrollBy({ top: newRect.top - topMargin, behavior: scrollBehavior });
+      scrollPageBy({ top: newRect.top - topMargin, behavior: scrollBehavior });
     } else if (newRect.bottom > window.innerHeight - bottomMargin) {
-      window.scrollBy({ top: newRect.bottom - (window.innerHeight - bottomMargin), behavior: scrollBehavior });
+      scrollPageBy({ top: newRect.bottom - (window.innerHeight - bottomMargin), behavior: scrollBehavior });
     }
 
     return true;

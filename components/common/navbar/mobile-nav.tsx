@@ -3,6 +3,7 @@
 import React from 'react';
 import { Search, X, Film, Tv, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
@@ -45,9 +46,12 @@ export function MobileNav({
   return (
     <>
       {isMobile && searchOpen && (
-        <div
+        <LiquidGlass
           ref={mobileSearchRef}
-          className="mt-3 w-full rounded-2xl bg-background/65 backdrop-blur-2xl border border-border p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+          radius={18}
+          className="mt-3 w-full rounded-2xl p-4 shadow-2xl animate-in fade-in duration-150"
+          fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border zoom-in-95"
+          glassClassName="bg-background/55"
         >
           <div className="flex items-center gap-3 bg-foreground/5 border border-border rounded-xl px-3 py-2">
             <Search className="w-4 h-4 text-foreground/50" />
@@ -134,7 +138,7 @@ export function MobileNav({
               )}
             </div>
           )}
-        </div>
+        </LiquidGlass>
       )}
     </>
   );

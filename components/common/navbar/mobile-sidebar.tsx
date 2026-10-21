@@ -7,8 +7,10 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Cable, LogOut, Clock, Server, Check } from 'lucide-react';
 
 import { useServerConfig } from '@/hooks/connect/use-server-config';
+import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useServerContext } from '@/context/server-context';
 import { formatServerAddress } from '@/lib/utils';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { UserAvatar } from './user-avatar';
 import { NavItemDef } from './nav-items';
 
@@ -59,11 +61,10 @@ export function MobileSidebar({
     touchStartY.current = null;
   };
 
+  useScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -74,7 +75,6 @@ export function MobileSidebar({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, onClose]);
@@ -125,16 +125,23 @@ export function MobileSidebar({
             className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[60] md:hidden cursor-pointer"
             aria-hidden="true"
           />
-          <motion.aside
+          <LiquidGlass
             key="mobile-sidebar-panel"
-            initial={{ x: '-100%' }}
-            animate={{ x: '0%' }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            render={
+              <motion.aside
+                initial={{ x: '-100%' }}
+                animate={{ x: '0%' }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              />
+            }
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="fixed top-0 bottom-0 left-0 w-[290px] max-w-[82vw] h-dvh z-[70] bg-background/95 backdrop-blur-2xl border-r border-border shadow-2xl flex flex-col md:hidden select-none"
+            radius={0}
+            className="fixed top-0 bottom-0 left-0 w-[290px] max-w-[82vw] h-dvh z-[70] shadow-2xl flex flex-col md:hidden select-none"
+            fallbackClassName="bg-background/95 backdrop-blur-2xl border-r border-border"
+            glassClassName="bg-background/55"
             aria-label="Mobile Navigation"
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-border/80">
@@ -295,7 +302,7 @@ export function MobileSidebar({
                 </button>
               )}
             </div>
-          </motion.aside>
+          </LiquidGlass>
         </>
       )}
     </AnimatePresence>

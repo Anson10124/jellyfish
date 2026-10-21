@@ -319,6 +319,8 @@
     "nsfwDescription": "在瀏覽、搜尋與推薦中包含 TMDb 的成人內容。",
     "reduceMotion": "減少動態效果",
     "reduceMotionDescription": "盡量減少整個應用程式中的動畫與轉場效果。",
+    "liquidGlass": "液態玻璃",
+    "liquidGlassDescription": "為導覽列、選單與面板使用折射玻璃效果。會使用較多 GPU 資源。",
     "close": "關閉設定"
   },
   "nsfw": {

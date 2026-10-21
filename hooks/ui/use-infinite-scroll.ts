@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getScrollRoot } from '@/lib/utils/scroll-root';
 
 export interface UseInfiniteScrollOptions {
   hasMore: boolean;
@@ -27,7 +28,8 @@ export function useInfiniteScroll({
           onLoadMore();
         }
       },
-      { rootMargin }
+      // Observe against the glass scroll container when there is one, so rootMargin preloads inside it
+      { root: getScrollRoot(), rootMargin }
     );
 
     observer.observe(target);

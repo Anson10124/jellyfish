@@ -319,6 +319,8 @@
     "nsfwDescription": "Include adult titles from TMDb in browse, search and recommendations.",
     "reduceMotion": "Reduce motion",
     "reduceMotionDescription": "Minimize animations and transitions throughout the app.",
+    "liquidGlass": "Liquid Glass",
+    "liquidGlassDescription": "Use refractive glass for the navigation bar, menus and panels. Uses more GPU.",
     "close": "Close settings"
   },
   "nsfw": {
