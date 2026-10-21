@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 import { I18nProvider } from "@/context/i18n-context";
 import { ServerProvider } from "@/context/server-context";
 import { Navbar, TVNavigationProvider } from "@/components/common";
 import { Toaster } from "@/components/ui/toast";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { LOCAL_STORAGE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
 
 const geistSans = Geist({
@@ -42,22 +44,22 @@ export default async function RootLayout({
       lang={initialLocale}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      style={{
-        overflowY: 'scroll',
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(255,255,255,0.3) transparent',
-      }}
+      style={{ overflowY: 'scroll' }}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden bg-background text-foreground">
-        <I18nProvider initialLocale={initialLocale}>
-          <ServerProvider>
-            <TVNavigationProvider>
-              <Navbar />
-              {children}
-              <Toaster />
-            </TVNavigationProvider>
-          </ServerProvider>
-        </I18nProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <I18nProvider initialLocale={initialLocale}>
+            <ServerProvider>
+              <TooltipProvider>
+                <TVNavigationProvider>
+                  <Navbar />
+                  {children}
+                  <Toaster />
+                </TVNavigationProvider>
+              </TooltipProvider>
+            </ServerProvider>
+          </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

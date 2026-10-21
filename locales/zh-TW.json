@@ -39,7 +39,8 @@
     "back": "返回",
     "addServer": "新增伺服器",
     "offlineWarning": "無法連接伺服器，請檢查網路連線。",
-    "toggleMenu": "切換選單"
+    "toggleMenu": "切換選單",
+    "settings": "設定"
   },
   "carousel": {
     "previousSlide": "上一張",
@@ -293,5 +294,19 @@
     "apiKeyDesc": "使用 Seerr 設定 -> 一般 頁面中的 API Key 進行驗證。",
     "jellyfinHostLabel": "Jellyfin 伺服器網址",
     "backToServer": "變更 Seerr 伺服器"
+  },
+  "settings": {
+    "title": "設定",
+    "general": "一般",
+    "appearance": "外觀",
+    "theme": "主題",
+    "themeDescription": "選擇 Jellyfish 在此裝置上的外觀。",
+    "themeSystem": "系統",
+    "themeLight": "淺色",
+    "themeDark": "深色",
+    "display": "顯示",
+    "language": "語言",
+    "languageDescription": "介面與媒體資訊所使用的語言。",
+    "close": "關閉設定"
   }
 }

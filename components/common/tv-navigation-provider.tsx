@@ -19,6 +19,11 @@ export function TVNavigationProvider({ children }: TVNavigationProviderProps) {
 
   const handleGlobalKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      // Let an open dropdown menu handle its own arrow, Enter and Escape keys
+      if (document.querySelector('[aria-haspopup="menu"][aria-expanded="true"]')) {
+        return;
+      }
+
       const activeEl = document.activeElement as HTMLElement | null;
       const isInput =
         activeEl &&

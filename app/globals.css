@@ -23,6 +23,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  --color-tint: var(--tint);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -50,6 +51,42 @@
 
 :root {
   --radius: 0.625rem;
+  /* App theme color (selected states, slight button tints); meant to become user-customizable */
+  --tint: #0ea5e9;
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #fafafa;
+  --secondary: #f0f0f2;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f0f0f2;
+  --muted-foreground: rgba(10, 10, 10, 0.6);
+  --accent: #e8e8eb;
+  --accent-foreground: #0a0a0a;
+  --destructive: #dc2626;
+  --border: rgba(10, 10, 10, 0.1);
+  --input: rgba(10, 10, 10, 0.15);
+  --ring: #a1a1aa;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #ec4899;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0f0f2;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: rgba(10, 10, 10, 0.1);
+  --sidebar-ring: #a1a1aa;
+}
+
+.dark {
   --background: #0a0a0a;
   --foreground: #ffffff;
   --card: #121215;
@@ -92,6 +129,8 @@
   }
   html {
     @apply font-sans;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--foreground) 30%, transparent) transparent;
   }
 
   ::selection {

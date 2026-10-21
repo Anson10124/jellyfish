@@ -17,6 +17,7 @@ import { SearchDropdown } from './search-dropdown';
 import { UserDropdownMenu } from './user-dropdown-menu';
 import { MobileNav } from './mobile-nav';
 import { MobileSidebar } from './mobile-sidebar';
+import { SettingsModal } from '../settings-modal';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -34,6 +35,8 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const closeSettings = useCallback(() => setSettingsOpen(false), []);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -343,8 +346,11 @@ export function Navbar() {
           userMenuRef={userMenuRef}
           userDropdownPos={userDropdownPos}
           setUserDropdownOpen={setUserDropdownOpen}
+          onOpenSettings={() => setSettingsOpen(true)}
           t={t}
         />
+
+        <SettingsModal isOpen={settingsOpen} onClose={closeSettings} />
 
         <MobileNav
           isMobile={isMobile}

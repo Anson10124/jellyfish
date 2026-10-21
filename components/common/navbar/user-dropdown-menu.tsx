@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock } from 'lucide-react';
+import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock, Settings } from 'lucide-react';
 
 import { JellyfinConfig } from '@/types/server';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
@@ -16,6 +16,7 @@ interface UserDropdownMenuProps {
   userMenuRef: React.RefObject<HTMLDivElement | null>;
   userDropdownPos: { right?: number };
   setUserDropdownOpen: (open: boolean) => void;
+  onOpenSettings: () => void;
   t: (key: string, fallback: string) => string;
 }
 
@@ -26,6 +27,7 @@ export function UserDropdownMenu({
   userMenuRef,
   userDropdownPos,
   setUserDropdownOpen,
+  onOpenSettings,
   t,
 }: UserDropdownMenuProps) {
   const router = useRouter();
@@ -206,6 +208,21 @@ export function UserDropdownMenu({
                     )}
                     <ChevronLeft className="w-3.5 h-3.5 text-foreground/40 rotate-180 transition-all duration-150 shrink-0" />
                   </div>
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  type="button"
+                  data-focusable="true"
+                  tabIndex={0}
+                  onClick={() => {
+                    setUserDropdownOpen(false);
+                    onOpenSettings();
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/[0.08] focus:bg-foreground/[0.15] focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-all duration-150 ease-out cursor-pointer group"
+                >
+                  <Settings className="w-4 h-4 text-foreground/50 group-hover:text-foreground transition-colors duration-150 shrink-0" />
+                  <span className="truncate">{t('nav.settings', 'Settings')}</span>
                 </motion.button>
 
                 <motion.button

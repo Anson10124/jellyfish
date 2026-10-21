@@ -39,7 +39,8 @@
     "back": "Back",
     "addServer": "Add Server",
     "offlineWarning": "Server unreachable. Please check your connection.",
-    "toggleMenu": "Toggle Menu"
+    "toggleMenu": "Toggle Menu",
+    "settings": "Settings"
   },
   "carousel": {
     "previousSlide": "Previous slide",
@@ -241,7 +242,6 @@
     "all": "All",
     "filmography": "Filmography",
     "appearances": "Appearances",
-
     "photos": "Photos",
     "readMore": "Read More",
     "showLess": "Show Less",
@@ -294,5 +294,19 @@
     "apiKeyDesc": "Authenticate using your Seerr API key found in Seerr Settings -> General.",
     "jellyfinHostLabel": "Jellyfin Server URL",
     "backToServer": "Change Seerr Server"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "themeDescription": "Choose how Jellyfish looks on this device.",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "display": "Display",
+    "language": "Language",
+    "languageDescription": "Language used for the interface and media info.",
+    "close": "Close settings"
   }
 }
