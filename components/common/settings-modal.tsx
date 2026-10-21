@@ -18,6 +18,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
+import { useReduceMotion } from '@/hooks/ui/use-reduce-motion';
 import { SUPPORTED_LANGUAGES, Locale } from '@/lib/i18n/config';
 
 type SettingsCategory = 'general';
@@ -126,6 +127,7 @@ function GeneralSettings() {
   const { t, locale, setLocale } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [showNsfw, setShowNsfw] = useShowNsfw();
+  const [reduceMotion, setReduceMotion] = useReduceMotion();
   const currentLanguage = SUPPORTED_LANGUAGES.find((lang) => lang.code === locale)?.label ?? 'English';
 
   return (
@@ -164,6 +166,16 @@ function GeneralSettings() {
               );
             })}
           </div>
+        </SettingsRow>
+        <SettingsRow
+          label={t('settings.reduceMotion', 'Reduce motion')}
+          description={t('settings.reduceMotionDescription', 'Minimize animations and transitions throughout the app.')}
+        >
+          <SettingsSwitch
+            checked={reduceMotion}
+            onCheckedChange={setReduceMotion}
+            label={t('settings.reduceMotion', 'Reduce motion')}
+          />
         </SettingsRow>
       </SettingsSection>
 

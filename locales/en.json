@@ -317,6 +317,8 @@
     "languageDescription": "Language used for the interface and media info.",
     "nsfw": "Show NSFW content",
     "nsfwDescription": "Include adult titles from TMDb in browse, search and recommendations.",
+    "reduceMotion": "Reduce motion",
+    "reduceMotionDescription": "Minimize animations and transitions throughout the app.",
     "close": "Close settings"
   },
   "nsfw": {

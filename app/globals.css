@@ -196,3 +196,14 @@ body.tv-navigation-active a[data-focusable="true"]:not(.group\/card):not(.group\
   outline: none;
   box-shadow: 0 0 0 2px var(--foreground);
 }
+
+/* In-app "Reduce motion" setting: effectively disable CSS animations, transitions and smooth scrolling */
+html.reduce-motion,
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

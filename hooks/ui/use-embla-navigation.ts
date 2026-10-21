@@ -5,6 +5,7 @@ import useEmblaCarousel from 'embla-carousel-react';
 import type { EmblaOptionsType, EmblaPluginType, EmblaCarouselType } from 'embla-carousel';
 
 import { getLayoutOffsetPx } from '@/constants/carousel';
+import { shouldReduceMotion } from '@/lib/storage/content-preferences';
 
 export interface UseEmblaNavigationOptions {
   options?: EmblaOptionsType;
@@ -37,11 +38,11 @@ export function useEmblaNavigation(config?: UseEmblaNavigationOptions) {
   }, [emblaApi, config]);
 
   const handlePrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
+    if (emblaApi) emblaApi.scrollPrev(shouldReduceMotion());
   }, [emblaApi]);
 
   const handleNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
+    if (emblaApi) emblaApi.scrollNext(shouldReduceMotion());
   }, [emblaApi]);
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { I18nProvider } from "@/context/i18n-context";
 import { ServerProvider } from "@/context/server-context";
-import { Navbar, TVNavigationProvider } from "@/components/common";
+import { Navbar, ReduceMotionProvider, TVNavigationProvider } from "@/components/common";
 import { Toaster } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LOCALE_COOKIE_KEY, DEFAULT_LOCALE, Locale } from "@/lib/i18n/config";
@@ -50,13 +50,15 @@ export default async function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <I18nProvider initialLocale={initialLocale}>
             <ServerProvider>
-              <TooltipProvider>
-                <TVNavigationProvider>
-                  <Navbar />
-                  {children}
-                  <Toaster />
-                </TVNavigationProvider>
-              </TooltipProvider>
+              <ReduceMotionProvider>
+                <TooltipProvider>
+                  <TVNavigationProvider>
+                    <Navbar />
+                    {children}
+                    <Toaster />
+                  </TVNavigationProvider>
+                </TooltipProvider>
+              </ReduceMotionProvider>
             </ServerProvider>
           </I18nProvider>
         </ThemeProvider>

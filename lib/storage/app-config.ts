@@ -12,6 +12,7 @@ const LEGACY_JELLYFIN_CONFIG_KEY = 'jellyfish_jellyfin_config';
 export interface JellyfishConfig {
   locale?: string;
   showNsfw?: boolean;
+  reduceMotion?: boolean;
   servers?: MultiServerStore;
 }
 

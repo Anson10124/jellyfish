@@ -1,5 +1,6 @@
 import { NavigationDirection } from './tv-remote-keys';
 import { getLayoutOffsetPx } from '@/constants/carousel';
+import { shouldReduceMotion } from '@/lib/storage/content-preferences';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -167,7 +168,7 @@ export function syncCarouselForElement(targetEl: HTMLElement): void {
     if (!carouselContainer) return;
 
     // Check for attached emblaApi
-    const emblaApi = (carouselContainer as unknown as { __emblaApi?: { scrollTo: (index: number) => void; slideNodes: () => HTMLElement[] } }).__emblaApi;
+    const emblaApi = (carouselContainer as unknown as { __emblaApi?: { scrollTo: (index: number, jump?: boolean) => void; slideNodes: () => HTMLElement[] } }).__emblaApi;
     if (emblaApi && typeof emblaApi.scrollTo === 'function') {
       const slides = emblaApi.slideNodes ? emblaApi.slideNodes() : [];
       const slideIndex = slides.findIndex((slide) => slide.contains(targetEl) || slide === targetEl);
@@ -179,14 +180,14 @@ export function syncCarouselForElement(targetEl: HTMLElement): void {
           targetRect.right <= (typeof window !== 'undefined' ? window.innerWidth : 1920) - leftOffset + 12;
 
         if (!isComfortablyVisible) {
-          emblaApi.scrollTo(slideIndex);
+          emblaApi.scrollTo(slideIndex, shouldReduceMotion());
         }
         return;
       }
     }
 
     // Fallback: smooth scroll within carousel track
-    targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    targetEl.scrollIntoView({ behavior: shouldReduceMotion() ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
   } catch (err) {
     console.debug('Carousel sync error:', err);
   }
@@ -261,11 +262,12 @@ export function navigateSpatial(direction: NavigationDirection): boolean {
     const newRect = bestCandidate.getBoundingClientRect();
     const topMargin = 80;
     const bottomMargin = 80;
+    const scrollBehavior: ScrollBehavior = shouldReduceMotion() ? 'auto' : 'smooth';
 
     if (newRect.top < topMargin) {
-      window.scrollBy({ top: newRect.top - topMargin, behavior: 'smooth' });
+      window.scrollBy({ top: newRect.top - topMargin, behavior: scrollBehavior });
     } else if (newRect.bottom > window.innerHeight - bottomMargin) {
-      window.scrollBy({ top: newRect.bottom - (window.innerHeight - bottomMargin), behavior: 'smooth' });
+      window.scrollBy({ top: newRect.bottom - (window.innerHeight - bottomMargin), behavior: scrollBehavior });
     }
 
     return true;
