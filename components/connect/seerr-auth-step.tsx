@@ -66,7 +66,7 @@ export function SeerrAuthStep({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 text-white/70 hover:text-white text-sm font-medium transition-all cursor-pointer border border-white/10 backdrop-blur-xl"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border border-foreground/10 backdrop-blur-xl"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('seerr.backToServer', 'Change Seerr Server')}</span>
@@ -74,12 +74,12 @@ export function SeerrAuthStep({
       </div>
 
       <div className="text-center max-w-2xl mb-8 space-y-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
           {t('seerr.authTitle', 'Authenticate with Seerr')}
         </h1>
-        <p className="text-white/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
+        <p className="text-foreground/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
           {t('seerr.authSubtitle', 'Choose how to log in to your Seerr server')}{' '}
-          <strong className="text-white">{seerrServerUrl}</strong>
+          <strong className="text-foreground">{seerrServerUrl}</strong>
         </p>
       </div>
 
@@ -89,26 +89,26 @@ export function SeerrAuthStep({
             onClick={() => onSelectMethod('jellyfin')}
             className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${
               selectedMethod === 'jellyfin'
-                ? 'border-white/30 bg-white/[0.08] shadow-2xl'
-                : 'border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl'
+                ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl'
+                : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'
             }`}
           >
-            <h2 className="text-xl font-bold text-white mb-2 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-foreground mb-2 flex items-center justify-between">
               <span>{t('seerr.jellyfinSignInTitle', 'Sign in with Jellyfin')}</span>
               {selectedMethod === 'jellyfin' && (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               )}
             </h2>
-            <p className="text-sm text-white/60 mb-6 leading-relaxed">
+            <p className="text-sm text-foreground/60 mb-6 leading-relaxed">
               {t(
                 'seerr.jellyfinSignInDesc',
                 'Log in using your Jellyfin account registered on your Seerr instance.'
               )}
             </p>
 
-            <div className="mt-auto space-y-3 pt-4 border-t border-white/10">
+            <div className="mt-auto space-y-3 pt-4 border-t border-foreground/10">
               <div className="relative flex items-center">
-                <User className="absolute left-3.5 w-4 h-4 text-white/60" />
+                <User className="absolute left-3.5 w-4 h-4 text-foreground/60" />
                 <input
                   type="text"
                   placeholder={t('connect.usernamePlaceholder', 'Username')}
@@ -118,12 +118,12 @@ export function SeerrAuthStep({
                     setSeerrUsername(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('jellyfin')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground text-sm outline-none placeholder:text-foreground/60 focus:border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground transition-all"
                 />
               </div>
 
               <div className="relative flex items-center">
-                <Lock className="absolute left-3.5 w-4 h-4 text-white/60" />
+                <Lock className="absolute left-3.5 w-4 h-4 text-foreground/60" />
                 <input
                   type="password"
                   placeholder={t('connect.passwordPlaceholder', 'Password (optional if none set)')}
@@ -133,7 +133,7 @@ export function SeerrAuthStep({
                     setSeerrPassword(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('jellyfin')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground text-sm outline-none placeholder:text-foreground/60 focus:border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground transition-all"
                 />
               </div>
 
@@ -147,26 +147,26 @@ export function SeerrAuthStep({
             onClick={() => onSelectMethod('apikey')}
             className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${
               selectedMethod === 'apikey'
-                ? 'border-white/30 bg-white/[0.08] shadow-2xl'
-                : 'border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] shadow-xl'
+                ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl'
+                : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'
             }`}
           >
-            <h2 className="text-xl font-bold text-white mb-2 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-foreground mb-2 flex items-center justify-between">
               <span>{t('seerr.apiKeyTitle', 'API Key')}</span>
               {selectedMethod === 'apikey' && (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               )}
             </h2>
-            <p className="text-sm text-white/60 mb-6 leading-relaxed">
+            <p className="text-sm text-foreground/60 mb-6 leading-relaxed">
               {t(
                 'seerr.apiKeyDesc',
                 'Authenticate using your Seerr API key found in Seerr Settings -> General.'
               )}
             </p>
 
-            <div className="mt-auto space-y-3 pt-4 border-t border-white/10">
+            <div className="mt-auto space-y-3 pt-4 border-t border-foreground/10">
               <div className="relative flex items-center">
-                <Key className="absolute left-3.5 w-4 h-4 text-white/60" />
+                <Key className="absolute left-3.5 w-4 h-4 text-foreground/60" />
                 <input
                   type="password"
                   placeholder={t('connect.seerrApiKeyPlaceholder', 'Found in Seerr Settings -> General -> API Key')}
@@ -176,7 +176,7 @@ export function SeerrAuthStep({
                     setSeerrApiKey(e.target.value);
                   }}
                   onFocus={() => onSelectMethod('apikey')}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm outline-none placeholder:text-white/60 focus:border-white/30 focus-visible:ring-2 focus-visible:ring-white transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-foreground/5 border border-foreground/10 text-foreground text-sm outline-none placeholder:text-foreground/60 focus:border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground transition-all"
                 />
               </div>
 
@@ -191,15 +191,15 @@ export function SeerrAuthStep({
           <button
             type="submit"
             disabled={!canSubmit || isAuthenticating}
-            className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+            className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground ${
               canSubmit && !isAuthenticating
-                ? 'bg-white text-black scale-100 hover:scale-105 active:scale-95'
-                : 'bg-white/10 text-white/50 cursor-not-allowed scale-95 opacity-50'
+                ? 'bg-foreground text-background scale-100 hover:scale-105 active:scale-95'
+                : 'bg-foreground/10 text-foreground/50 cursor-not-allowed scale-95 opacity-50'
             }`}
           >
             {isAuthenticating ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin text-black" />
+                <Loader2 className="w-5 h-5 animate-spin text-background" />
                 <span>{t('connect.connecting', 'Connecting...')}</span>
               </>
             ) : (
@@ -213,7 +213,7 @@ export function SeerrAuthStep({
           <button
             type="button"
             onClick={onSkip}
-            className="px-6 py-4 rounded-full font-semibold text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
+            className="px-6 py-4 rounded-full font-semibold text-sm text-foreground/70 hover:text-foreground hover:bg-foreground/10 transition-all duration-200 cursor-pointer"
           >
             {t('connect.skipForNow', 'Skip for now')}
           </button>

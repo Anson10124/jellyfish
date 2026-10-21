@@ -73,7 +73,7 @@ export function LandscapeMediaCard({
       }}
       className={`group/land w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/5 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/land:scale-[1.025] group-hover/land:ring-foreground/40 group-focus-visible/land:scale-[1.03] group-focus-visible/land:ring-2 group-focus-visible/land:ring-white">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/5 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/land:scale-[1.025] group-hover/land:ring-foreground/40 group-focus-visible/land:scale-[1.03] group-focus-visible/land:ring-2 group-focus-visible/land:ring-foreground">
         {imageUrl ? (
           <img
             src={imageUrl}

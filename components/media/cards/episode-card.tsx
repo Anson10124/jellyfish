@@ -36,7 +36,7 @@ export function EpisodeCard({ episode, className = '', onPlay }: EpisodeCardProp
       }}
       className={`group/ep w-full shrink-0 text-left select-none cursor-pointer focus:outline-none focus-visible:outline-none rounded-xl ${className}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/ep:scale-[1.025] group-hover/ep:ring-foreground/40 group-focus-visible/ep:scale-[1.03] group-focus-visible/ep:ring-2 group-focus-visible/ep:ring-white">
+      <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/ep:scale-[1.025] group-hover/ep:ring-foreground/40 group-focus-visible/ep:scale-[1.03] group-focus-visible/ep:ring-2 group-focus-visible/ep:ring-foreground">
         {imageUrl ? (
           <img
             src={imageUrl}

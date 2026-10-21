@@ -30,7 +30,7 @@ export function PosterGrid({
   return (
     <section className={`w-full space-y-6 ${PADDING_X_CLASSES} ${className}`}>
       {title && (
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {title}
         </h2>
       )}

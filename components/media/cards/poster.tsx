@@ -45,7 +45,7 @@ export function Poster({
 
   const content = (
     <div className="w-full shrink-0 text-left focus:outline-none select-none">
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/card:scale-[1.025] group-hover/card:ring-foreground/40 group-focus-visible/card:scale-[1.03] group-focus-visible/card:ring-2 group-focus-visible/card:ring-white">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/card:scale-[1.025] group-hover/card:ring-foreground/40 group-focus-visible/card:scale-[1.03] group-focus-visible/card:ring-2 group-focus-visible/card:ring-foreground">
         <img
           src={getTmdbImage(posterPath, 'w342')}
           alt={title}

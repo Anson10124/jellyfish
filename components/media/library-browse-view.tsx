@@ -31,16 +31,16 @@ export function LibraryBrowseView({ params }: LibraryBrowseViewProps) {
     return (
       <section className={`w-full py-12 ${PADDING_X_CLASSES} flex flex-col items-center justify-center space-y-6 text-center`}>
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-white">
+          <h3 className="text-lg font-bold text-foreground">
             {t('library.connectPromptTitle', 'Connect Your Jellyfin Server')}
           </h3>
-          <p className="text-sm text-neutral-400 max-w-md">
+          <p className="text-sm text-muted-foreground max-w-md">
             {t('library.connectPromptDesc', 'Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly.')}
           </p>
         </div>
         <Link
           href="/connect"
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-black text-sm font-semibold hover:bg-neutral-200 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/85 transition-colors"
         >
           <span>{t('nav.connect', 'Connect Server')}</span>
         </Link>
@@ -49,8 +49,8 @@ export function LibraryBrowseView({ params }: LibraryBrowseViewProps) {
   }
 
   const emptyState = (
-    <div className="w-full py-16 text-center text-white/50 text-sm flex flex-col items-center gap-2">
-      <FolderOpen className="w-8 h-8 text-neutral-500" />
+    <div className="w-full py-16 text-center text-foreground/50 text-sm flex flex-col items-center gap-2">
+      <FolderOpen className="w-8 h-8 text-muted-foreground" />
       <p>{t('library.noItems', 'No media items found in this library.')}</p>
     </div>
   );

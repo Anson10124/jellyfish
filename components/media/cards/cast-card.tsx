@@ -39,7 +39,7 @@ export function CastCard({
 
   const cardContent = (
     <div className={`group/cast w-full shrink-0 text-left focus:outline-none select-none ${className}`}>
-      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/cast:scale-[1.025] group-hover/cast:ring-foreground/40 group-focus-visible/cast:scale-[1.03] group-focus-visible/cast:ring-2 group-focus-visible/cast:ring-white">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg ring-1 ring-border transition-all duration-200 group-hover/cast:scale-[1.025] group-hover/cast:ring-foreground/40 group-focus-visible/cast:scale-[1.03] group-focus-visible/cast:ring-2 group-focus-visible/cast:ring-foreground">
         <img
           src={imageUrl}
           alt={displayName}

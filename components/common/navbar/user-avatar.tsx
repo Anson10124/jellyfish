@@ -34,7 +34,7 @@ export function UserAvatar({ serverUrl, userId, tag, username }: UserAvatarProps
 
   const initial = username ? username.charAt(0).toUpperCase() : '?';
   return (
-    <div className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold text-white shrink-0 leading-none">
+    <div className="w-4 h-4 rounded-full bg-foreground/20 flex items-center justify-center text-[10px] font-bold text-foreground shrink-0 leading-none">
       {initial}
     </div>
   );

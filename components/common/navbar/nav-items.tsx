@@ -57,7 +57,7 @@ export function NavItems({
             data-focusable="true"
             tabIndex={0}
             onClick={() => setActivePath(item.href)}
-            className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20 ${
+            className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
               isActive ? 'text-foreground font-semibold' : 'text-foreground/80 hover:text-foreground'
             }`}
           >

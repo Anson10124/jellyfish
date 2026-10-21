@@ -152,7 +152,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
         >
           <div className="flex items-center justify-between pb-2 border-b border-border">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
@@ -182,7 +182,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
                 {t('connect.seerrUrlLabel', 'Seerr Server Address')}
               </label>
               <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-foreground/[0.05] border border-border focus-within:border-primary transition">
-                <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
                 <input
                   type="url"
                   placeholder="http://localhost:5055"
@@ -202,7 +202,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
                   onClick={() => setAuthMethod('jellyfin')}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     authMethod === 'jellyfin'
-                      ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+                      ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'
                       : 'text-foreground/50 hover:text-foreground/70 border border-transparent'
                   }`}
                 >
@@ -214,7 +214,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
                   onClick={() => setAuthMethod('apikey')}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     authMethod === 'apikey'
-                      ? 'bg-purple-500/15 text-purple-400 border border-purple-500/30'
+                      ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30'
                       : 'text-foreground/50 hover:text-foreground/70 border border-transparent'
                   }`}
                 >
@@ -263,7 +263,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
             <ConnectionModeToggle mode={mode} onChange={setMode} variant="modal" />
 
             {seerrConfig?.isConnected && (
-              <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium px-1">
+              <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium px-1">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>
                   Currently connected to {seerrConfig.appName || 'Seerr'}
@@ -281,7 +281,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
                 <button
                   type="button"
                   onClick={handleDisconnect}
-                  className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs transition cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-semibold text-xs transition cursor-pointer flex items-center gap-1.5"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>{t('seerr.disconnect', 'Disconnect')}</span>

@@ -66,7 +66,7 @@ export function SearchDropdown({
                 data-focusable="true"
                 tabIndex={0}
                 onClick={() => handleResultClick(item.media_type, item.id)}
-                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-foreground/8 focus:bg-foreground/15 focus:outline-none focus-visible:ring-1 focus-visible:ring-white transition-colors duration-150 cursor-pointer group rounded-lg"
+                className="w-full flex items-center gap-3 px-3 py-2 hover:bg-foreground/8 focus:bg-foreground/15 focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground transition-colors duration-150 cursor-pointer group rounded-lg"
               >
                 {/* Poster */}
                 <div className="relative w-10 h-[60px] rounded-lg overflow-hidden bg-foreground/5 shrink-0">

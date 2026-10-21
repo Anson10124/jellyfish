@@ -72,7 +72,7 @@ const ProgressiveBlur: React.FC<ProgressiveBlurProps> = ({
 
   const fadeOverlay = useMemo(() => {
     if (!fade) return null;
-    const colorStr = typeof fade === 'string' ? fade : '#0a0a0a';
+    const colorStr = typeof fade === 'string' ? fade : 'var(--background)';
     let rgba = colorStr;
     if (colorStr.startsWith('#')) {
       const hex = colorStr.replace('#', '');
@@ -81,6 +81,8 @@ const ProgressiveBlur: React.FC<ProgressiveBlurProps> = ({
       const g = parseInt(fullHex.substring(2, 4), 16) || 10;
       const b = parseInt(fullHex.substring(4, 6), 16) || 10;
       rgba = `rgba(${r}, ${g}, ${b}, ${fadeOpacity})`;
+    } else if (colorStr.startsWith('var(')) {
+      rgba = `color-mix(in srgb, ${colorStr} ${fadeOpacity * 100}%, transparent)`;
     }
     const fadeDirection = FADE_DIRECTION_MAP[position] || 'to bottom';
     return (

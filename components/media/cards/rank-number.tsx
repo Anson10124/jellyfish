@@ -26,7 +26,8 @@ export function RankNumber({ rank, className }: RankNumberProps) {
         y="114"
         textAnchor="middle"
         fill="transparent"
-        stroke="rgba(255, 255, 255, 0.3)"
+        stroke="var(--foreground)"
+        strokeOpacity={0.3}
         strokeWidth="1"
         strokeLinejoin="round"
         paintOrder="stroke fill"

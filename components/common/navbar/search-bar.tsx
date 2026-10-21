@@ -38,8 +38,6 @@ export function SearchBar({
           initial={false}
           animate={{
             width: searchOpen ? 325 : 110,
-            backgroundColor: searchOpen ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.05)',
-            borderColor: searchOpen ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
           }}
           transition={{
             type: 'spring',
@@ -58,7 +56,9 @@ export function SearchBar({
           }}
           tabIndex={searchOpen ? -1 : 0}
           data-focusable={!searchOpen ? 'true' : undefined}
-          className="relative flex items-center h-9 rounded-full border px-3.5 overflow-hidden cursor-pointer shadow-sm group focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20"
+          className={`relative flex items-center h-9 rounded-full border px-3.5 overflow-hidden cursor-pointer shadow-sm group transition-[background-color,border-color] duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+            searchOpen ? 'bg-foreground/12 border-foreground/20' : 'bg-foreground/5 border-foreground/10'
+          }`}
         >
           <Search className="w-4 h-4 text-foreground/80 shrink-0 transition-colors group-hover:text-foreground" />
 
@@ -125,7 +125,7 @@ export function SearchBar({
           onClick={() => setSearchOpen((prev) => !prev)}
           data-focusable="true"
           tabIndex={0}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-foreground transition-all text-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/10 text-foreground/80 hover:text-foreground transition-all text-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground"
         >
           <Search className="w-4 h-4" />
           <span className="hidden sm:inline font-medium">{t('nav.search', 'Search')}</span>

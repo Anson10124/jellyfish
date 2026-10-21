@@ -277,7 +277,7 @@ export function MobileSidebar({
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer"
                     title={t('nav.signOut', 'Sign Out')}
                     aria-label={t('nav.signOut', 'Sign Out')}
                   >

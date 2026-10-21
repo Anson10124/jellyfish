@@ -67,7 +67,7 @@ export function AuthStep({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 text-white/70 hover:text-white text-sm font-medium transition-all cursor-pointer border border-white/10 backdrop-blur-xl"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border border-foreground/10 backdrop-blur-xl"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('connect.changeServer', 'Change Server')}</span>
@@ -75,12 +75,12 @@ export function AuthStep({
       </div>
 
       <div className="text-center max-w-2xl mb-8 space-y-4">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
           {t('connect.loginTitle', 'How would you like to log in?')}
         </h1>
-        <p className="text-white/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
+        <p className="text-foreground/60 text-sm leading-6 font-normal [overflow-wrap:anywhere]">
           {t('connect.loginSubtitle', 'Choose your preferred login method for')}{' '}
-          <strong className="text-white">{serverUrl}</strong>
+          <strong className="text-foreground">{serverUrl}</strong>
         </p>
       </div>
 
@@ -105,15 +105,15 @@ export function AuthStep({
         <button
           type="submit"
           disabled={!canSubmit || isAuthenticating}
-          className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+          className={`group relative inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full font-bold text-base transition-all duration-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground ${
             canSubmit && !isAuthenticating
-              ? 'bg-white text-black scale-100 hover:scale-105 active:scale-95'
-              : 'bg-white/10 text-white/50 cursor-not-allowed scale-95 opacity-50'
+              ? 'bg-foreground text-background scale-100 hover:scale-105 active:scale-95'
+              : 'bg-foreground/10 text-foreground/50 cursor-not-allowed scale-95 opacity-50'
           }`}
         >
           {isAuthenticating ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin text-black" />
+              <Loader2 className="w-5 h-5 animate-spin text-background" />
               <span>{t('connect.connecting', 'Connecting...')}</span>
             </>
           ) : (

@@ -21,7 +21,7 @@ export function RequestButton({ children, className, disabled, isRequesting = fa
       disabled={disabled || isRequesting}
       aria-busy={isRequesting}
       className={cn(
-        'inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
+        'inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100',
         className,
       )}
       {...props}

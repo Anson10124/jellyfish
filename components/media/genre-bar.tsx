@@ -64,10 +64,10 @@ export function GenreBar({
           data-focusable="true"
           tabIndex={0}
           onClick={() => onSelectGenre(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
             activeGenreId === null
-              ? 'bg-white text-black shadow-md scale-[1.02]'
-              : 'bg-[#3b3b45]/65 text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
+              ? 'bg-foreground text-background shadow-md scale-[1.02]'
+              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
           }`}
         >
           {t('common.all', 'All')}
@@ -78,10 +78,10 @@ export function GenreBar({
           prefetch={false}
           data-focusable="true"
           tabIndex={0}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
+          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
             activeGenreId === null
-              ? 'bg-white text-black shadow-md scale-[1.02]'
-              : 'bg-[#3b3b45]/65 text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
+              ? 'bg-foreground text-background shadow-md scale-[1.02]'
+              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
           }`}
         >
           {t('common.all', 'All')}
@@ -91,10 +91,10 @@ export function GenreBar({
       {genres.map((genre) => {
         const isSelected = activeGenreId === genre.id;
         const genreName = getGenreName(genre.id, t) || genre.name;
-        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer bg-[#121215]/65 backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.05] ${
+        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
           isSelected
-            ? 'bg-white text-black shadow-md scale-[1.02]'
-            : 'text-white/70 hover:bg-white/20 hover:text-white ring-1 ring-white/10'
+            ? 'bg-foreground text-background shadow-md scale-[1.02]'
+            : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
         }`;
 
         if (onSelectGenre) {

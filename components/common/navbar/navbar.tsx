@@ -223,7 +223,7 @@ export function Navbar() {
 
   return (
     <>
-      <ProgressiveBlur position="top" height="6rem" fade />
+      <ProgressiveBlur position="top" height="6rem" fade="var(--top-fade)" />
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <nav className="relative flex items-center justify-between rounded-full bg-background/65 backdrop-blur-2xl border border-border px-3 py-2 shadow-2xl text-foreground/80">
@@ -275,7 +275,7 @@ export function Navbar() {
                   data-focusable="true"
                   tabIndex={0}
                   onClick={() => setUserDropdownOpen((prev) => !prev)}
-                  className={`flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20 ${
+                  className={`flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
                     userDropdownOpen
                       ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
                       : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
@@ -311,7 +311,7 @@ export function Navbar() {
                 href="/connect"
                 data-focusable="true"
                 tabIndex={0}
-                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:bg-foreground/20 ${
+                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
                   pathname === '/connect'
                     ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
                     : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'

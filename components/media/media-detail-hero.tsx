@@ -125,9 +125,9 @@ export function MediaDetailHero({
                   data-focusable="true"
                   tabIndex={0}
                   onClick={onWatchTrailer}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                 >
-                  <Film className="h-4 w-4 text-red-400" />
+                  <Film className="h-4 w-4 text-red-600 dark:text-red-400" />
                   {t('movies.watchTrailer', 'Watch Trailer')}
                 </button>
               )}
@@ -137,7 +137,7 @@ export function MediaDetailHero({
                 data-focusable="true"
                 tabIndex={0}
                 onClick={onAddToWatchlist}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                 aria-label={t('common.addToWatchlist', 'Add to watchlist')}
               >
                 <Bookmark className="h-4 w-4" />

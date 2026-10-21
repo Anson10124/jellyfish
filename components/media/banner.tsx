@@ -205,12 +205,20 @@ export function Banner({
       </div>
 
       {/* Side Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
+      <div className="absolute inset-0 hidden dark:block bg-gradient-to-r from-background/70 via-background/20 to-transparent w-full md:w-3/5 lg:w-1/2"></div>
 
       {/* Bottom Overlay */}
-      <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden">
+      <div className="absolute bottom-0 inset-x-0 h-44 sm:h-56 md:h-72 lg:h-88 pointer-events-none z-20 overflow-hidden hidden dark:block">
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/85 via-40% to-transparent" />
       </div>
+
+      {/* Light mode: the hero text stays light-on-dark (see the `dark` island below), so a dark scrim
+          keeps it readable on any backdrop, and only a thin strip blends into the light page */}
+      <div className="absolute inset-0 pointer-events-none dark:hidden">
+        <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/70 via-black/30 via-45% to-transparent" />
+        <div className="absolute inset-y-0 left-0 hidden lg:block w-3/5 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
+      </div>
+      <div className="absolute bottom-0 inset-x-0 h-12 sm:h-16 lg:h-20 pointer-events-none z-20 dark:hidden bg-gradient-to-t from-background to-transparent" />
 
       <div className={`relative z-30 flex h-full flex-col justify-end pt-24 pb-14 lg:pb-20 ${PADDING_X_CLASSES}`}>
         <div className="max-w-xl sm:max-w-2xl lg:max-w-3xl mx-auto lg:mx-0">
@@ -222,7 +230,7 @@ export function Banner({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-              className="space-y-3 sm:space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start pb-10 lg:pb-0"
+              className="dark space-y-3 sm:space-y-4 text-center lg:text-left flex flex-col items-center lg:items-start pb-10 lg:pb-0"
             >
               <div>
                 {activeLogoUrl ? (
@@ -273,7 +281,7 @@ export function Banner({
                     prefetch={false}
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -283,7 +291,7 @@ export function Banner({
                     type="button"
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl bg-primary px-4 text-[13px] font-semibold shadow-none transition hover:bg-primary/90 active:scale-[0.98] text-primary-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     {t('common.watchNow', 'Watch Now')}
@@ -296,7 +304,7 @@ export function Banner({
                     prefetch={false}
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -306,7 +314,7 @@ export function Banner({
                     type="button"
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
@@ -326,7 +334,7 @@ export function Banner({
                   data-focusable="true"
                   tabIndex={0}
                   aria-label={`${t('carousel.goToSlide', 'Go to slide')} ${idx + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground ${
                     idx === currentIndex
                       ? 'w-7 bg-foreground'
                       : 'w-2 bg-foreground/40 hover:bg-foreground/70'

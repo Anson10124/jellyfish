@@ -145,7 +145,7 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
           <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-center md:items-start text-center md:text-left">
             {/* Collection Poster */}
             {posterUrl && (
-              <div className="relative w-44 sm:w-56 md:w-64 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/15 shrink-0 bg-foreground/5">
+              <div className="relative w-44 sm:w-56 md:w-64 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-foreground/15 shrink-0 bg-foreground/5">
                 <img
                   src={posterUrl}
                   alt={collection.name}

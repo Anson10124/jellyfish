@@ -47,8 +47,8 @@ export function SeasonCard({
       <div
         className={`relative aspect-[2/3] overflow-hidden rounded-xl bg-foreground/4 shadow-lg transition-all duration-200 ${
           isSelected
-            ? 'ring-2 ring-white scale-[1.03]'
-            : 'ring-1 ring-border group-hover/season:scale-[1.025] group-hover/season:ring-foreground/40 group-focus-visible/season:scale-[1.03] group-focus-visible/season:ring-2 group-focus-visible/season:ring-white'
+            ? 'ring-2 ring-foreground scale-[1.03]'
+            : 'ring-1 ring-border group-hover/season:scale-[1.025] group-hover/season:ring-foreground/40 group-focus-visible/season:scale-[1.03] group-focus-visible/season:ring-2 group-focus-visible/season:ring-foreground'
         }`}
       >
         {imageUrl ? (
