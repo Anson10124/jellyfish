@@ -53,7 +53,15 @@
     "trendingToday": "今日熱門",
     "actionTitle": "動作強檔",
     "comedyTitle": "熱門喜劇",
-    "popularMovies": "熱門電影"
+    "popularMovies": "熱門電影",
+    "trendingThisWeek": "本週熱門",
+    "popularTvShows": "熱門影集",
+    "sciFiTitle": "科幻與奇幻",
+    "dramaTitle": "動人劇情",
+    "horrorTitle": "恐怖之夜",
+    "animationTitle": "動畫",
+    "crimeTitle": "犯罪與驚悚",
+    "documentaryTitle": "紀錄片"
   },
   "movies": {
     "title": "電影",

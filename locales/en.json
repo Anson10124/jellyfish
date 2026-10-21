@@ -53,7 +53,15 @@
     "trendingToday": "Trending Today",
     "actionTitle": "Action Blockbusters",
     "comedyTitle": "Laugh Out Loud Comedy",
-    "popularMovies": "Popular Movies"
+    "popularMovies": "Popular Movies",
+    "trendingThisWeek": "Trending This Week",
+    "popularTvShows": "Popular TV Shows",
+    "sciFiTitle": "Sci-Fi & Fantasy",
+    "dramaTitle": "Gripping Dramas",
+    "horrorTitle": "Horror Nights",
+    "animationTitle": "Animation",
+    "crimeTitle": "Crime & Thrillers",
+    "documentaryTitle": "Documentaries"
   },
   "movies": {
     "title": "Movies",
