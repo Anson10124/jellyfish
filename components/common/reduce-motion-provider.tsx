@@ -22,6 +22,6 @@ export function ReduceMotionProvider({ children }: { children: React.ReactNode }
     document.documentElement.classList.toggle('reduce-motion', reduceMotion);
   }, [reduceMotion]);
 
-  // 'user' still honors the OS-level prefers-reduced-motion setting when the in-app toggle is off.
-  return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  // The setting already defaults to the OS preference, so an explicit "off" should mean full motion.
+  return <MotionConfig reducedMotion="never">{children}</MotionConfig>;
 }

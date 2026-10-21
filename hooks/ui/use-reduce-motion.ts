@@ -1,9 +1,9 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { getReduceMotion, setReduceMotion, subscribeContentPreferences } from '@/lib/storage/content-preferences';
+import { getReduceMotion, setReduceMotion, subscribeReduceMotion } from '@/lib/storage/content-preferences';
 
 export function useReduceMotion(): [boolean, (value: boolean) => void] {
-  const reduceMotion = useSyncExternalStore(subscribeContentPreferences, getReduceMotion, () => false);
+  const reduceMotion = useSyncExternalStore(subscribeReduceMotion, getReduceMotion, () => false);
   return [reduceMotion, setReduceMotion];
 }

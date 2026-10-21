@@ -8,18 +8,28 @@ export function setShowNsfw(value: boolean): void {
   updateStoredConfig({ showNsfw: value });
 }
 
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+// Until the user flips the switch, follow the OS-level reduced motion preference.
 export function getReduceMotion(): boolean {
-  return getStoredConfig().reduceMotion === true;
+  if (typeof window === 'undefined') return false;
+  const stored = getStoredConfig().reduceMotion;
+  if (stored !== undefined) return stored;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
 }
 
 export function setReduceMotion(value: boolean): void {
   updateStoredConfig({ reduceMotion: value });
 }
 
-// True when either the in-app setting or the OS-level preference asks for reduced motion.
-export function shouldReduceMotion(): boolean {
-  if (typeof window === 'undefined') return false;
-  return getReduceMotion() || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export function subscribeReduceMotion(callback: () => void): () => void {
+  const unsubscribeConfig = subscribeStoredConfig(callback);
+  const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+  mediaQuery.addEventListener('change', callback);
+  return () => {
+    unsubscribeConfig();
+    mediaQuery.removeEventListener('change', callback);
+  };
 }
 
 export const subscribeContentPreferences = subscribeStoredConfig;

@@ -1,6 +1,6 @@
 import { NavigationDirection } from './tv-remote-keys';
 import { getLayoutOffsetPx } from '@/constants/carousel';
-import { shouldReduceMotion } from '@/lib/storage/content-preferences';
+import { getReduceMotion } from '@/lib/storage/content-preferences';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -180,14 +180,14 @@ export function syncCarouselForElement(targetEl: HTMLElement): void {
           targetRect.right <= (typeof window !== 'undefined' ? window.innerWidth : 1920) - leftOffset + 12;
 
         if (!isComfortablyVisible) {
-          emblaApi.scrollTo(slideIndex, shouldReduceMotion());
+          emblaApi.scrollTo(slideIndex, getReduceMotion());
         }
         return;
       }
     }
 
     // Fallback: smooth scroll within carousel track
-    targetEl.scrollIntoView({ behavior: shouldReduceMotion() ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+    targetEl.scrollIntoView({ behavior: getReduceMotion() ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
   } catch (err) {
     console.debug('Carousel sync error:', err);
   }
@@ -262,7 +262,7 @@ export function navigateSpatial(direction: NavigationDirection): boolean {
     const newRect = bestCandidate.getBoundingClientRect();
     const topMargin = 80;
     const bottomMargin = 80;
-    const scrollBehavior: ScrollBehavior = shouldReduceMotion() ? 'auto' : 'smooth';
+    const scrollBehavior: ScrollBehavior = getReduceMotion() ? 'auto' : 'smooth';
 
     if (newRect.top < topMargin) {
       window.scrollBy({ top: newRect.top - topMargin, behavior: scrollBehavior });
