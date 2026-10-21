@@ -52,7 +52,7 @@
 :root {
   --radius: 0.625rem;
   /* App theme color (selected states, slight button tints); meant to become user-customizable */
-  --tint: #0ea5e9;
+  --tint: var(--foreground);
   --background: #fafafa;
   --foreground: #0a0a0a;
   --card: #ffffff;
