@@ -121,13 +121,12 @@ export function Banner({
 
   const activeItem = bannerItems[currentIndex] || initialItem;
 
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-    Promise.resolve().then(() => {
-      setImageLoaded(false);
-    });
-  }, [activeItem?.id]);
+  // Track which URLs have finished loading rather than a single boolean that gets
+  // reset on slide change — a reset racing a cached image's load event left it hidden.
+  const [loadedUrls, setLoadedUrls] = useState<Record<string, true>>({});
+  const markLoaded = React.useCallback((url: string) => {
+    setLoadedUrls((prev) => (prev[url] ? prev : { ...prev, [url]: true }));
+  }, []);
 
   if (loading && !activeItem) {
     return (
@@ -154,6 +153,7 @@ export function Banner({
     selectedImagePath,
     'original'
   );
+  const imageLoaded = !!loadedUrls[backdropUrl];
   const activeLogoUrl = activeItem.id ? logosMap[activeItem.id] : null;
   const overview = (activeDetails?.overview || activeItem.overview) as string | undefined;
   const tagline = activeDetails?.tagline || activeItem.tagline;
@@ -190,8 +190,11 @@ export function Banner({
             key={activeItem.id}
             src={backdropUrl}
             alt={title}
-            onLoad={() => setImageLoaded(true)}
-            initial={{ opacity: 0, scale: 1.04 }}
+            ref={(img) => {
+              // Cached images can finish before React attaches onLoad
+              if (img?.complete && img.naturalWidth > 0) markLoaded(backdropUrl);
+            }}
+            onLoad={() => markLoaded(backdropUrl)}            initial={{ opacity: 0, scale: 1.04 }}
             animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 1.04 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
