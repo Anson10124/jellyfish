@@ -7,6 +7,7 @@ import { JellyfinService } from '@/services/jellyfin.service';
 import { SeerrService } from '@/services/seerr.service';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { getErrorMessage } from '@/lib/utils';
+import { connectWithMode, describeConnectionFailure, type ConnectionMode } from '@/lib/api/connection-mode';
 import type { SeerrAuthMethod } from '@/types/seerr';
 
 export type AuthMethod = 'credentials' | 'quickconnect';
@@ -49,7 +50,9 @@ export function useConnectFlow() {
 
   // Step 1: Jellyfin Server URL
   const [serverUrl, setServerUrlState] = useState('');
-  const [jellyfinUseProxy, setJellyfinUseProxyState] = useState(false);
+  const [jellyfinMode, setJellyfinModeState] = useState<ConnectionMode>('auto');
+  // The route Auto settled on, used for sign-in and saved with the server.
+  const [jellyfinUseProxy, setJellyfinUseProxy] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [serverVerified, setServerVerified] = useState(false);
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
@@ -70,6 +73,7 @@ export function useConnectFlow() {
 
   // Step 3 & 4: Seerr Server & Auth
   const [seerrServerUrl, setSeerrServerUrl] = useState('');
+  const [seerrMode, setSeerrMode] = useState<ConnectionMode>('auto');
   const [seerrUseProxy, setSeerrUseProxy] = useState(true);
   const [isTestingSeerr, setIsTestingSeerr] = useState(false);
   const [seerrVerified, setSeerrVerified] = useState(false);
@@ -114,10 +118,12 @@ export function useConnectFlow() {
       setServerVerified(false);
       setServerInfo(null);
 
-      const res = await verifyServerUrl(targetUrl, jellyfinUseProxy);
+      const outcome = await connectWithMode(jellyfinMode, targetUrl, (useProxy) => verifyServerUrl(targetUrl, useProxy));
+      const res = outcome.result;
       setIsVerifying(false);
+      setJellyfinUseProxy(outcome.useProxy);
 
-      if (res.success && res.info) {
+      if (res?.success && res.info) {
         setServerVerified(true);
         setServerInfo({
           name: res.info.ServerName || t('connect.defaultServerName', 'Jellyfin Server'),
@@ -125,10 +131,11 @@ export function useConnectFlow() {
         });
       } else {
         setServerVerified(false);
-        setVerifyError(res.error || t('connect.errors.couldNotConnect', 'Could not connect to Jellyfin server.'));
+        setVerifyError(describeConnectionFailure(outcome, 'Jellyfin', t,
+          t('connect.errors.couldNotConnect', 'Could not connect to Jellyfin server.')));
       }
     },
-    [serverUrl, jellyfinUseProxy, t, verifyServerUrl]
+    [serverUrl, jellyfinMode, t, verifyServerUrl]
   );
 
   useEffect(() => {
@@ -181,8 +188,8 @@ export function useConnectFlow() {
     }
   };
 
-  const setJellyfinUseProxy = (value: boolean) => {
-    setJellyfinUseProxyState(value);
+  const setJellyfinMode = (value: ConnectionMode) => {
+    setJellyfinModeState(value);
     setServerVerified(false);
     setVerifyError(null);
     setServerInfo(null);
@@ -281,10 +288,14 @@ export function useConnectFlow() {
     setSeerrVerified(false);
     setSeerrInfo(null);
 
-    const res = await SeerrService.testConnection(cleanUrl, undefined, seerrUseProxy);
+    // Seerr sends no CORS headers by default, so Auto tries the proxy first.
+    const outcome = await connectWithMode(seerrMode, cleanUrl,
+      (useProxy) => SeerrService.testConnection(cleanUrl, undefined, useProxy), { preferProxy: true });
+    const res = outcome.result;
     setIsTestingSeerr(false);
+    setSeerrUseProxy(outcome.useProxy);
 
-    if (res.success) {
+    if (res?.success) {
       setSeerrVerified(true);
       setSeerrInfo({
         appName: res.appName || 'Seerr',
@@ -293,7 +304,8 @@ export function useConnectFlow() {
       return true;
     } else {
       setSeerrVerified(false);
-      setSeerrError(res.error || t('seerr.couldNotConnect', 'Could not connect to Seerr server.'));
+      setSeerrError(describeConnectionFailure(outcome, 'Seerr', t,
+        t('seerr.couldNotConnect', 'Could not connect to Seerr server.')));
       return false;
     }
   };
@@ -420,8 +432,9 @@ export function useConnectFlow() {
 
     serverUrl,
     setServerUrl,
+    jellyfinMode,
+    setJellyfinMode,
     jellyfinUseProxy,
-    setJellyfinUseProxy,
     isVerifying,
     serverVerified,
     serverInfo,
@@ -450,8 +463,9 @@ export function useConnectFlow() {
     // Step 3 Seerr Server
     seerrServerUrl,
     setSeerrServerUrl,
+    seerrMode,
+    setSeerrMode,
     seerrUseProxy,
-    setSeerrUseProxy,
     isTestingSeerr,
     seerrVerified,
     seerrInfo,

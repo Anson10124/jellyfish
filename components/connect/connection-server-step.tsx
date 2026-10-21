@@ -4,7 +4,8 @@ import { useId } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, CheckCircle2, Globe, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
-import { ConnectionProxyToggle } from './seerr-proxy-toggle';
+import { ConnectionModeToggle } from './connection-mode-toggle';
+import type { ConnectionMode } from '@/lib/api/connection-mode';
 import { ConnectionStatus } from './connection-status';
 import { UrlPrefillOptions } from './url-prefill-options';
 
@@ -21,8 +22,10 @@ interface ConnectionServerStepProps {
   direction: number;
   serverUrl: string;
   onUrlChange: (url: string) => void;
+  mode: ConnectionMode;
+  onModeChange: (mode: ConnectionMode) => void;
+  // The route the last successful check used.
   useProxy: boolean;
-  onProxyChange: (value: boolean) => void;
   busy: boolean;
   verified: boolean;
   serverName?: string;
@@ -36,7 +39,7 @@ interface ConnectionServerStepProps {
 }
 
 export function ConnectionServerStep({ service, title, subtitle, direction, serverUrl, onUrlChange,
-  useProxy, onProxyChange, busy, verified, serverName, version, error, onCheck, onContinue,
+  mode, onModeChange, useProxy, busy, verified, serverName, version, error, onCheck, onContinue,
   onBack, backLabel, onSkip }: ConnectionServerStepProps) {
   const { t } = useTranslation();
   const id = useId();
@@ -83,12 +86,13 @@ export function ConnectionServerStep({ service, title, subtitle, direction, serv
         <UrlPrefillOptions urls={presets} value={serverUrl} onSelect={onUrlChange} disabled={busy}
           label={t('connect.suggestedAddresses', 'Suggested server addresses')} />
         <div className="mt-6 border-t border-white/10 pt-6">
-          <ConnectionProxyToggle service={service} useProxy={useProxy} onToggle={onProxyChange} disabled={busy} variant="embedded" />
+          <ConnectionModeToggle service={service} mode={mode} onChange={onModeChange} disabled={busy} variant="embedded" />
         </div>
         {(error || verified) && (
           <div className="mt-6">
             <ConnectionStatus id={`${id}-status`} variant={error ? 'error' : 'success'}>
-              {error || <>{t('connect.connectedTo', 'Connected to')} <strong>{serverName || service}</strong>{version ? ` (v${version})` : ''}</>}
+              {error || <>{t('connect.connectedTo', 'Connected to')} <strong>{serverName || service}</strong>{version ? ` (v${version})` : ''}
+                {mode === 'auto' && ` · ${useProxy ? t('seerr.proxyMode', 'Proxied') : t('seerr.directMode', 'Direct')}`}</>}
             </ConnectionStatus>
           </div>
         )}

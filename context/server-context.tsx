@@ -17,7 +17,7 @@ import {
 } from '@/lib/storage/server-storage';
 import { JellyfinService } from '@/services/jellyfin.service';
 import { JellyfinPublicSystemInfo, JellyfinUser } from '@/types/jellyfin';
-import { normalizeServerUrl, serverFetch } from '@/lib/api/fetch-client';
+import { ApiError, normalizeServerUrl, serverFetch } from '@/lib/api/fetch-client';
 import { getErrorMessage } from '@/lib/utils';
 import { toast } from '@/components/ui/toast';
 
@@ -32,7 +32,7 @@ interface ServerContextType {
   seerrConfig: SeerrConfig | null;
   serverStatuses: Record<string, 'online' | 'offline' | 'checking'>;
 
-  verifyServerUrl: (url: string, useProxy?: boolean) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string }>;
+  verifyServerUrl: (url: string, useProxy?: boolean) => Promise<{ success: boolean; info?: JellyfinPublicSystemInfo; error?: string; networkError?: boolean }>;
   connectWithPassword: (serverUrl: string, username: string, password?: string, useProxy?: boolean) => Promise<boolean>;
   connectWithQuickConnect: (serverUrl: string, secret: string, useProxy?: boolean) => Promise<boolean>;
   switchServer: (serverId: string) => void;
@@ -201,7 +201,9 @@ export function ServerProvider({ children }: { children: React.ReactNode }) {
         status: 'error',
         error: errorMsg,
       });
-      return { success: false, error: errorMsg };
+      // Status 0 and 408 mean no HTTP response reached the browser.
+      const networkError = err instanceof ApiError && (err.status === 0 || err.status === 408);
+      return { success: false, error: errorMsg, networkError };
     }
   }, []);
 

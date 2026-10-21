@@ -91,7 +91,8 @@ export async function serverFetch<T>(
     if (err instanceof Error && err.name === 'AbortError') {
       throw new ApiError('Connection timed out. Please verify your server URL and network accessibility.', 408, 'Timeout', url);
     }
-    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+    // fetch rejects with a TypeError for network failures; the message differs per browser.
+    if (err instanceof TypeError) {
       throw new ApiError(
         normalizedBase.startsWith('/api/jellyfin/')
           ? 'Unable to connect through the proxy. Please check the server address and try again.'

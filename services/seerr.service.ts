@@ -112,10 +112,13 @@ export class SeerrService {
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Could not connect to Seerr server.';
+      // fetch rejects with a TypeError for network failures; the message differs per browser.
+      const networkError = err instanceof TypeError || (err instanceof Error && err.name === 'TimeoutError');
       return {
         success: false,
+        networkError,
         error:
-          msg.includes('fetch') || msg.includes('timeout') || msg.includes('Timeout')
+          networkError
             ? useProxy
               ? 'Unable to connect through the proxy. Please check the server address and try again.'
               : 'Unable to connect directly. Check the server address and that it is online, or try Proxied mode if CORS blocks browser access.'

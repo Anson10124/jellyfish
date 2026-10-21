@@ -144,9 +144,12 @@
     "10768": "War & Politics"
   },
   "jellyfin": {
+    "autoModeDescription": "Jellyfish connects directly and switches to the proxy if your browser blocks the connection.",
+    "directModeDescription": "Your browser connects to Jellyfin itself. The server must allow this site through CORS and use HTTPS when this page does.",
     "useProxyDescription": "Use Proxied if your Jellyfin server’s CORS settings block a direct connection. Your Jellyfin server handles sign-in."
   },
   "connect": {
+    "autoMode": "Auto",
     "serverAddress": "Server address",
     "suggestedAddresses": "Suggested server addresses",
     "connectionMode": "Connection mode",
@@ -178,6 +181,10 @@
     "defaultServerName": "Jellyfin Server",
     "latestVersion": "Latest",
     "errors": {
+      "mixedContent": "This page uses HTTPS, so your browser blocks http:// servers. Use an https:// address for your {service} server, or choose Auto or Proxied.",
+      "autoBothFailed": "Could not connect directly or through the proxy. {error}",
+      "mixedContentProxied": "Your browser blocks http:// servers on this HTTPS page, so Jellyfish tried the proxy instead. {error}",
+      "localNetworkHint": "This is a local network address. Allow local network access if your browser asks, use an address reachable from the internet, or run Jellyfish on the same network.",
       "enterServerAddress": "Please enter your Jellyfin server address.",
       "couldNotConnect": "Could not connect to Jellyfin server.",
       "quickConnectFailed": "Failed to initiate Quick Connect on server.",
@@ -261,6 +268,8 @@
     "fetchFailed": "Failed to load data."
   },
   "seerr": {
+    "autoModeDescription": "Jellyfish tries the proxy first and connects directly if the proxy cannot reach your Seerr server.",
+    "directModeDescription": "Your browser connects to Seerr itself. The server must allow this site through CORS and use HTTPS when this page does.",
     "connectToRequest": "Connect to Seerr from the user menu to request movies.",
     "collectionRequestFailed": "Could not request {count} movie(s). Please try again.",
     "collectionRequestSuccess": "Movies requested. Available and previously requested movies were skipped.",

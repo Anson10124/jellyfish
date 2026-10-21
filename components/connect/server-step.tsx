@@ -1,6 +1,7 @@
 'use client';
 
 import type { ServerInfo } from '@/hooks/connect/use-connect-flow';
+import type { ConnectionMode } from '@/lib/api/connection-mode';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { ConnectionServerStep } from './connection-server-step';
 export { slideVariants } from './connection-server-step';
@@ -8,8 +9,9 @@ export { slideVariants } from './connection-server-step';
 interface ServerStepProps {
   direction: number;
   serverUrl: string;
+  mode: ConnectionMode;
+  onModeChange: (mode: ConnectionMode) => void;
   useProxy: boolean;
-  onProxyChange: (useProxy: boolean) => void;
   setServerUrl: (url: string) => void;
   isVerifying: boolean;
   serverVerified: boolean;
@@ -24,8 +26,9 @@ interface ServerStepProps {
 export function ServerStep({
   direction,
   serverUrl,
+  mode,
+  onModeChange,
   useProxy,
-  onProxyChange,
   setServerUrl,
   isVerifying,
   serverVerified,
@@ -40,11 +43,11 @@ export function ServerStep({
   const resetVerification = () => { setServerVerified(false); setVerifyError(null); };
   return <ConnectionServerStep service="Jellyfin" direction={direction}
     title={t('connect.title', 'Connect with your Jellyfin server to get started')}
-    subtitle={useProxy
+    subtitle={mode === 'proxy'
       ? t('connect.proxySubtitle', 'Proxied mode helps you connect when your server’s CORS settings block direct browser access.')
       : t('connect.subtitle', 'Jellyfish runs in your browser. Your server address and credentials stay safely on your local device.')}
     serverUrl={serverUrl} onUrlChange={(url) => { setServerUrl(url); resetVerification(); }}
-    useProxy={useProxy} onProxyChange={(value) => { onProxyChange(value); resetVerification(); }}
+    mode={mode} onModeChange={(value) => { onModeChange(value); resetVerification(); }} useProxy={useProxy}
     busy={isVerifying} verified={serverVerified} serverName={serverInfo?.name} version={serverInfo?.version}
     error={verifyError} onCheck={() => onCheckServer()} onContinue={onContinue} />;
 }

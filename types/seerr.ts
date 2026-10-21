@@ -66,6 +66,7 @@ export interface SeerrTestResult {
   version?: string;
   user?: SeerrUser;
   error?: string;
+  networkError?: boolean;
 }
 
 export type SeerrAuthMethod = 'jellyfin' | 'apikey';

@@ -197,3 +197,50 @@ test('proxy forwards auth and JSON, streams byte ranges, rewrites HLS, and prese
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test('connection preflight detects mixed content and LAN targets from public pages', () => {
+  const { getConnectionPreflight } = load('lib/api/connection-mode.ts');
+  const hosted = { protocol: 'https:', hostname: 'jellyfish.kollod.dev' };
+  assert.deepEqual(getConnectionPreflight('http://192.168.1.10:8096', hosted), { mixedContent: true, localNetwork: true });
+  assert.deepEqual(getConnectionPreflight('jellyfin.example.com', hosted), { mixedContent: true, localNetwork: false });
+  assert.deepEqual(getConnectionPreflight('https://jellyfin.local', hosted), { mixedContent: false, localNetwork: true });
+  assert.deepEqual(getConnectionPreflight('http://localhost:8096', hosted), { mixedContent: false, localNetwork: true });
+  assert.deepEqual(getConnectionPreflight('http://192.168.1.10:8096', { protocol: 'http:', hostname: '192.168.1.5' }), { mixedContent: false, localNetwork: false });
+});
+
+test('Auto mode falls back only when the first route cannot reach the server', async () => {
+  const { connectWithMode } = load('lib/api/connection-mode.ts');
+  const page = { protocol: 'https:', hostname: 'jellyfish.kollod.dev' };
+  const run = async (mode, url, results, options = {}) => {
+    const calls = [];
+    const outcome = await connectWithMode(mode, url, async (useProxy) => {
+      calls.push(useProxy);
+      return results[useProxy ? 'proxy' : 'direct'];
+    }, { page, ...options });
+    return { calls, outcome };
+  };
+  const ok = { success: true };
+  const blocked = { success: false, networkError: true, error: 'blocked' };
+  const notFound = { success: false, error: 'not found' };
+  const proxyRejected = { success: false, error: 'proxy rejected' };
+
+  let { calls, outcome } = await run('auto', 'https://jf.example', { direct: blocked, proxy: ok });
+  assert.deepEqual(calls, [false, true]);
+  assert.equal(outcome.useProxy, true);
+
+  ({ calls, outcome } = await run('auto', 'https://jf.example', { direct: notFound, proxy: ok }));
+  assert.deepEqual(calls, [false]);
+  assert.equal(outcome.result.error, 'not found');
+
+  ({ calls } = await run('auto', 'http://jf.example', { direct: ok, proxy: ok }));
+  assert.deepEqual(calls, [true]);
+
+  ({ calls, outcome } = await run('direct', 'http://jf.example', { direct: ok, proxy: ok }));
+  assert.deepEqual(calls, []);
+  assert.equal(outcome.result, undefined);
+
+  ({ calls, outcome } = await run('auto', 'https://seerr.example', { direct: blocked, proxy: proxyRejected }, { preferProxy: true }));
+  assert.deepEqual(calls, [true, false]);
+  assert.equal(outcome.result.error, 'proxy rejected');
+  assert.equal(outcome.triedDirect && outcome.triedProxy, true);
+});

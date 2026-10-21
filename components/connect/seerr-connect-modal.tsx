@@ -9,7 +9,8 @@ import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { SeerrService } from '@/services/seerr.service';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { toast } from '@/components/ui/toast';
-import { SeerrProxyToggle } from './seerr-proxy-toggle';
+import { ConnectionModeToggle } from './connection-mode-toggle';
+import { connectWithMode, describeConnectionFailure, type ConnectionMode } from '@/lib/api/connection-mode';
 import type { SeerrAuthMethod } from '@/types/seerr';
 
 interface SeerrConnectModalProps {
@@ -34,7 +35,9 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState(seerrConfig?.username || activeServer?.username || '');
   const [password, setPassword] = useState('');
   const [apiKey, setApiKey] = useState(seerrConfig?.apiKey || '');
-  const [useProxy, setUseProxy] = useState(seerrConfig?.useProxy ?? true);
+  const [mode, setMode] = useState<ConnectionMode>(
+    seerrConfig ? (seerrConfig.useProxy ?? true ? 'proxy' : 'direct') : 'auto'
+  );
   const [isTesting, setIsTesting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +52,17 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
     setError(null);
 
     try {
+      // Resolve the route with a plain status check so credential errors are not retried.
+      const outcome = await connectWithMode(mode, serverUrl.trim(),
+        (proxied) => SeerrService.testConnection(serverUrl.trim(), undefined, proxied), { preferProxy: true });
+      if (!outcome.result?.success) {
+        setIsTesting(false);
+        setError(describeConnectionFailure(outcome, 'Seerr', t,
+          t('seerr.couldNotConnect', 'Could not connect to Seerr server.')));
+        return;
+      }
+      const useProxy = outcome.useProxy;
+
       if (authMethod === 'jellyfin') {
         if (!username.trim()) {
           setError(t('connect.errors.enterUsername', 'Please enter your Jellyfin username.'));
@@ -246,7 +260,7 @@ function SeerrConnectModalContent({ onClose }: { onClose: () => void }) {
               )}
             </div>
 
-            <SeerrProxyToggle useProxy={useProxy} onToggle={setUseProxy} variant="modal" />
+            <ConnectionModeToggle mode={mode} onChange={setMode} variant="modal" />
 
             {seerrConfig?.isConnected && (
               <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium px-1">

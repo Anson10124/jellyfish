@@ -18,8 +18,9 @@ function ConnectPageContent() {
             direction={flow.direction}
             serverUrl={flow.serverUrl}
             setServerUrl={flow.setServerUrl}
+            mode={flow.jellyfinMode}
+            onModeChange={flow.setJellyfinMode}
             useProxy={flow.jellyfinUseProxy}
-            onProxyChange={flow.setJellyfinUseProxy}
             isVerifying={flow.isVerifying}
             serverVerified={flow.serverVerified}
             serverInfo={flow.serverInfo}
@@ -60,8 +61,9 @@ function ConnectPageContent() {
             direction={flow.direction}
             seerrServerUrl={flow.seerrServerUrl}
             setSeerrServerUrl={flow.setSeerrServerUrl}
+            seerrMode={flow.seerrMode}
+            setSeerrMode={flow.setSeerrMode}
             seerrUseProxy={flow.seerrUseProxy}
-            setSeerrUseProxy={flow.setSeerrUseProxy}
             isTestingSeerr={flow.isTestingSeerr}
             seerrVerified={flow.seerrVerified}
             seerrInfo={flow.seerrInfo}

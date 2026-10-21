@@ -144,9 +144,12 @@
     "10768": "戰爭與政治"
   },
   "jellyfin": {
+    "autoModeDescription": "Jellyfish 會先直接連線，若瀏覽器封鎖連線則自動改用代理。",
+    "directModeDescription": "由您的瀏覽器直接連線至 Jellyfin。伺服器必須透過 CORS 允許此網站，且在此頁面使用 HTTPS 時也須使用 HTTPS。",
     "useProxyDescription": "如果您的 Jellyfin 伺服器因 CORS 設定而阻擋直接連線，請使用代理模式。登入由您的 Jellyfin 伺服器處理。"
   },
   "connect": {
+    "autoMode": "自動",
     "serverAddress": "伺服器位址",
     "suggestedAddresses": "建議的伺服器位址",
     "connectionMode": "連線模式",
@@ -178,6 +181,10 @@
     "defaultServerName": "Jellyfin 伺服器",
     "latestVersion": "最新版本",
     "errors": {
+      "mixedContent": "此頁面使用 HTTPS，瀏覽器會封鎖 http:// 伺服器。請為您的 {service} 伺服器使用 https:// 位址，或選擇自動或代理模式。",
+      "autoBothFailed": "無法直接或透過代理連線。{error}",
+      "mixedContentProxied": "瀏覽器會在此 HTTPS 頁面上封鎖 http:// 伺服器，因此 Jellyfish 改用代理連線。{error}",
+      "localNetworkHint": "這是區域網路位址。若瀏覽器詢問，請允許存取區域網路裝置；或使用可從網際網路存取的位址，或在同一網路中執行 Jellyfish。",
       "enterServerAddress": "請輸入你的 Jellyfin 伺服器位址。",
       "couldNotConnect": "無法連接至 Jellyfin 伺服器。",
       "quickConnectFailed": "無法在伺服器上發起快速連接。",
@@ -260,6 +267,8 @@
     "fetchFailed": "無法載入資料。"
   },
   "seerr": {
+    "autoModeDescription": "Jellyfish 會先透過代理連線，若代理無法連到您的 Seerr 伺服器則改為直接連線。",
+    "directModeDescription": "由您的瀏覽器直接連線至 Seerr。伺服器必須透過 CORS 允許此網站，且在此頁面使用 HTTPS 時也須使用 HTTPS。",
     "connectToRequest": "請從使用者選單連線至 Seerr，以請求電影。",
     "collectionRequestFailed": "無法請求 {count} 部電影，請再試一次。",
     "collectionRequestSuccess": "已請求電影，並略過可觀看及已請求的電影。",
