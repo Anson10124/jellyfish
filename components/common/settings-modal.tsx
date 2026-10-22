@@ -40,6 +40,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [category, setCategory] = useState<SettingsCategory>('general');
+  const [liquidGlass] = useLiquidGlass();
 
   useScrollLock(isOpen);
 
@@ -56,17 +57,18 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          key="settings-modal"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) onClose();
-          }}
-        >
+        <motion.div key="settings-modal" className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Scrim is a sibling, not the panel's parent: a parent with a backdrop-filter or fading opacity would
+              become the panel's backdrop root, so the glass would only see the dark scrim instead of the page */}
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute inset-0 backdrop-blur-sm ${liquidGlass ? 'bg-black/25' : 'bg-black/60'}`}
+            onMouseDown={onClose}
+          />
           <LiquidGlass
             render={
               <motion.div
