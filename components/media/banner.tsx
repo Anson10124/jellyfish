@@ -8,6 +8,7 @@ import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { getTmdbImage } from '@/lib/utils/tmdb-image';
 import { getMediaTitle, getMediaHref, formatRuntime } from '@/lib/utils/media-format';
 import { MediaBadges } from './media-badges';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { useTmdbMedia } from '@/hooks/media/use-tmdb-media';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
@@ -299,26 +300,31 @@ export function Banner({
                 )}
 
                 {href ? (
-                  <Link
-                    href={href}
-                    prefetch={false}
+                  <LiquidGlass
+                    render={<Link href={href} prefetch={false} />}
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    radius={14}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    glassClassName="bg-foreground/8"
+                    fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
-                  </Link>
+                  </LiquidGlass>
                 ) : (
-                  <button
-                    type="button"
+                  <LiquidGlass
+                    render={<button type="button" />}
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    radius={14}
+                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    glassClassName="bg-foreground/8"
+                    fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
-                  </button>
+                  </LiquidGlass>
                 )}
               </div>
             </motion.div>

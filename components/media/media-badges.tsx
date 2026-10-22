@@ -4,6 +4,7 @@ import React from 'react';
 import { Star, Calendar, Clock, Tv } from 'lucide-react';
 import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { LiquidGlass, type LiquidGlassProps } from '@/components/ui/liquid-glass';
 
 export interface MediaBadgesProps {
   voteAverage?: string | number | null;
@@ -15,6 +16,18 @@ export interface MediaBadgesProps {
   genreIds?: number[];
   maxGenres?: number;
   className?: string;
+}
+
+function Badge(props: LiquidGlassProps) {
+  return (
+    <LiquidGlass
+      radius={14}
+      className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium text-foreground/80"
+      glassClassName="bg-foreground/8"
+      fallbackClassName="bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl"
+      {...props}
+    />
+  );
 }
 
 export function MediaBadges({
@@ -62,43 +75,40 @@ export function MediaBadges({
   return (
     <div className={`flex flex-wrap items-center gap-2 sm:gap-2.5 ${className}`}>
       {formattedVote && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <Badge>
           <Star className="h-4 w-4 text-foreground fill-foreground" />
           <span>{formattedVote}</span>
-        </div>
+        </Badge>
       )}
 
       {displayYear && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <Badge>
           <Calendar className="h-4 w-4 text-foreground/70" />
           <span>{displayYear}</span>
-        </div>
+        </Badge>
       )}
 
       {numberOfSeasons !== undefined && numberOfSeasons !== null && numberOfSeasons > 0 && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <Badge>
           <Tv className="h-4 w-4 text-foreground/70" />
           <span>
             {numberOfSeasons}{' '}
             {numberOfSeasons === 1 ? t('tv.season', 'Season') : t('tv.seasons', 'Seasons')}
           </span>
-        </div>
+        </Badge>
       )}
 
       {runtime && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <Badge>
           <Clock className="h-4 w-4 text-foreground/70" />
           <span>{runtime}</span>
-        </div>
+        </Badge>
       )}
 
       {resolvedGenres.map((g) => (
-        <span
-          key={g.id}
-          className="inline-flex h-9 items-center rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80"
-        >
+        <Badge key={g.id} render={<span />}>
           {g.name}
-        </span>
+        </Badge>
       ))}
     </div>
   );

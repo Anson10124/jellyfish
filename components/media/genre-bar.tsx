@@ -8,6 +8,7 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface GenreBarProps {
   mediaType?: 'movie' | 'tv';
@@ -56,73 +57,57 @@ export function GenreBar({
     }
   }, [emblaApi, isMobile, activeGenreId, genres]);
 
+  // Selected chips stay solid; the rest are glass so the page shows through the sticky bar
+  const getChipProps = (isSelected: boolean) => ({
+    radius: 'capsule' as const,
+    'data-focusable': 'true',
+    tabIndex: 0,
+    className: `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
+      isSelected
+        ? 'bg-foreground text-background shadow-md scale-[1.02]'
+        : 'text-foreground/70 hover:bg-foreground/20 hover:text-foreground'
+    }`,
+    glassClassName: isSelected ? undefined : 'bg-card/25',
+    fallbackClassName: isSelected ? 'backdrop-blur-xl' : 'bg-card/65 ring-1 ring-foreground/10 backdrop-blur-xl',
+  });
+
   const renderGenreButtons = () => (
     <>
       {onSelectGenre ? (
-        <button
-          type="button"
-          data-focusable="true"
-          tabIndex={0}
-          onClick={() => onSelectGenre(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-            activeGenreId === null
-              ? 'bg-foreground text-background shadow-md scale-[1.02]'
-              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-          }`}
-        >
+        <LiquidGlass render={<button type="button" />} onClick={() => onSelectGenre(null)} {...getChipProps(activeGenreId === null)}>
           {t('common.all', 'All')}
-        </button>
+        </LiquidGlass>
       ) : (
-        <Link
-          href={baseUrl}
-          prefetch={false}
-          data-focusable="true"
-          tabIndex={0}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-            activeGenreId === null
-              ? 'bg-foreground text-background shadow-md scale-[1.02]'
-              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-          }`}
-        >
+        <LiquidGlass render={<Link href={baseUrl} prefetch={false} />} {...getChipProps(activeGenreId === null)}>
           {t('common.all', 'All')}
-        </Link>
+        </LiquidGlass>
       )}
 
       {genres.map((genre) => {
-        const isSelected = activeGenreId === genre.id;
+        const chipProps = getChipProps(activeGenreId === genre.id);
         const genreName = getGenreName(genre.id, t) || genre.name;
-        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-          isSelected
-            ? 'bg-foreground text-background shadow-md scale-[1.02]'
-            : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-        }`;
 
         if (onSelectGenre) {
           return (
-            <button
+            <LiquidGlass
               key={genre.id}
-              type="button"
-              data-focusable="true"
-              tabIndex={0}
+              render={<button type="button" />}
               onClick={() => onSelectGenre(genre.id)}
-              className={buttonClasses}
+              {...chipProps}
             >
               {genreName}
-            </button>
+            </LiquidGlass>
           );
         }
 
         return (
-          <Link
+          <LiquidGlass
             key={genre.id}
-            href={`${baseUrl}/genre/${genre.id}`}
-            prefetch={false}
-            data-focusable="true"
-            tabIndex={0}
-            className={buttonClasses}
+            render={<Link href={`${baseUrl}/genre/${genre.id}`} prefetch={false} />}
+            {...chipProps}
           >
             {genreName}
-          </Link>
+          </LiquidGlass>
         );
       })}
     </>
