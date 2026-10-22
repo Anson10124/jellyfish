@@ -32,4 +32,13 @@ export function subscribeReduceMotion(callback: () => void): () => void {
   };
 }
 
+// Off unless the user turns it on: the glass renderer filters live page content, which costs GPU time.
+export function getLiquidGlass(): boolean {
+  return getStoredConfig().liquidGlass === true;
+}
+
+export function setLiquidGlass(value: boolean): void {
+  updateStoredConfig({ liquidGlass: value });
+}
+
 export const subscribeContentPreferences = subscribeStoredConfig;

@@ -8,6 +8,7 @@ import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock, Settings } from
 import { JellyfinConfig } from '@/types/server';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { formatServerAddress } from '@/lib/utils';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface UserDropdownMenuProps {
   userDropdownOpen: boolean;
@@ -107,16 +108,21 @@ export function UserDropdownMenu({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <LiquidGlass
         key="user-dropdown-menu-card"
+        render={
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          />
+        }
         ref={userMenuRef}
         data-user-menu="true"
-        initial={{ opacity: 0, y: -8, scale: 0.96 }}
-
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -8, scale: 0.96 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl bg-background/65 backdrop-blur-2xl border border-border shadow-2xl p-1.5 z-[100] overflow-hidden"
+        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl shadow-2xl p-1.5 z-[100] overflow-hidden"
+        fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
+        glassClassName="bg-background/55"
         style={{
           right: userDropdownPos.right !== undefined ? `${userDropdownPos.right}px` : '12px',
         }}
@@ -339,7 +345,7 @@ export function UserDropdownMenu({
           </AnimatePresence>
         </div>
       </motion.div>
-    </motion.div>
+    </LiquidGlass>
   </AnimatePresence>
   );
 }

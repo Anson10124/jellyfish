@@ -4,3 +4,4 @@ export * from './use-embla-navigation';
 export * from './use-translation';
 export * from './use-show-nsfw';
 export * from './use-reduce-motion';
+export * from './use-liquid-glass';

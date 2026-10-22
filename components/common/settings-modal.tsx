@@ -14,11 +14,13 @@ import {
   DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip } from '@/components/ui/tooltip';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useScrollLock } from '@/hooks/ui/use-scroll-lock';
 import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { useReduceMotion } from '@/hooks/ui/use-reduce-motion';
+import { useLiquidGlass } from '@/hooks/ui/use-liquid-glass';
 import { SUPPORTED_LANGUAGES, Locale } from '@/lib/i18n/config';
 
 type SettingsCategory = 'general';
@@ -38,6 +40,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [category, setCategory] = useState<SettingsCategory>('general');
+  const [liquidGlass] = useLiquidGlass();
 
   useScrollLock(isOpen);
 
@@ -54,26 +57,34 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          key="settings-modal"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) onClose();
-          }}
-        >
+        <motion.div key="settings-modal" className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Scrim is a sibling, not the panel's parent: a parent with a backdrop-filter or fading opacity would
+              become the panel's backdrop root, so the glass would only see the dark scrim instead of the page */}
           <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className={`absolute inset-0 backdrop-blur-sm ${liquidGlass ? 'bg-black/25' : 'bg-black/60'}`}
+            onMouseDown={onClose}
+          />
+          <LiquidGlass
+            render={
+              <motion.div
+                initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.97 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              />
+            }
             role="dialog"
             aria-modal="true"
             aria-labelledby="settings-modal-title"
-            initial={{ opacity: 0, y: 12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.97 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex flex-col md:flex-row w-full max-w-3xl h-[min(560px,calc(100dvh-2rem))] rounded-2xl bg-popover border border-border shadow-2xl overflow-hidden"
+            radius={16}
+            className="relative flex flex-col md:flex-row w-full max-w-3xl h-[min(560px,calc(100dvh-2rem))] rounded-2xl shadow-2xl overflow-hidden"
+            fallbackClassName="bg-popover border border-border"
+            glassClassName="bg-background/55"
           >
             {/* Category sidebar */}
             <aside className="shrink-0 md:w-52 border-b md:border-b-0 md:border-r border-border p-3 md:p-4">
@@ -115,7 +126,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             >
               <X className="w-4 h-4" />
             </button>
-          </motion.div>
+          </LiquidGlass>
         </motion.div>
       )}
     </AnimatePresence>,
@@ -128,6 +139,7 @@ function GeneralSettings() {
   const { theme, setTheme } = useTheme();
   const [showNsfw, setShowNsfw] = useShowNsfw();
   const [reduceMotion, setReduceMotion] = useReduceMotion();
+  const [liquidGlass, setLiquidGlass] = useLiquidGlass();
   const currentLanguage = SUPPORTED_LANGUAGES.find((lang) => lang.code === locale)?.label ?? 'English';
 
   return (
@@ -175,6 +187,16 @@ function GeneralSettings() {
             checked={reduceMotion}
             onCheckedChange={setReduceMotion}
             label={t('settings.reduceMotion', 'Reduce motion')}
+          />
+        </SettingsRow>
+        <SettingsRow
+          label={t('settings.liquidGlass', 'Liquid Glass')}
+          description={t('settings.liquidGlassDescription', 'Use refractive glass for the navigation bar, menus and panels.')}
+        >
+          <SettingsSwitch
+            checked={liquidGlass}
+            onCheckedChange={setLiquidGlass}
+            label={t('settings.liquidGlass', 'Liquid Glass')}
           />
         </SettingsRow>
       </SettingsSection>
