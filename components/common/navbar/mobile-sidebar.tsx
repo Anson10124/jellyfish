@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Cable, LogOut, Clock, Server, Check } from 'lucide-react';
+import { X, Cable, LogOut, Clock, Server, Check, Settings } from 'lucide-react';
 
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { useServerContext } from '@/context/server-context';
@@ -16,6 +16,7 @@ import { NavItemDef } from './nav-items';
 interface MobileSidebarProps {
   open: boolean;
   onClose: () => void;
+  onOpenSettings: () => void;
   navItems: NavItemDef[];
   activeIndex: number;
   setActivePath: (href: string) => void;
@@ -25,6 +26,7 @@ interface MobileSidebarProps {
 export function MobileSidebar({
   open,
   onClose,
+  onOpenSettings,
   navItems,
   activeIndex,
   setActivePath,
@@ -88,6 +90,11 @@ export function MobileSidebar({
   const handleConnectClick = () => {
     onClose();
     router.push('/connect');
+  };
+
+  const handleSettingsClick = () => {
+    onClose();
+    onOpenSettings();
   };
 
   const handleRequestsClick = () => {
@@ -210,6 +217,15 @@ export function MobileSidebar({
               )}
             </div>
             <div className="shrink-0 p-3 border-t border-border/80 bg-foreground/[0.02] space-y-3">
+              <button
+                type="button"
+                onClick={handleSettingsClick}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.08] active:scale-[0.98] transition-all duration-150 cursor-pointer"
+              >
+                <Settings className="w-4 h-4 text-foreground/60" />
+                <span>{t('nav.settings', 'Settings')}</span>
+              </button>
+
               {servers && servers.length > 1 && (
                 <div className="space-y-1">
                   <div className="space-y-1 max-h-48 overflow-y-auto">
