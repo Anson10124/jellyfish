@@ -316,6 +316,19 @@ export function Navbar() {
               </div>
             ) : (
               <>
+                <Link
+                  href="/connect"
+                  data-focusable="true"
+                  tabIndex={0}
+                  className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+                    pathname === '/connect'
+                      ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
+                      : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
+                  }`}
+                >
+                  <Cable className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
+                </Link>
                 {/* Settings are all device-local, so they stay reachable before a Jellyfin server is linked */}
                 {isInitialized && (
                   <Tooltip content={t('nav.settings', 'Settings')} side="bottom">
@@ -335,19 +348,6 @@ export function Navbar() {
                     </button>
                   </Tooltip>
                 )}
-                <Link
-                  href="/connect"
-                  data-focusable="true"
-                  tabIndex={0}
-                  className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
-                    pathname === '/connect'
-                      ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
-                      : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
-                  }`}
-                >
-                  <Cable className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
-                </Link>
               </>
             )}
           </div>
