@@ -17,6 +17,7 @@ interface NavItemsProps {
   activePath: string;
   setActivePath: (href: string) => void;
   tabRefs: React.MutableRefObject<(HTMLAnchorElement | null)[]>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
   pillStyle: { left: number; width: number; ready: boolean };
 }
 
@@ -26,10 +27,11 @@ export function NavItems({
   activePath,
   setActivePath,
   tabRefs,
+  containerRef,
   pillStyle,
 }: NavItemsProps) {
   return (
-    <div className="hidden md:flex items-center gap-1 relative">
+    <div ref={containerRef} className="hidden md:flex items-center gap-1 relative">
       {activeIndex !== -1 && pillStyle.ready && (
         <div
           className="absolute top-0 bottom-0 my-auto h-full bg-foreground/15 rounded-full shadow-md z-0 pointer-events-none"
