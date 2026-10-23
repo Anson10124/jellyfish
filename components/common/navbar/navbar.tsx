@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff } from 'lucide-react';
+import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff, Settings } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { Tooltip } from '@/components/ui/tooltip';
 
 import { UserAvatar } from './user-avatar';
 import { NavItems } from './nav-items';
@@ -314,19 +315,40 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
-                href="/connect"
-                data-focusable="true"
-                tabIndex={0}
-                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
-                  pathname === '/connect'
-                    ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
-                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
-                }`}
-              >
-                <Cable className="w-4 h-4 shrink-0" />
-                <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
-              </Link>
+              <>
+                <Link
+                  href="/connect"
+                  data-focusable="true"
+                  tabIndex={0}
+                  className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+                    pathname === '/connect'
+                      ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
+                      : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
+                  }`}
+                >
+                  <Cable className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
+                </Link>
+                {/* Settings are all device-local, so they stay reachable before a Jellyfin server is linked */}
+                {isInitialized && (
+                  <Tooltip content={t('nav.settings', 'Settings')} side="bottom">
+                    <button
+                      type="button"
+                      data-focusable="true"
+                      tabIndex={0}
+                      onClick={() => setSettingsOpen(true)}
+                      aria-label={t('nav.settings', 'Settings')}
+                      className={`relative z-10 flex items-center justify-center p-2 rounded-full transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+                        settingsOpen
+                          ? 'bg-foreground/15 text-foreground shadow-md'
+                          : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4 shrink-0" />
+                    </button>
+                  </Tooltip>
+                )}
+              </>
             )}
           </div>
         </LiquidGlass>
@@ -379,6 +401,7 @@ export function Navbar() {
       <MobileSidebar
         open={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        onOpenSettings={() => setSettingsOpen(true)}
         navItems={navItems}
         activeIndex={activeIndex}
         setActivePath={setActivePath}
