@@ -128,7 +128,8 @@ export function MediaDetailHero({
                   tabIndex={0}
                   onClick={onWatchTrailer}
                   className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
-                  glassClassName="bg-foreground/8"
+                  glassClassName="bg-foreground/12"
+                  glass={{ blur: 4 }}
                   fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                 >
                   <Film className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -143,7 +144,8 @@ export function MediaDetailHero({
                 tabIndex={0}
                 onClick={onAddToWatchlist}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
-                glassClassName="bg-foreground/8"
+                glassClassName="bg-foreground/12"
+                glass={{ blur: 4 }}
                 fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                 aria-label={t('common.addToWatchlist', 'Add to watchlist')}
               >

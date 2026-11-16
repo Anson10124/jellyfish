@@ -8,7 +8,7 @@ import { Server, LogOut, ChevronLeft, Plus, Check, Cable, Clock, Settings } from
 import { JellyfinConfig } from '@/types/server';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { formatServerAddress } from '@/lib/utils';
-import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { GLASS_PANEL_CLASS, GLASS_PANEL_OPTIONS, LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface UserDropdownMenuProps {
   userDropdownOpen: boolean;
@@ -120,9 +120,10 @@ export function UserDropdownMenu({
         }
         ref={userMenuRef}
         data-user-menu="true"
-        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl shadow-2xl p-1.5 z-[100] overflow-hidden"
-        fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
-        glassClassName="bg-background/55"
+        className="absolute top-full mt-2 w-56 origin-top-right rounded-2xl border shadow-2xl p-1.5 z-[100] overflow-hidden"
+        fallbackClassName="bg-background/65 backdrop-blur-2xl border-border"
+        glassClassName={GLASS_PANEL_CLASS}
+        glass={GLASS_PANEL_OPTIONS}
         style={{
           right: userDropdownPos.right !== undefined ? `${userDropdownPos.right}px` : '12px',
         }}

@@ -4,6 +4,7 @@ import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 
 import { cn } from "@/lib/utils"
+import { LiquidGlass, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from "@/components/ui/liquid-glass"
 import { Button } from "@/components/ui/button"
 import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
@@ -43,10 +44,15 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
 
 function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
   return (
-    <ToastPrimitive.Root
+    <LiquidGlass
+      // Glass props (className, style, ref, children) go onto the Base UI root along with its own props
+      render={(glassProps) => <ToastPrimitive.Root {...props} {...glassProps} />}
       data-slot="toast"
+      fallbackClassName="border-foreground/15 bg-background/60 backdrop-blur-2xl"
+      glassClassName={GLASS_PANEL_CLASS}
+      glass={GLASS_PANEL_OPTIONS}
       className={cn(
-        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border border-foreground/15 bg-background/60 backdrop-blur-2xl text-foreground shadow-2xl will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "group/toast pointer-events-auto absolute right-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom rounded-2xl border text-foreground shadow-2xl will-change-transform outline-none select-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
         "[--gap:0.75rem] [--height:var(--toast-frontmost-height,var(--toast-height))] [--offset-y:calc(var(--toast-offset-y)*-1+calc(var(--toast-index)*var(--gap)*-1)+var(--toast-swipe-movement-y))] [--peek:0.75rem] [--scale:calc(max(0,1-(var(--toast-index)*0.1)))] [--shrink:calc(1-var(--scale))]",
         "h-(--height) [transform:translateX(var(--toast-swipe-movement-x))_translateY(calc(var(--toast-swipe-movement-y)-(var(--toast-index)*var(--peek))-(var(--shrink)*var(--height))))_scale(var(--scale))] [transition:transform_500ms_cubic-bezier(0.22,1,0.36,1),opacity_500ms,height_150ms]",
         "after:absolute after:top-full after:left-0 after:h-[calc(var(--gap)+1px)] after:w-full after:content-['']",
@@ -63,7 +69,6 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
         "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
         className
       )}
-      {...props}
     />
   )
 }

@@ -7,6 +7,7 @@ import { AuthMethod, QuickConnectStatus, ServerInfo } from '@/hooks/connect/use-
 import { slideVariants } from './server-step';
 import { AuthCard } from './auth-card';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface AuthStepProps {
   direction: number;
@@ -64,14 +65,17 @@ export function AuthStep({
       className="w-full max-w-4xl flex flex-col items-center z-10"
     >
       <div className="w-full flex items-center justify-between mb-6">
-        <button
-          type="button"
+        <LiquidGlass
+          render={<button type="button" />}
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border border-foreground/10 backdrop-blur-xl"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border"
+          fallbackClassName="border-foreground/10 backdrop-blur-xl"
+          glassClassName="border-transparent"
+          glass={{ blur: 4 }}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('connect.changeServer', 'Change Server')}</span>
-        </button>
+        </LiquidGlass>
       </div>
 
       <div className="text-center max-w-2xl mb-8 space-y-4">

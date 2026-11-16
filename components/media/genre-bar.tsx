@@ -67,7 +67,8 @@ export function GenreBar({
         ? 'bg-foreground text-background shadow-md scale-[1.02]'
         : 'text-foreground/70 hover:bg-foreground/20 hover:text-foreground'
     }`,
-    glassClassName: isSelected ? undefined : 'bg-card/25',
+    glassClassName: isSelected ? undefined : 'bg-card/65',
+    glass: { blur: 4 },
     fallbackClassName: isSelected ? 'backdrop-blur-xl' : 'bg-card/65 ring-1 ring-foreground/10 backdrop-blur-xl',
   });
 

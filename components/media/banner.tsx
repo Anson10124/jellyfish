@@ -306,7 +306,8 @@ export function Banner({
                     tabIndex={0}
                     radius={14}
                     className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
-                    glassClassName="bg-foreground/8"
+                    glassClassName="bg-foreground/12"
+                    glass={{ blur: 4 }}
                     fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                   >
                     <Info className="h-4 w-4" />
@@ -319,7 +320,8 @@ export function Banner({
                     tabIndex={0}
                     radius={14}
                     className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
-                    glassClassName="bg-foreground/8"
+                    glassClassName="bg-foreground/12"
+                    glass={{ blur: 4 }}
                     fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
                   >
                     <Info className="h-4 w-4" />

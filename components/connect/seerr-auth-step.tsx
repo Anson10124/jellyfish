@@ -8,6 +8,7 @@ import { ArrowLeft, ArrowRight, Loader2, User, Lock, Key, CheckCircle2 } from 'l
 import { slideVariants } from './server-step';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { SeerrAuthMethod } from '@/types/seerr';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface SeerrAuthStepProps {
   direction: number;
@@ -63,14 +64,17 @@ export function SeerrAuthStep({
       className="w-full max-w-4xl flex flex-col items-center z-10"
     >
       <div className="w-full flex items-center justify-between mb-6">
-        <button
-          type="button"
+        <LiquidGlass
+          render={<button type="button" />}
           onClick={onBack}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border border-foreground/10 backdrop-blur-xl"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-foreground/5 hover:bg-foreground/10 active:scale-95 text-foreground/70 hover:text-foreground text-sm font-medium transition-all cursor-pointer border"
+          fallbackClassName="border-foreground/10 backdrop-blur-xl"
+          glassClassName="border-transparent"
+          glass={{ blur: 4 }}
         >
           <ArrowLeft className="w-4 h-4" />
           <span>{t('seerr.backToServer', 'Change Seerr Server')}</span>
-        </button>
+        </LiquidGlass>
       </div>
 
       <div className="text-center max-w-2xl mb-8 space-y-4">
@@ -85,13 +89,15 @@ export function SeerrAuthStep({
 
       <form onSubmit={onSubmit} className="w-full flex flex-col items-center">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mb-8">
-          <div
+          <LiquidGlass
             onClick={() => onSelectMethod('jellyfin')}
-            className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${
+            className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border cursor-pointer min-h-[300px] ${
               selectedMethod === 'jellyfin'
                 ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl'
                 : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'
             }`}
+            fallbackClassName="backdrop-blur-xl"
+            glass={{ blur: 6 }}
           >
             <h2 className="text-xl font-bold text-foreground mb-2 flex items-center justify-between">
               <span>{t('seerr.jellyfinSignInTitle', 'Sign in with Jellyfin')}</span>
@@ -141,15 +147,17 @@ export function SeerrAuthStep({
                 <ConnectionStatus>{authError}</ConnectionStatus>
               )}
             </div>
-          </div>
+          </LiquidGlass>
 
-          <div
+          <LiquidGlass
             onClick={() => onSelectMethod('apikey')}
-            className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${
+            className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border cursor-pointer min-h-[300px] ${
               selectedMethod === 'apikey'
                 ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl'
                 : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'
             }`}
+            fallbackClassName="backdrop-blur-xl"
+            glass={{ blur: 6 }}
           >
             <h2 className="text-xl font-bold text-foreground mb-2 flex items-center justify-between">
               <span>{t('seerr.apiKeyTitle', 'API Key')}</span>
@@ -184,7 +192,7 @@ export function SeerrAuthStep({
                 <ConnectionStatus>{authError}</ConnectionStatus>
               )}
             </div>
-          </div>
+          </LiquidGlass>
         </div>
 
         <div className="flex flex-col items-center gap-3">

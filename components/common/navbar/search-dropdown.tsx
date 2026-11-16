@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Film, Tv, User, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
-import { LiquidGlass } from '@/components/ui/liquid-glass';
+import { GLASS_PANEL_CLASS, GLASS_PANEL_OPTIONS, LiquidGlass } from '@/components/ui/liquid-glass';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
@@ -50,9 +50,10 @@ export function SearchDropdown({
         }
         ref={dropdownRef}
         data-search-dropdown="true"
-        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl shadow-2xl z-[100]"
-        fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border"
-        glassClassName="bg-background/55"
+        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl border shadow-2xl z-[100]"
+        fallbackClassName="bg-background/65 backdrop-blur-2xl border-border"
+        glassClassName={GLASS_PANEL_CLASS}
+        glass={GLASS_PANEL_OPTIONS}
         style={{
           left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
           scrollbarWidth: 'thin',

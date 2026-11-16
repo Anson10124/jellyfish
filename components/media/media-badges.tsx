@@ -23,7 +23,8 @@ function Badge(props: LiquidGlassProps) {
     <LiquidGlass
       radius={14}
       className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium text-foreground/80"
-      glassClassName="bg-foreground/8"
+      glassClassName="bg-foreground/12"
+      glass={{ blur: 4 }}
       fallbackClassName="bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl"
       {...props}
     />
