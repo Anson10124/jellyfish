@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
+import { GlassSurface, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS, LiquidGlass } from '@/components/ui/liquid-glass';
 
 import { UserAvatar } from './user-avatar';
 import { NavItems } from './nav-items';
@@ -226,7 +227,14 @@ export function Navbar() {
       <ProgressiveBlur position="top" height="6rem" fade="var(--top-fade)" />
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
-        <nav className="relative flex items-center justify-between rounded-full bg-background/65 backdrop-blur-2xl border border-border px-3 py-2 shadow-2xl text-foreground/80">
+        <LiquidGlass
+          as="nav"
+          className="relative flex items-center justify-between rounded-full px-3 py-2 text-foreground/80"
+          fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border shadow-2xl"
+          // Same size as the fallback: 1px extra padding stands in for its border
+          activeClassName="px-[13px] py-[9px]"
+          glassClassName="bg-white/60 dark:bg-[#222222]/60 shadow-[0_4px_19px_rgba(0,0,0,0.4)]"
+        >
           <NavItems
             navItems={navItems}
             activeIndex={activeIndex}
@@ -322,7 +330,7 @@ export function Navbar() {
               </Link>
             )}
           </div>
-        </nav>
+        </LiquidGlass>
 
         {/* Desktop search dropdown */}
         {!isMobile && (
@@ -379,12 +387,17 @@ export function Navbar() {
       />
 
       {isOffline && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/65 backdrop-blur-xl text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <GlassSurface
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300"
+          fallbackClassName="bg-muted/65 backdrop-blur-xl"
+          glassClassName={GLASS_PANEL_CLASS}
+          glass={GLASS_PANEL_OPTIONS}
+        >
           <WifiOff className="w-3.5 h-3.5 text-foreground shrink-0 animate-pulse" />
           <span>
             {t('nav.offlineWarning', 'Server unreachable. Please check your connection.')}
           </span>
-        </div>
+        </GlassSurface>
       )}
     </>
   );

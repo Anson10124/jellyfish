@@ -6,6 +6,7 @@ import React from 'react';
 import { User, Lock, CheckCircle2, Loader2 } from 'lucide-react';
 import { AuthMethod, QuickConnectStatus } from '@/hooks/connect/use-connect-flow';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { GlassSurface } from '@/components/ui/liquid-glass';
 
 interface AuthCardProps {
   selectedMethod: AuthMethod;
@@ -41,9 +42,11 @@ export function AuthCard({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
       {/* Username & Password Card */}
-      <div
+      <GlassSurface
         onClick={() => onSelectMethod('credentials')}
-        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${selectedMethod === 'credentials' ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl' : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'}`}
+        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border cursor-pointer min-h-[300px] ${selectedMethod === 'credentials' ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl' : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'}`}
+        fallbackClassName="backdrop-blur-xl"
+        glass={{ blur: 6 }}
       >
         <h2 className="text-xl font-bold text-foreground mb-2">
           {t('connect.credentialsTitle', 'Username and password')}
@@ -89,12 +92,14 @@ export function AuthCard({
             <ConnectionStatus>{authError}</ConnectionStatus>
           )}
         </div>
-      </div>
+      </GlassSurface>
 
       {/* Quick Connect Card */}
-      <div
+      <GlassSurface
         onClick={() => onSelectMethod('quickconnect')}
-        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border backdrop-blur-xl cursor-pointer min-h-[300px] ${selectedMethod === 'quickconnect' ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl' : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'}`}
+        className={`group relative flex flex-col rounded-3xl p-6 transition-all duration-300 border cursor-pointer min-h-[300px] ${selectedMethod === 'quickconnect' ? 'border-foreground/30 bg-foreground/[0.08] shadow-2xl' : 'border-foreground/10 hover:border-foreground/20 bg-foreground/5 hover:bg-foreground/[0.08] shadow-xl'}`}
+        fallbackClassName="backdrop-blur-xl"
+        glass={{ blur: 6 }}
       >
         <h2 className="text-xl font-bold text-foreground mb-2">
           {t('connect.quickConnectTitle', 'Quick Connect')}
@@ -149,7 +154,7 @@ export function AuthCard({
             <ConnectionStatus>{qcError}</ConnectionStatus>
           )}
         </div>
-      </div>
+      </GlassSurface>
     </div>
   );
 }

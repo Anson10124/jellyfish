@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Film, Tv, User, Loader2 } from 'lucide-react';
 import { SearchResult } from '@/hooks/media/use-search';
+import { GlassSurface, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from '@/components/ui/liquid-glass';
 
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w92';
 
@@ -38,14 +39,18 @@ export function SearchDropdown({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <GlassSurface
+        as={motion.div}
         ref={dropdownRef}
         data-search-dropdown="true"
         initial={{ opacity: 0, y: -8, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.97 }}
         transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl bg-background/65 backdrop-blur-2xl border border-border shadow-2xl z-[100]"
+        className="absolute top-full mt-2 w-[325px] max-h-[420px] overflow-y-auto rounded-2xl border shadow-2xl z-[100]"
+        fallbackClassName="bg-background/65 backdrop-blur-2xl border-border"
+        glassClassName={GLASS_PANEL_CLASS}
+        glass={GLASS_PANEL_OPTIONS}
         style={{
           left: dropdownPos.left !== undefined ? `${dropdownPos.left}px` : 'auto',
           scrollbarWidth: 'thin',
@@ -111,7 +116,7 @@ export function SearchDropdown({
             {t('common.noResults', 'No results found')}
           </div>
         )}
-      </motion.div>
+      </GlassSurface>
     </AnimatePresence>
   );
 }

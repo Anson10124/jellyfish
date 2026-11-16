@@ -10,6 +10,16 @@ import { PlayButton } from './play-button';
 import { RequestButton } from './request-button';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
+import { GlassSurface } from '@/components/ui/liquid-glass';
+
+// Secondary hero button: liquid glass where supported; the original ring + blur look elsewhere.
+const GLASS_BUTTON = {
+  className:
+    'inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg',
+  fallbackClassName: 'ring-1 ring-border backdrop-blur-2xl',
+  glass: { blur: 4 },
+};
+
 
 export interface MediaDetailHeroProps {
   title: string;
@@ -120,28 +130,32 @@ export function MediaDetailHero({
               )}
 
               {trailerKey && onWatchTrailer && (
-                <button
+                <GlassSurface
+                  as="button"
                   type="button"
                   data-focusable="true"
                   tabIndex={0}
                   onClick={onWatchTrailer}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                  {...GLASS_BUTTON}
                 >
                   <Film className="h-4 w-4 text-red-600 dark:text-red-400" />
                   {t('movies.watchTrailer', 'Watch Trailer')}
-                </button>
+                </GlassSurface>
               )}
 
-              <button
+              <GlassSurface
+                as="button"
                 type="button"
                 data-focusable="true"
                 tabIndex={0}
                 onClick={onAddToWatchlist}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/12 text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                fallbackClassName={GLASS_BUTTON.fallbackClassName}
+                glass={GLASS_BUTTON.glass}
                 aria-label={t('common.addToWatchlist', 'Add to watchlist')}
               >
                 <Bookmark className="h-4 w-4" />
-              </button>
+              </GlassSurface>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { Router, Cable, Cpu } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { ConnectionMode } from '@/lib/api/connection-mode';
+import { GlassSurface } from '@/components/ui/liquid-glass';
 
 interface ConnectionModeToggleProps {
   service?: 'Seerr' | 'Jellyfin';
@@ -66,7 +67,12 @@ export function ConnectionModeToggle({
   };
 
   return (
-    <div className={variant === 'embedded' ? 'space-y-3' : `p-4 rounded-2xl ${containerBg} backdrop-blur-xl space-y-3 border`}>
+    <GlassSurface
+      className={variant === 'embedded' ? 'space-y-3' : `p-4 rounded-2xl ${containerBg} space-y-3 border`}
+      fallbackClassName={variant === 'embedded' ? undefined : 'backdrop-blur-xl'}
+      // Inside the Seerr modal the panel's own blur is the backdrop root, so glass would only see the panel.
+      glass={{ blur: 6, disabled: variant !== 'glass' }}
+    >
       <p className={`text-xs ${labelClass}`}>
         {t('connect.connectionMode', 'Connection mode')}
       </p>
@@ -88,6 +94,6 @@ export function ConnectionModeToggle({
         ))}
       </div>
       <p className={`text-xs leading-5 ${descClass}`}>{descriptions[mode]}</p>
-    </div>
+    </GlassSurface>
   );
 }

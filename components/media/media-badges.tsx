@@ -4,6 +4,15 @@ import React from 'react';
 import { Star, Calendar, Clock, Tv } from 'lucide-react';
 import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/ui/use-translation';
+import { GlassSurface } from '@/components/ui/liquid-glass';
+
+// Liquid glass where supported; the original ring + blur look elsewhere.
+const BADGE_GLASS = {
+  className:
+    'inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 text-foreground/80',
+  fallbackClassName: 'ring-1 ring-foreground/8 backdrop-blur-2xl',
+  glass: { blur: 4 },
+};
 
 export interface MediaBadgesProps {
   voteAverage?: string | number | null;
@@ -62,43 +71,40 @@ export function MediaBadges({
   return (
     <div className={`flex flex-wrap items-center gap-2 sm:gap-2.5 ${className}`}>
       {formattedVote && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <GlassSurface {...BADGE_GLASS}>
           <Star className="h-4 w-4 text-foreground fill-foreground" />
           <span>{formattedVote}</span>
-        </div>
+        </GlassSurface>
       )}
 
       {displayYear && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <GlassSurface {...BADGE_GLASS}>
           <Calendar className="h-4 w-4 text-foreground/70" />
           <span>{displayYear}</span>
-        </div>
+        </GlassSurface>
       )}
 
       {numberOfSeasons !== undefined && numberOfSeasons !== null && numberOfSeasons > 0 && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <GlassSurface {...BADGE_GLASS}>
           <Tv className="h-4 w-4 text-foreground/70" />
           <span>
             {numberOfSeasons}{' '}
             {numberOfSeasons === 1 ? t('tv.season', 'Season') : t('tv.seasons', 'Seasons')}
           </span>
-        </div>
+        </GlassSurface>
       )}
 
       {runtime && (
-        <div className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80">
+        <GlassSurface {...BADGE_GLASS}>
           <Clock className="h-4 w-4 text-foreground/70" />
           <span>{runtime}</span>
-        </div>
+        </GlassSurface>
       )}
 
       {resolvedGenres.map((g) => (
-        <span
-          key={g.id}
-          className="inline-flex h-9 items-center rounded-xl px-4 text-[13px] font-medium bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl text-foreground/80"
-        >
+        <GlassSurface key={g.id} as="span" {...BADGE_GLASS}>
           {g.name}
-        </span>
+        </GlassSurface>
       ))}
     </div>
   );

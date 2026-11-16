@@ -8,6 +8,7 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
+import { GlassSurface } from '@/components/ui/liquid-glass';
 
 interface GenreBarProps {
   mediaType?: 'movie' | 'tv';
@@ -56,73 +57,75 @@ export function GenreBar({
     }
   }, [emblaApi, isMobile, activeGenreId, genres]);
 
+  // Liquid glass where supported; the original ring + blur look elsewhere.
+  const pillProps = (selected: boolean) => ({
+    className: `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
+      selected
+        ? 'bg-foreground text-background shadow-md scale-[1.02]'
+        : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground'
+    }`,
+    fallbackClassName: selected ? 'backdrop-blur-xl' : 'backdrop-blur-xl ring-1 ring-foreground/10',
+    glass: { blur: 4 },
+  });
+
   const renderGenreButtons = () => (
     <>
       {onSelectGenre ? (
-        <button
+        <GlassSurface
+          as="button"
           type="button"
           data-focusable="true"
           tabIndex={0}
           onClick={() => onSelectGenre(null)}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-            activeGenreId === null
-              ? 'bg-foreground text-background shadow-md scale-[1.02]'
-              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-          }`}
+          {...pillProps(activeGenreId === null)}
         >
           {t('common.all', 'All')}
-        </button>
+        </GlassSurface>
       ) : (
-        <Link
+        <GlassSurface
+          as={Link}
           href={baseUrl}
           prefetch={false}
           data-focusable="true"
           tabIndex={0}
-          className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-            activeGenreId === null
-              ? 'bg-foreground text-background shadow-md scale-[1.02]'
-              : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-          }`}
+          {...pillProps(activeGenreId === null)}
         >
           {t('common.all', 'All')}
-        </Link>
+        </GlassSurface>
       )}
 
       {genres.map((genre) => {
         const isSelected = activeGenreId === genre.id;
         const genreName = getGenreName(genre.id, t) || genre.name;
-        const buttonClasses = `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer backdrop-blur-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-          isSelected
-            ? 'bg-foreground text-background shadow-md scale-[1.02]'
-            : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground ring-1 ring-foreground/10'
-        }`;
 
         if (onSelectGenre) {
           return (
-            <button
+            <GlassSurface
               key={genre.id}
+              as="button"
               type="button"
               data-focusable="true"
               tabIndex={0}
               onClick={() => onSelectGenre(genre.id)}
-              className={buttonClasses}
+              {...pillProps(isSelected)}
             >
               {genreName}
-            </button>
+            </GlassSurface>
           );
         }
 
         return (
-          <Link
+          <GlassSurface
             key={genre.id}
+            as={Link}
             href={`${baseUrl}/genre/${genre.id}`}
             prefetch={false}
             data-focusable="true"
             tabIndex={0}
-            className={buttonClasses}
+            {...pillProps(isSelected)}
           >
             {genreName}
-          </Link>
+          </GlassSurface>
         );
       })}
     </>

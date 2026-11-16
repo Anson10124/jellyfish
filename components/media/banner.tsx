@@ -13,6 +13,16 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { TmdbApi } from '@/lib/api/tmdb';
 import type { MediaItem, MovieDetails, TVDetails } from '@/types/media';
+import { GlassSurface } from '@/components/ui/liquid-glass';
+
+// Secondary hero button: liquid glass where supported; the original ring + blur look elsewhere.
+const GLASS_BUTTON = {
+  className:
+    'inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg',
+  fallbackClassName: 'ring-1 ring-border backdrop-blur-2xl',
+  glass: { blur: 4 },
+};
+
 
 export interface BannerProps {
   item?: MediaItem;
@@ -299,26 +309,28 @@ export function Banner({
                 )}
 
                 {href ? (
-                  <Link
+                  <GlassSurface
+                    as={Link}
                     href={href}
                     prefetch={false}
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    {...GLASS_BUTTON}
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
-                  </Link>
+                  </GlassSurface>
                 ) : (
-                  <button
+                  <GlassSurface
+                    as="button"
                     type="button"
                     data-focusable="true"
                     tabIndex={0}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium transition hover:bg-foreground/16 active:scale-[0.98] bg-foreground/12 ring-1 ring-border backdrop-blur-2xl text-foreground/80 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
+                    {...GLASS_BUTTON}
                   >
                     <Info className="h-4 w-4" />
                     {t('common.moreInfo', 'More Info')}
-                  </button>
+                  </GlassSurface>
                 )}
               </div>
             </motion.div>

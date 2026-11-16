@@ -6,3 +6,4 @@ export * from './popover';
 export * from './brand-icons';
 export * from './drawer';
 export * from './tooltip';
+export * from './liquid-glass';
