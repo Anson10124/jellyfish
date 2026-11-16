@@ -3,7 +3,7 @@
 import { Router, Cable, Cpu } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import type { ConnectionMode } from '@/lib/api/connection-mode';
-import { GlassSurface } from '@/components/ui/liquid-glass';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface ConnectionModeToggleProps {
   service?: 'Seerr' | 'Jellyfin';
@@ -66,13 +66,8 @@ export function ConnectionModeToggle({
       `Use Proxied if your ${service} server’s CORS settings block a direct connection. Your ${service} server handles sign-in.`),
   };
 
-  return (
-    <GlassSurface
-      className={variant === 'embedded' ? 'space-y-3' : `p-4 rounded-2xl ${containerBg} space-y-3 border`}
-      fallbackClassName={variant === 'embedded' ? undefined : 'backdrop-blur-xl'}
-      // Inside the Seerr modal the panel's own blur is the backdrop root, so glass would only see the panel.
-      glass={{ blur: 6, disabled: variant !== 'glass' }}
-    >
+  const content = (
+    <>
       <p className={`text-xs ${labelClass}`}>
         {t('connect.connectionMode', 'Connection mode')}
       </p>
@@ -94,6 +89,26 @@ export function ConnectionModeToggle({
         ))}
       </div>
       <p className={`text-xs leading-5 ${descClass}`}>{descriptions[mode]}</p>
-    </GlassSurface>
+    </>
+  );
+
+  // Only the standalone variant is a glass surface: "embedded" has no surface of its own, and inside the
+  // Seerr modal the panel's own blur is the backdrop root, so glass would only see the panel.
+  if (variant !== 'glass') {
+    return (
+      <div className={variant === 'embedded' ? 'space-y-3' : `p-4 rounded-2xl ${containerBg} backdrop-blur-xl space-y-3 border`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <LiquidGlass
+      className={`p-4 rounded-2xl ${containerBg} space-y-3 border`}
+      fallbackClassName="backdrop-blur-xl"
+      glass={{ blur: 6 }}
+    >
+      {content}
+    </LiquidGlass>
   );
 }

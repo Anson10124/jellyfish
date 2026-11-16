@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff } from 'lucide-react';
+import { Home, Film, Tv, Bookmark, Menu, X, ChevronDown, Cable, WifiOff, Settings } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { useSearch } from '@/hooks/media/use-search';
 import { useServerContext } from '@/context/server-context';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
-import { GlassSurface, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS, LiquidGlass } from '@/components/ui/liquid-glass';
+import { GLASS_PANEL_CLASS, GLASS_PANEL_OPTIONS, LiquidGlass } from '@/components/ui/liquid-glass';
+import { Tooltip } from '@/components/ui/tooltip';
 
 import { UserAvatar } from './user-avatar';
 import { NavItems } from './nav-items';
@@ -19,6 +20,9 @@ import { UserDropdownMenu } from './user-dropdown-menu';
 import { MobileNav } from './mobile-nav';
 import { MobileSidebar } from './mobile-sidebar';
 import { SettingsModal } from '../settings-modal';
+
+// Breathing room kept between the nav items and the expanded search bar
+const SEARCH_GAP = 8;
 
 export function Navbar() {
   const pathname = usePathname();
@@ -45,6 +49,9 @@ export function Navbar() {
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const navItemsRef = useRef<HTMLDivElement>(null);
+  const navActionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mobileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,6 +60,7 @@ export function Navbar() {
   const [activePath, setActivePath] = useState(pathname);
   const [dropdownPos, setDropdownPos] = useState<{ left?: number; width?: number }>({});
   const [userDropdownPos, setUserDropdownPos] = useState<{ right?: number }>({});
+  const [searchAvailableWidth, setSearchAvailableWidth] = useState(Infinity);
 
   const updateDropdownPos = () => {
     if (searchRef.current && headerRef.current) {
@@ -92,6 +100,30 @@ export function Navbar() {
     observer.observe(searchRef.current);
     if (userDropdownRef.current) observer.observe(userDropdownRef.current);
     if (headerRef.current) observer.observe(headerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // The search bar may grow into whatever the nav items and the other action buttons leave free
+  useEffect(() => {
+    const nav = navRef.current;
+    const navItems = navItemsRef.current;
+    const navActions = navActionsRef.current;
+    if (!nav || !navItems || !navActions) return;
+    const measure = () => {
+      const search = searchRef.current;
+      if (!search) return;
+      const style = getComputedStyle(nav);
+      const contentWidth = nav.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      // Leave the search bar's own width out, so the result stays put while it animates
+      const otherActionsWidth = navActions.getBoundingClientRect().width - search.getBoundingClientRect().width;
+      setSearchAvailableWidth(
+        Math.floor(contentWidth - navItems.getBoundingClientRect().width - otherActionsWidth - SEARCH_GAP),
+      );
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(nav);
+    observer.observe(navItems);
+    observer.observe(navActions);
     return () => observer.disconnect();
   }, []);
 
@@ -228,12 +260,14 @@ export function Navbar() {
 
       <header ref={headerRef} className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-4xl transition-all duration-300">
         <LiquidGlass
-          as="nav"
-          className="relative flex items-center justify-between rounded-full px-3 py-2 text-foreground/80"
-          fallbackClassName="bg-background/65 backdrop-blur-2xl border border-border shadow-2xl"
-          // Same size as the fallback: 1px extra padding stands in for its border
-          activeClassName="px-[13px] py-[9px]"
-          glassClassName="bg-white/60 dark:bg-[#222222]/60 shadow-[0_4px_19px_rgba(0,0,0,0.4)]"
+          ref={navRef}
+          render={<nav />}
+          radius="capsule"
+          className="relative flex items-center justify-between rounded-full border px-3 py-2 text-foreground/80"
+          // The article's music player glass: full-size bezel (not scaled to the radius), 60% tint and its shadow
+          glass={{ fitToRadius: false }}
+          glassClassName="bg-white/60 dark:bg-[#222222]/60 border-transparent shadow-[0_4px_19px_rgba(0,0,0,0.4)]"
+          fallbackClassName="bg-background/65 backdrop-blur-2xl border-border shadow-2xl"
         >
           <NavItems
             navItems={navItems}
@@ -241,6 +275,7 @@ export function Navbar() {
             activePath={activePath}
             setActivePath={setActivePath}
             tabRefs={tabRefs}
+            containerRef={navItemsRef}
             pillStyle={pillStyle}
           />
 
@@ -261,7 +296,7 @@ export function Navbar() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div ref={navActionsRef} className="flex items-center gap-2 sm:gap-3">
             <SearchBar
               isMobile={isMobile}
               searchOpen={searchOpen}
@@ -270,6 +305,7 @@ export function Navbar() {
               setSearchQuery={setSearchQuery}
               inputRef={inputRef}
               searchRef={searchRef}
+              availableWidth={searchAvailableWidth}
               handleKeyDown={handleKeyDown}
               setDropdownVisible={setDropdownVisible}
               clearResults={clearResults}
@@ -315,19 +351,40 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link
-                href="/connect"
-                data-focusable="true"
-                tabIndex={0}
-                className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
-                  pathname === '/connect'
-                    ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
-                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
-                }`}
-              >
-                <Cable className="w-4 h-4 shrink-0" />
-                <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
-              </Link>
+              <>
+                <Link
+                  href="/connect"
+                  data-focusable="true"
+                  tabIndex={0}
+                  className={`relative z-10 flex items-center justify-center gap-2 px-3 py-2 lg:px-4 rounded-full text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+                    pathname === '/connect'
+                      ? 'bg-foreground/15 text-foreground font-semibold shadow-md'
+                      : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
+                  }`}
+                >
+                  <Cable className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">{t('nav.connect', 'Connect')}</span>
+                </Link>
+                {/* Settings are all device-local, so they stay reachable before a Jellyfin server is linked */}
+                {isInitialized && (
+                  <Tooltip content={t('nav.settings', 'Settings')} side="bottom">
+                    <button
+                      type="button"
+                      data-focusable="true"
+                      tabIndex={0}
+                      onClick={() => setSettingsOpen(true)}
+                      aria-label={t('nav.settings', 'Settings')}
+                      className={`relative z-10 flex items-center justify-center p-2 rounded-full transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:bg-foreground/20 ${
+                        settingsOpen
+                          ? 'bg-foreground/15 text-foreground shadow-md'
+                          : 'text-foreground/80 hover:text-foreground hover:bg-foreground/10'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4 shrink-0" />
+                    </button>
+                  </Tooltip>
+                )}
+              </>
             )}
           </div>
         </LiquidGlass>
@@ -380,6 +437,7 @@ export function Navbar() {
       <MobileSidebar
         open={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        onOpenSettings={() => setSettingsOpen(true)}
         navItems={navItems}
         activeIndex={activeIndex}
         setActivePath={setActivePath}
@@ -387,17 +445,18 @@ export function Navbar() {
       />
 
       {isOffline && (
-        <GlassSurface
+        <LiquidGlass
+          radius="capsule"
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs md:text-sm font-medium select-none animate-in fade-in slide-in-from-bottom-4 duration-300"
-          fallbackClassName="bg-muted/65 backdrop-blur-xl"
           glassClassName={GLASS_PANEL_CLASS}
           glass={GLASS_PANEL_OPTIONS}
+          fallbackClassName="bg-muted/65 backdrop-blur-xl"
         >
           <WifiOff className="w-3.5 h-3.5 text-foreground shrink-0 animate-pulse" />
           <span>
             {t('nav.offlineWarning', 'Server unreachable. Please check your connection.')}
           </span>
-        </GlassSurface>
+        </LiquidGlass>
       )}
     </>
   );

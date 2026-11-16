@@ -4,15 +4,7 @@ import React from 'react';
 import { Star, Calendar, Clock, Tv } from 'lucide-react';
 import { getGenreName } from '@/constants/genres';
 import { useTranslation } from '@/hooks/ui/use-translation';
-import { GlassSurface } from '@/components/ui/liquid-glass';
-
-// Liquid glass where supported; the original ring + blur look elsewhere.
-const BADGE_GLASS = {
-  className:
-    'inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium bg-foreground/12 text-foreground/80',
-  fallbackClassName: 'ring-1 ring-foreground/8 backdrop-blur-2xl',
-  glass: { blur: 4 },
-};
+import { LiquidGlass, type LiquidGlassProps } from '@/components/ui/liquid-glass';
 
 export interface MediaBadgesProps {
   voteAverage?: string | number | null;
@@ -24,6 +16,19 @@ export interface MediaBadgesProps {
   genreIds?: number[];
   maxGenres?: number;
   className?: string;
+}
+
+function Badge(props: LiquidGlassProps) {
+  return (
+    <LiquidGlass
+      radius={14}
+      className="inline-flex h-9 items-center gap-2 rounded-xl px-4 text-[13px] font-medium text-foreground/80"
+      glassClassName="bg-foreground/12"
+      glass={{ blur: 4 }}
+      fallbackClassName="bg-foreground/12 ring-1 ring-foreground/8 backdrop-blur-2xl"
+      {...props}
+    />
+  );
 }
 
 export function MediaBadges({
@@ -71,40 +76,40 @@ export function MediaBadges({
   return (
     <div className={`flex flex-wrap items-center gap-2 sm:gap-2.5 ${className}`}>
       {formattedVote && (
-        <GlassSurface {...BADGE_GLASS}>
+        <Badge>
           <Star className="h-4 w-4 text-foreground fill-foreground" />
           <span>{formattedVote}</span>
-        </GlassSurface>
+        </Badge>
       )}
 
       {displayYear && (
-        <GlassSurface {...BADGE_GLASS}>
+        <Badge>
           <Calendar className="h-4 w-4 text-foreground/70" />
           <span>{displayYear}</span>
-        </GlassSurface>
+        </Badge>
       )}
 
       {numberOfSeasons !== undefined && numberOfSeasons !== null && numberOfSeasons > 0 && (
-        <GlassSurface {...BADGE_GLASS}>
+        <Badge>
           <Tv className="h-4 w-4 text-foreground/70" />
           <span>
             {numberOfSeasons}{' '}
             {numberOfSeasons === 1 ? t('tv.season', 'Season') : t('tv.seasons', 'Seasons')}
           </span>
-        </GlassSurface>
+        </Badge>
       )}
 
       {runtime && (
-        <GlassSurface {...BADGE_GLASS}>
+        <Badge>
           <Clock className="h-4 w-4 text-foreground/70" />
           <span>{runtime}</span>
-        </GlassSurface>
+        </Badge>
       )}
 
       {resolvedGenres.map((g) => (
-        <GlassSurface key={g.id} as="span" {...BADGE_GLASS}>
+        <Badge key={g.id} render={<span />}>
           {g.name}
-        </GlassSurface>
+        </Badge>
       ))}
     </div>
   );

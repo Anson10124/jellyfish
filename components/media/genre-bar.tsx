@@ -8,7 +8,7 @@ import { useTranslation } from '@/hooks/ui/use-translation';
 import { useIsMobile } from '@/hooks/device/use-mobile';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import { useEmblaNavigation } from '@/hooks/ui/use-embla-navigation';
-import { GlassSurface } from '@/components/ui/liquid-glass';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 
 interface GenreBarProps {
   mediaType?: 'movie' | 'tv';
@@ -57,75 +57,58 @@ export function GenreBar({
     }
   }, [emblaApi, isMobile, activeGenreId, genres]);
 
-  // Liquid glass where supported; the original ring + blur look elsewhere.
-  const pillProps = (selected: boolean) => ({
+  // Selected chips stay solid; the rest are glass so the page shows through the sticky bar
+  const getChipProps = (isSelected: boolean) => ({
+    radius: 'capsule' as const,
+    'data-focusable': 'true',
+    tabIndex: 0,
     className: `shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.05] ${
-      selected
+      isSelected
         ? 'bg-foreground text-background shadow-md scale-[1.02]'
-        : 'bg-card/65 text-foreground/70 hover:bg-foreground/20 hover:text-foreground'
+        : 'text-foreground/70 hover:bg-foreground/20 hover:text-foreground'
     }`,
-    fallbackClassName: selected ? 'backdrop-blur-xl' : 'backdrop-blur-xl ring-1 ring-foreground/10',
+    glassClassName: isSelected ? undefined : 'bg-card/65',
     glass: { blur: 4 },
+    fallbackClassName: isSelected ? 'backdrop-blur-xl' : 'bg-card/65 ring-1 ring-foreground/10 backdrop-blur-xl',
   });
 
   const renderGenreButtons = () => (
     <>
       {onSelectGenre ? (
-        <GlassSurface
-          as="button"
-          type="button"
-          data-focusable="true"
-          tabIndex={0}
-          onClick={() => onSelectGenre(null)}
-          {...pillProps(activeGenreId === null)}
-        >
+        <LiquidGlass render={<button type="button" />} onClick={() => onSelectGenre(null)} {...getChipProps(activeGenreId === null)}>
           {t('common.all', 'All')}
-        </GlassSurface>
+        </LiquidGlass>
       ) : (
-        <GlassSurface
-          as={Link}
-          href={baseUrl}
-          prefetch={false}
-          data-focusable="true"
-          tabIndex={0}
-          {...pillProps(activeGenreId === null)}
-        >
+        <LiquidGlass render={<Link href={baseUrl} prefetch={false} />} {...getChipProps(activeGenreId === null)}>
           {t('common.all', 'All')}
-        </GlassSurface>
+        </LiquidGlass>
       )}
 
       {genres.map((genre) => {
-        const isSelected = activeGenreId === genre.id;
+        const chipProps = getChipProps(activeGenreId === genre.id);
         const genreName = getGenreName(genre.id, t) || genre.name;
 
         if (onSelectGenre) {
           return (
-            <GlassSurface
+            <LiquidGlass
               key={genre.id}
-              as="button"
-              type="button"
-              data-focusable="true"
-              tabIndex={0}
+              render={<button type="button" />}
               onClick={() => onSelectGenre(genre.id)}
-              {...pillProps(isSelected)}
+              {...chipProps}
             >
               {genreName}
-            </GlassSurface>
+            </LiquidGlass>
           );
         }
 
         return (
-          <GlassSurface
+          <LiquidGlass
             key={genre.id}
-            as={Link}
-            href={`${baseUrl}/genre/${genre.id}`}
-            prefetch={false}
-            data-focusable="true"
-            tabIndex={0}
-            {...pillProps(isSelected)}
+            render={<Link href={`${baseUrl}/genre/${genre.id}`} prefetch={false} />}
+            {...chipProps}
           >
             {genreName}
-          </GlassSurface>
+          </LiquidGlass>
         );
       })}
     </>

@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useCallback, useEffect, useId, useMemo, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useId, useMemo, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
+import { useRender } from '@base-ui/react/use-render';
 import { useTheme } from 'next-themes';
+
+import { useLiquidGlass } from '@/hooks/ui/use-liquid-glass';
 import { cn } from '@/lib/utils';
 import {
   SURFACES,
@@ -13,29 +16,43 @@ import {
   type SurfaceName,
 } from '@/lib/liquid-glass';
 
-/**
- * SVG filters inside `backdrop-filter` (which the refraction relies on) only work
- * in Chromium-based browsers. `CSS.supports` reports true elsewhere too, so we
- * have to check the engine. Chrome on iOS ("CriOS") is WebKit underneath.
+/*
+ * Liquid Glass, based on kube.io's "Liquid Glass in the Browser: Refraction with CSS and SVG"
+ * (https://kube.io/blog/liquid-glass-css-svg/).
+ *
+ * With the Liquid Glass setting on:
+ * - Chromium refracts the backdrop through an SVG displacement filter built from Snell's law,
+ *   with a rim highlight (see lib/liquid-glass).
+ * - Safari and Firefox accept SVG filters in backdrop-filter but draw nothing, so they get a
+ *   frosted blur with a sheen and rim instead.
+ * With it off, surfaces render their `fallbackClassName`.
  */
-function detectSupport(): boolean {
-  if (typeof navigator === 'undefined') return false;
+
+type GlassRenderer = 'svg' | 'frosted';
+
+let rendererCache: GlassRenderer | undefined;
+
+function detectRenderer(): GlassRenderer {
   const brands = (navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } })
     .userAgentData?.brands;
-  if (brands?.some((b) => b.brand === 'Chromium')) return true;
+  if (brands?.some((b) => b.brand === 'Chromium')) return 'svg';
   const ua = navigator.userAgent;
-  return /\b(Chrome|Chromium)\/\d+/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+  // Chrome on iOS ("CriOS") and friends are WebKit underneath.
+  return /\b(Chrome|Chromium)\/\d+/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua) ? 'svg' : 'frosted';
 }
 
-let supportCache: boolean | null = null;
-const subscribeNoop = () => () => {};
-const getSupport = () => (supportCache ??= detectSupport());
-const getServerSupport = () => false;
+const subscribeNever = () => () => {};
+const getRenderer = () => (rendererCache ??= detectRenderer());
+const getServerRenderer = () => null;
 
-/** True when the browser can render the refracting liquid glass (Chromium only). */
-export function useLiquidGlassSupport(): boolean {
-  return useSyncExternalStore(subscribeNoop, getSupport, getServerSupport);
+/** Which glass renderer this browser gets, or null during server rendering. */
+function useGlassRenderer(): GlassRenderer | null {
+  return useSyncExternalStore(subscribeNever, getRenderer, getServerRenderer);
 }
+
+// ---------------------------------------------------------------------------------------------
+// Refraction filter (Chromium)
+// ---------------------------------------------------------------------------------------------
 
 // Brighten / darken what's behind the glass so text on top stays readable.
 const TONE_MATRIX = {
@@ -44,8 +61,6 @@ const TONE_MATRIX = {
 } as const;
 
 export interface LiquidGlassOptions {
-  /** Corner radius in px. Defaults to the element's computed border radius. */
-  radius?: number;
   /** Width of the curved edge in px. */
   bezelWidth?: number;
   /** Thickness of the glass slab in px. Thicker glass bends light further. */
@@ -65,9 +80,9 @@ export interface LiquidGlassOptions {
   /** Darken (dark theme) or lighten (light theme) the backdrop for legibility. */
   tone?: boolean;
   /**
-   * When the bezel is wider than the corner radius allows, shrink the bezel and the
-   * glass thickness together, so small surfaces get the same glass shape scaled down
-   * instead of bending light far outside themselves. Defaults to true.
+   * When the bezel is wider than the corner radius allows, shrink the bezel and the glass
+   * thickness together, so small surfaces get the same glass shape scaled down instead of
+   * bending light far outside themselves. Defaults to true.
    */
   fitToRadius?: boolean;
 }
@@ -133,12 +148,10 @@ function getMaps(
   return maps;
 }
 
-type GlassMode = 'self' | 'layer';
-
 /**
  * True when an ancestor has its own backdrop-filter, filter, mask or clip-path. Such an
- * ancestor becomes the "backdrop root", so the glass would only see that ancestor's
- * content, not the page. In that case we keep the fallback look and skip the filter.
+ * ancestor becomes the "backdrop root", so the glass would only see that ancestor's content,
+ * not the page. In that case we keep the fallback look and skip the filter.
  * (Opacity also does this, but only during fades, so it's deliberately not checked.)
  */
 function isInsideBackdropRoot(element: HTMLElement): boolean {
@@ -156,35 +169,27 @@ function isInsideBackdropRoot(element: HTMLElement): boolean {
   return false;
 }
 
-export interface LiquidGlassHandle<T extends HTMLElement> {
-  /** Callback ref for the glass element: `ref={glass.attach}`. */
+interface GlassFilter<T extends HTMLElement> {
+  /** Callback ref for the glass element. */
   attach: (element: T | null) => void;
-  /** True once the glass is rendering. Use it to swap fallback classes for glass ones. */
+  /** True once the filter is ready to render. */
   active: boolean;
-  /** `backdrop-filter` style for the element ("self" mode) or its glass layer ("layer" mode). */
+  /** `backdrop-filter` style for the element. */
   style: React.CSSProperties | undefined;
-  /** The SVG filter definition, rendered into document.body. Render it anywhere. */
+  /** The SVG filter definition, portalled into document.body. Render it anywhere. */
   filter: React.ReactNode;
 }
 
 /**
- * Refracting "liquid glass" based on kube.io's SVG displacement technique
- * (https://kube.io/blog/liquid-glass-css-svg/).
- *
- * In "self" mode (the default) the filter goes on the element itself, exactly where
- * a `backdrop-blur` class would. That keeps the element's own fade animations
- * working. "layer" mode is for containers that hold other glass surfaces; see
- * `<LiquidGlass>`.
- *
- * Browsers without support never become `active`, so callers keep their usual
- * blur classes there.
+ * Builds the refraction filter for one element: measures its border box and corner radius,
+ * generates (or reuses) the displacement and specular maps, and returns the filter plus the
+ * `backdrop-filter` style that points at it.
  */
-export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
-  options: LiquidGlassOptions & { mode?: GlassMode; disabled?: boolean } = {},
-): LiquidGlassHandle<T> {
+function useGlassFilter<T extends HTMLElement>(
+  options: LiquidGlassOptions & { enabled: boolean; radius?: number | 'capsule' },
+): GlassFilter<T> {
   const {
-    mode = 'self',
-    disabled = false,
+    enabled,
     radius: radiusProp,
     bezelWidth = DEFAULTS.bezelWidth,
     glassThickness = DEFAULTS.glassThickness,
@@ -199,14 +204,13 @@ export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
     fitToRadius = true,
   } = options;
 
-  const supported = useLiquidGlassSupport() && !disabled;
   const { resolvedTheme } = useTheme();
   const [element, setElement] = useState<T | null>(null);
   const [size, setSize] = useState<{ width: number; height: number; radius: number } | null>(null);
-  const filterId = `liquid-glass-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const filterId = `liquid-glass-${useId().replace(/[^\w-]/g, '')}`;
 
   const maps = useMemo(() => {
-    if (!supported || !size || size.width < 2 || size.height < 2) return null;
+    if (!enabled || !size || size.width < 2 || size.height < 2) return null;
     return getMaps(
       size.width,
       size.height,
@@ -218,16 +222,15 @@ export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
       lightAngle,
       fitToRadius,
     );
-  }, [supported, size, bezelWidth, glassThickness, refractiveIndex, surface, lightAngle, fitToRadius]);
+  }, [enabled, size, bezelWidth, glassThickness, refractiveIndex, surface, lightAngle, fitToRadius]);
 
   const active = maps !== null && size !== null;
 
-  // Track the size of the area the filter covers, in whole pixels so sub-pixel jitter
-  // doesn't rebuild the maps. Also re-measure when the glass switches on: swapping a
-  // fallback border for padding changes the box without resizing the content box, so
-  // ResizeObserver alone would miss it.
+  // Track the border box in whole pixels, so sub-pixel jitter doesn't rebuild the maps. Also
+  // re-measure when the glass switches on: swapping a fallback border for a transparent one
+  // or padding changes the box without resizing the content box, so ResizeObserver misses it.
   useEffect(() => {
-    if (!supported || !element) return;
+    if (!enabled || !element) return;
 
     let frame = 0;
     const measure = () => {
@@ -236,16 +239,11 @@ export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
         setSize(null);
         return;
       }
-      const style = getComputedStyle(element);
-      const outerRadius = parseFloat(style.borderTopLeftRadius) || 0;
-      // "self": the filter covers the border box. "layer": the layer fills the padding box.
-      const width = mode === 'self' ? element.offsetWidth : element.clientWidth;
-      const height = mode === 'self' ? element.offsetHeight : element.clientHeight;
-      const cssRadius =
-        mode === 'self'
-          ? outerRadius
-          : Math.max(0, outerRadius - (parseFloat(style.borderTopWidth) || 0));
-      const radius = Math.round(Math.min(radiusProp ?? cssRadius, width / 2, height / 2));
+      const width = element.offsetWidth;
+      const height = element.offsetHeight;
+      const cssRadius = parseFloat(getComputedStyle(element).borderTopLeftRadius) || 0;
+      const wanted = radiusProp === 'capsule' ? Infinity : (radiusProp ?? cssRadius);
+      const radius = Math.round(Math.min(wanted, width / 2, height / 2));
       setSize((prev) =>
         prev && prev.width === width && prev.height === height && prev.radius === radius
           ? prev
@@ -263,7 +261,7 @@ export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
       observer.disconnect();
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [element, supported, mode, radiusProp, active]);
+  }, [element, enabled, radiusProp, active]);
 
   const toneMatrix = tone ? TONE_MATRIX[resolvedTheme === 'light' ? 'light' : 'dark'] : null;
 
@@ -346,158 +344,138 @@ export function useLiquidGlass<T extends HTMLElement = HTMLElement>(
   };
 }
 
-function assignRef<T>(ref: React.Ref<T> | undefined, value: T | null) {
-  if (typeof ref === 'function') ref(value);
-  else if (ref) (ref as React.RefObject<T | null>).current = value;
-}
+// ---------------------------------------------------------------------------------------------
+// Frosted renderer (Safari, Firefox)
+// ---------------------------------------------------------------------------------------------
 
-/** Combine two refs (objects or callbacks) into one stable callback ref. */
-export function useMergedRef<T>(
-  a: React.Ref<T> | undefined,
-  b: React.Ref<T> | undefined,
-): React.RefCallback<T> {
-  return useCallback(
-    (value: T | null) => {
-      assignRef(a, value);
-      assignRef(b, value);
-    },
-    [a, b],
-  );
-}
+const FROSTED_FILTER = 'blur(12px) saturate(1.4) brightness(1.04)';
 
-type GlassTag = 'div' | 'nav' | 'header' | 'section' | 'aside';
+const SHEEN =
+  'linear-gradient(135deg, light-dark(hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0.14)) 0%, transparent 42%, transparent 64%, light-dark(hsl(0 0% 100% / 0.18), hsl(0 0% 100% / 0.05)) 100%)';
 
-export interface LiquidGlassProps extends LiquidGlassOptions, React.HTMLAttributes<HTMLElement> {
-  as?: GlassTag;
-  /** Classes for the glass layer itself, e.g. a tint (`bg-white/60`). */
-  glassClassName?: string;
-  /** Classes for the element while the glass is active (e.g. padding that replaces a fallback border). */
-  activeClassName?: string;
-  /** Classes used only when it is not (e.g. the regular blur look). */
-  fallbackClassName?: string;
-}
+const RIM =
+  'linear-gradient(150deg, light-dark(hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0.34)), light-dark(hsl(0 0% 100% / 0.1), hsl(0 0% 100% / 0.03)) 45%, light-dark(hsl(0 0% 100% / 0.08), hsl(0 0% 100% / 0.02)) 60%, light-dark(hsl(0 0% 100% / 0.42), hsl(0 0% 100% / 0.18)))';
 
-/**
- * Liquid glass container that draws the glass on a separate layer behind its
- * children. Use it for containers that hold other glass surfaces (like the navbar):
- * a backdrop-filter on the container itself would make it the backdrop root of
- * everything inside, so nested glass would only see the container.
- *
- * The element must be positioned (e.g. `relative` or `fixed`) for the layer to fit it.
- */
-export function LiquidGlass({
-  as: Tag = 'div',
-  radius,
-  bezelWidth,
-  glassThickness,
-  refractiveIndex,
-  surface,
-  blur,
-  refraction,
-  specularOpacity,
-  specularSaturation,
-  lightAngle,
-  tone,
-  fitToRadius = false,
-  glassClassName,
-  activeClassName,
-  fallbackClassName,
-  className,
-  children,
-  ...rest
-}: LiquidGlassProps) {
-  const { attach, active, style, filter } = useLiquidGlass<HTMLElement>({
-    mode: 'layer',
-    radius,
-    bezelWidth,
-    glassThickness,
-    refractiveIndex,
-    surface,
-    blur,
-    refraction,
-    specularOpacity,
-    specularSaturation,
-    lightAngle,
-    tone,
-    fitToRadius,
-  });
+const RING = 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)';
 
+function FrostedLayers() {
   return (
-    <Tag
-      ref={attach as React.Ref<never>}
-      // Keep the fallback look until the maps are ready, so there's no flash of bare content.
-      className={cn(className, active ? cn('isolate', activeClassName) : fallbackClassName)}
-      {...rest}
-    >
-      {filter}
-      {active && (
-        <span
-          aria-hidden
-          className={cn('pointer-events-none absolute inset-0 -z-10', glassClassName)}
-          style={{
-            ...style,
-            borderRadius: 'inherit',
-            // Own compositing layer, as in the article, for smoother scrolling.
-            transform: 'translateZ(0)',
-          }}
-        />
-      )}
-      {children}
-    </Tag>
+    <>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit]"
+        style={{ background: 'light-dark(hsl(0 0% 100% / 0.12), hsl(0 0% 100% / 0.04))' }}
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit]"
+        style={{ background: SHEEN }}
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] p-[3px]"
+        style={{ background: RIM, WebkitMask: RING, WebkitMaskComposite: 'xor', mask: RING, maskComposite: 'exclude' }}
+      />
+    </>
   );
 }
+
+// ---------------------------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------------------------
 
 /**
  * Glass look for menus and panels: the article's music player tint (same as the navbar).
- * Borders turn transparent instead of disappearing, so nothing shifts when the glass
- * switches on; the rim highlight takes their place.
+ * Borders turn transparent instead of disappearing, so nothing shifts when the glass switches
+ * on; the rim highlight takes their place.
  */
 export const GLASS_PANEL_CLASS = 'bg-white/60 dark:bg-[#222222]/60 border-transparent';
 
 /** Glass settings for menus and panels: more blur than the player, so small text stays readable. */
 export const GLASS_PANEL_OPTIONS: LiquidGlassOptions = { blur: 6 };
 
-type GlassSurfaceProps<C extends React.ElementType> = {
-  /** Element or component to render (e.g. 'button', Link, motion.div). Defaults to 'div'. */
-  as?: C;
-  /** Glass settings passed to `useLiquidGlass`. */
-  glass?: LiquidGlassOptions & { disabled?: boolean };
-  /** Classes added while the glass is active. */
+export interface LiquidGlassProps extends React.HTMLAttributes<HTMLElement> {
+  render?: useRender.RenderProp;
+  ref?: React.Ref<HTMLElement>;
+  /**
+   * Corner radius in px. "capsule" is half the shorter side. Defaults to the element's
+   * computed border radius.
+   */
+  radius?: number | 'capsule';
+  /** Refraction settings (Chromium). Defaults match the article's music player. */
+  glass?: LiquidGlassOptions;
+  /** Classes applied only when Liquid Glass is on (e.g. a background wash for legibility). */
   glassClassName?: string;
-  /** Classes used when it is not (e.g. today's `backdrop-blur` look). */
+  /** Classes applied only when Liquid Glass is off, typically the frosted background and border it replaces. */
   fallbackClassName?: string;
-} & Omit<React.ComponentPropsWithRef<C>, 'as'>;
+}
 
 /**
- * A leaf liquid glass surface (tag, button, dropdown, card): the filter goes on the
- * element itself, in place of a `backdrop-blur` class. Its own opacity/scale
- * animations keep working. Don't nest other glass surfaces inside it; use
- * `<LiquidGlass>` for containers like the navbar.
+ * Base glass surface for the app. When the Liquid Glass setting is on, the element refracts what
+ * is behind it (Chromium) or gets a frosted blur (other browsers). Otherwise it renders the same
+ * element with `fallbackClassName`.
+ *
+ * The filter goes on the element itself, so its own fade and scale animations keep working.
+ * Don't nest glass surfaces: the outer one would become the inner one's backdrop root.
  */
-export function GlassSurface<C extends React.ElementType = 'div'>({
-  as,
+export function LiquidGlass({
+  render,
+  ref,
+  radius,
   glass: options,
+  className,
   glassClassName,
   fallbackClassName,
-  className,
   style,
-  ref,
   children,
-  ...rest
-}: GlassSurfaceProps<C>) {
-  const { attach, active, style: glassStyle, filter } = useLiquidGlass(options);
-  const mergedRef = useMergedRef(attach, ref as React.Ref<HTMLElement> | undefined);
-  const Component: React.ElementType = as ?? 'div';
+  ...props
+}: LiquidGlassProps) {
+  const [enabled] = useLiquidGlass();
+  const renderer = useGlassRenderer();
+  const { attach, active, style: filterStyle, filter } = useGlassFilter<HTMLElement>({
+    ...options,
+    radius,
+    enabled: enabled && renderer === 'svg',
+  });
 
-  return (
-    <Component
-      ref={mergedRef}
-      className={cn(className, active ? glassClassName : fallbackClassName)}
-      style={glassStyle ? { ...style, ...glassStyle } : style}
-      {...rest}
-    >
-      {filter}
-      {children}
-    </Component>
-  );
+  // Until the refraction maps are ready (or when the element sits under another backdrop root),
+  // Chromium shows the regular fallback look.
+  const mode: GlassRenderer | null = !enabled
+    ? null
+    : renderer === 'svg'
+      ? active
+        ? 'svg'
+        : null
+      : renderer;
+
+  const glassStyle: React.CSSProperties | undefined =
+    mode === 'svg'
+      ? filterStyle
+      : mode === 'frosted'
+        ? { WebkitBackdropFilter: FROSTED_FILTER, backdropFilter: FROSTED_FILTER }
+        : undefined;
+
+  return useRender({
+    render: render ?? <div />,
+    ref: ref ? [ref, attach] : attach,
+    props: {
+      ...props,
+      'data-liquid-glass': mode ?? undefined,
+      className:
+        mode === 'svg'
+          ? cn(className, glassClassName)
+          : mode === 'frosted'
+            ? // Isolated so the frosted layers can sit at -z-10: above the element's background, under its content
+              cn('relative isolate', className, glassClassName)
+            : cn(className, fallbackClassName),
+      style: glassStyle ? { ...style, ...glassStyle } : style,
+      children: (
+        <>
+          {filter}
+          {mode === 'frosted' && <FrostedLayers />}
+          {children}
+        </>
+      ),
+    },
+  });
 }

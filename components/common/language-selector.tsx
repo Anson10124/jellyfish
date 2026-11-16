@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Globe, Check, ChevronDown } from 'lucide-react';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { SUPPORTED_LANGUAGES } from '@/lib/i18n/config';
-import { GlassSurface, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from '@/components/ui/liquid-glass';
+import { LiquidGlass, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from '@/components/ui/liquid-glass';
 
 export function LanguageSelector() {
   const { locale, setLocale } = useTranslation();
@@ -30,9 +30,8 @@ export function LanguageSelector() {
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      <GlassSurface
-        as="button"
-        type="button"
+      <LiquidGlass
+        render={<button type="button" />}
         onClick={() => setIsOpen((prev) => !prev)}
         className="inline-flex items-center gap-2 rounded-xl bg-foreground/10 hover:bg-foreground/15 px-3 py-1.5 text-xs font-medium text-foreground transition cursor-pointer border"
         fallbackClassName="backdrop-blur-md border-border"
@@ -43,10 +42,10 @@ export function LanguageSelector() {
         <Globe className="h-3.5 w-3.5 text-foreground/80" />
         <span suppressHydrationWarning>{currentLabel}</span>
         <ChevronDown className={`h-3 w-3 text-foreground/60 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </GlassSurface>
+      </LiquidGlass>
 
       {isOpen && (
-        <GlassSurface
+        <LiquidGlass
           className="absolute right-0 mt-2 w-36 origin-top-right rounded-xl border shadow-2xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100"
           fallbackClassName="bg-popover/95 backdrop-blur-xl border-border"
           glassClassName={GLASS_PANEL_CLASS}
@@ -69,7 +68,7 @@ export function LanguageSelector() {
               {activeLocale === lang.code && <Check className="h-3.5 w-3.5 text-foreground" />}
             </button>
           ))}
-        </GlassSurface>
+        </LiquidGlass>
       )}
     </div>
   );

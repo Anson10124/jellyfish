@@ -4,7 +4,7 @@ import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 
 import { cn } from "@/lib/utils"
-import { GlassSurface, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from "@/components/ui/liquid-glass"
+import { LiquidGlass, GLASS_PANEL_OPTIONS, GLASS_PANEL_CLASS } from "@/components/ui/liquid-glass"
 import { Button } from "@/components/ui/button"
 import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
@@ -44,8 +44,9 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
 
 function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
   return (
-    <GlassSurface
-      as={ToastPrimitive.Root}
+    <LiquidGlass
+      // Glass props (className, style, ref, children) go onto the Base UI root along with its own props
+      render={(glassProps) => <ToastPrimitive.Root {...props} {...glassProps} />}
       data-slot="toast"
       fallbackClassName="border-foreground/15 bg-background/60 backdrop-blur-2xl"
       glassClassName={GLASS_PANEL_CLASS}
@@ -68,7 +69,6 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
         "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
         className
       )}
-      {...props}
     />
   )
 }

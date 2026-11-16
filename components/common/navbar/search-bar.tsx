@@ -4,6 +4,9 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X } from 'lucide-react';
 
+const SEARCH_CLOSED_WIDTH = 110;
+const SEARCH_OPEN_MAX_WIDTH = 325;
+
 interface SearchBarProps {
   isMobile: boolean;
   searchOpen: boolean;
@@ -12,6 +15,8 @@ interface SearchBarProps {
   setSearchQuery: (query: string) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
   searchRef: React.RefObject<HTMLDivElement | null>;
+  /** Room the navbar has for the expanded search bar, so it never pushes the other items out */
+  availableWidth: number;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   setDropdownVisible: (visible: boolean) => void;
   clearResults: () => void;
@@ -26,18 +31,21 @@ export function SearchBar({
   setSearchQuery,
   inputRef,
   searchRef,
+  availableWidth,
   handleKeyDown,
   setDropdownVisible,
   clearResults,
   t,
 }: SearchBarProps) {
+  const openWidth = Math.max(SEARCH_CLOSED_WIDTH, Math.min(SEARCH_OPEN_MAX_WIDTH, availableWidth));
+
   return (
     <div ref={searchRef} className="relative flex items-center">
       {!isMobile ? (
         <motion.div
           initial={false}
           animate={{
-            width: searchOpen ? 325 : 110,
+            width: searchOpen ? openWidth : SEARCH_CLOSED_WIDTH,
           }}
           transition={{
             type: 'spring',

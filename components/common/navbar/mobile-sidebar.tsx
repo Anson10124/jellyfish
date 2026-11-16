@@ -4,17 +4,19 @@ import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Cable, LogOut, Clock, Server, Check } from 'lucide-react';
+import { X, Cable, LogOut, Clock, Server, Check, Settings } from 'lucide-react';
 
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { useServerContext } from '@/context/server-context';
 import { formatServerAddress } from '@/lib/utils';
+import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { UserAvatar } from './user-avatar';
 import { NavItemDef } from './nav-items';
 
 interface MobileSidebarProps {
   open: boolean;
   onClose: () => void;
+  onOpenSettings: () => void;
   navItems: NavItemDef[];
   activeIndex: number;
   setActivePath: (href: string) => void;
@@ -24,6 +26,7 @@ interface MobileSidebarProps {
 export function MobileSidebar({
   open,
   onClose,
+  onOpenSettings,
   navItems,
   activeIndex,
   setActivePath,
@@ -89,6 +92,11 @@ export function MobileSidebar({
     router.push('/connect');
   };
 
+  const handleSettingsClick = () => {
+    onClose();
+    onOpenSettings();
+  };
+
   const handleRequestsClick = () => {
     onClose();
     router.push('/requests');
@@ -125,16 +133,23 @@ export function MobileSidebar({
             className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[60] md:hidden cursor-pointer"
             aria-hidden="true"
           />
-          <motion.aside
+          <LiquidGlass
             key="mobile-sidebar-panel"
-            initial={{ x: '-100%' }}
-            animate={{ x: '0%' }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            render={
+              <motion.aside
+                initial={{ x: '-100%' }}
+                animate={{ x: '0%' }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              />
+            }
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="fixed top-0 bottom-0 left-0 w-[290px] max-w-[82vw] h-dvh z-[70] bg-background/95 backdrop-blur-2xl border-r border-border shadow-2xl flex flex-col md:hidden select-none"
+            radius={0}
+            className="fixed top-0 bottom-0 left-0 w-[290px] max-w-[82vw] h-dvh z-[70] shadow-2xl flex flex-col md:hidden select-none"
+            fallbackClassName="bg-background/95 backdrop-blur-2xl border-r border-border"
+            glassClassName="bg-background/55"
             aria-label="Mobile Navigation"
           >
             <div className="flex items-center justify-between px-4 py-4 border-b border-border/80">
@@ -202,6 +217,15 @@ export function MobileSidebar({
               )}
             </div>
             <div className="shrink-0 p-3 border-t border-border/80 bg-foreground/[0.02] space-y-3">
+              <button
+                type="button"
+                onClick={handleSettingsClick}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.08] active:scale-[0.98] transition-all duration-150 cursor-pointer"
+              >
+                <Settings className="w-4 h-4 text-foreground/60" />
+                <span>{t('nav.settings', 'Settings')}</span>
+              </button>
+
               {servers && servers.length > 1 && (
                 <div className="space-y-1">
                   <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -295,7 +319,7 @@ export function MobileSidebar({
                 </button>
               )}
             </div>
-          </motion.aside>
+          </LiquidGlass>
         </>
       )}
     </AnimatePresence>

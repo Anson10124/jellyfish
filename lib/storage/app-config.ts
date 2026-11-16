@@ -13,6 +13,7 @@ export interface JellyfishConfig {
   locale?: string;
   showNsfw?: boolean;
   reduceMotion?: boolean;
+  liquidGlass?: boolean;
   servers?: MultiServerStore;
 }
 
