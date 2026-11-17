@@ -30,7 +30,8 @@ export interface MediaDetailHeroProps {
   trailerKey?: string | null;
   onWatchNow: () => void;
   onWatchTrailer?: () => void;
-  onAddToWatchlist?: () => void;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
 }
 
 export function MediaDetailHero({
@@ -51,9 +52,13 @@ export function MediaDetailHero({
   trailerKey,
   onWatchNow,
   onWatchTrailer,
-  onAddToWatchlist,
+  isBookmarked = false,
+  onToggleBookmark,
 }: MediaDetailHeroProps) {
   const { t } = useTranslation();
+  const bookmarkLabel = isBookmarked
+    ? t('common.removeFromWatchlist', 'Remove from watchlist')
+    : t('common.addToWatchlist', 'Add to watchlist');
 
   return (
     <>
@@ -142,14 +147,16 @@ export function MediaDetailHero({
                 radius={14}
                 data-focusable="true"
                 tabIndex={0}
-                onClick={onAddToWatchlist}
+                onClick={onToggleBookmark}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-foreground/80 hover:bg-foreground/16 active:scale-[0.98] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:scale-[1.04] focus-visible:shadow-lg"
                 glassClassName="bg-foreground/12"
                 glass={{ blur: 4 }}
                 fallbackClassName="bg-foreground/12 ring-1 ring-border backdrop-blur-2xl"
-                aria-label={t('common.addToWatchlist', 'Add to watchlist')}
+                aria-pressed={isBookmarked}
+                aria-label={bookmarkLabel}
+                title={bookmarkLabel}
               >
-                <Bookmark className="h-4 w-4" />
+                <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-foreground' : ''}`} />
               </LiquidGlass>
             </div>
           </div>

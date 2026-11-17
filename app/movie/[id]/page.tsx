@@ -17,6 +17,8 @@ import { useShowNsfw } from '@/hooks/ui/use-show-nsfw';
 import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
+import { useBookmark } from '@/hooks/media/use-bookmarks';
+import { toast } from '@/components/ui/toast';
 import { PADDING_X_CLASSES } from '@/constants/carousel';
 import {
   CastCarousel,
@@ -57,6 +59,31 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
     movieId,
     'movie'
   );
+
+  const bookmarkTarget = React.useMemo(
+    () =>
+      movie
+        ? {
+            id: movieId,
+            mediaType: 'movie' as const,
+            title: getMediaTitle(movie),
+            posterPath: movie.poster_path || null,
+            year: movie.release_date ? new Date(movie.release_date).getFullYear() : null,
+          }
+        : null,
+    [movie, movieId]
+  );
+  const { isBookmarked, toggle: toggleBookmark } = useBookmark(bookmarkTarget);
+
+  const handleToggleBookmark = () => {
+    if (!bookmarkTarget) return;
+    const added = toggleBookmark();
+    if (added) {
+      toast.success(t('common.addedToWatchlist', 'Added to watchlist'), bookmarkTarget.title);
+    } else {
+      toast.info(t('common.removedFromWatchlist', 'Removed from watchlist'), bookmarkTarget.title);
+    }
+  };
 
   const { isAvailable, isChecking, jellyfinItem } = useJellyfinAvailability({
     id: movieId,
@@ -180,6 +207,8 @@ export default function MovieDetailPage({ params }: MovieDetailPageProps) {
         trailerKey={trailerKey}
         onWatchNow={handleWatchNow}
         onWatchTrailer={playTrailer}
+        isBookmarked={isBookmarked}
+        onToggleBookmark={handleToggleBookmark}
       />
 
       <div className="relative z-20 w-full min-h-screen bg-background/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-border">

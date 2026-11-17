@@ -21,7 +21,10 @@
     "searching": "搜尋中",
     "noResults": "未找到結果",
     "movies": "電影",
-    "addToWatchlist": "加入待看清單"
+    "addToWatchlist": "加入待看清單",
+    "removeFromWatchlist": "從待看清單移除",
+    "addedToWatchlist": "已加入待看清單",
+    "removedFromWatchlist": "已從待看清單移除"
   },
   "nav": {
     "home": "首頁",
@@ -215,6 +218,9 @@
     "noItems": "在此媒體庫中未找到任何媒體項目。",
     "libraryCount": "個媒體庫",
     "librariesCount": "個媒體庫",
+    "watchlist": "待看清單",
+    "watchlistCount": "部作品",
+    "watchlistCountPlural": "部作品",
     "connectPromptTitle": "連接你的 Jellyfin 伺服器",
     "connectPromptDesc": "連接你的 Jellyfin 伺服器，直接存取你的個人電影、影集與音樂媒體庫。"
   },

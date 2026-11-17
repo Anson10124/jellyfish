@@ -19,6 +19,8 @@ import { useMediaDetails } from '@/hooks/media/use-media-details';
 import { useTvSeasonCredits } from '@/hooks/media/use-tv-season-credits';
 import { useJellyfinAvailability } from '@/hooks/media/use-jellyfin-availability';
 import { usePlayer } from '@/hooks/player/use-player';
+import { useBookmark } from '@/hooks/media/use-bookmarks';
+import { toast } from '@/components/ui/toast';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { JellyfinService } from '@/services/jellyfin.service';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
@@ -65,6 +67,31 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
     tvId,
     'tv'
   );
+
+  const bookmarkTarget = React.useMemo(
+    () =>
+      tvShow
+        ? {
+            id: tvId,
+            mediaType: 'tv' as const,
+            title: getMediaTitle(tvShow),
+            posterPath: tvShow.poster_path || null,
+            year: tvShow.first_air_date ? new Date(tvShow.first_air_date).getFullYear() : null,
+          }
+        : null,
+    [tvShow, tvId]
+  );
+  const { isBookmarked, toggle: toggleBookmark } = useBookmark(bookmarkTarget);
+
+  const handleToggleBookmark = () => {
+    if (!bookmarkTarget) return;
+    const added = toggleBookmark();
+    if (added) {
+      toast.success(t('common.addedToWatchlist', 'Added to watchlist'), bookmarkTarget.title);
+    } else {
+      toast.info(t('common.removedFromWatchlist', 'Removed from watchlist'), bookmarkTarget.title);
+    }
+  };
 
   const { isAvailable, isChecking, jellyfinItem } = useJellyfinAvailability({
     id: tvId,
@@ -277,6 +304,8 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
         trailerKey={trailerKey}
         onWatchNow={handlePlaySeries}
         onWatchTrailer={playTrailer}
+        isBookmarked={isBookmarked}
+        onToggleBookmark={handleToggleBookmark}
       />
 
       <div className="relative z-20 w-full min-h-screen bg-background/65 backdrop-blur-2xl space-y-10 pt-4 border-t border-border">

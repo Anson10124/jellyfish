@@ -2,11 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LibraryCarousel, ContinueWatchingCarousel, NextUpCarousel } from '@/components/media/carousels';
+import { LibraryCarousel, ContinueWatchingCarousel, NextUpCarousel, BookmarksCarousel } from '@/components/media/carousels';
 import { VideoPlayerModal } from '@/components/player';
 import { useTranslation } from '@/hooks/ui/use-translation';
 import { useServerConfig } from '@/hooks/connect/use-server-config';
 import { usePlayer } from '@/hooks/player/use-player';
+import { useBookmarks } from '@/hooks/media/use-bookmarks';
 import { JellyfinService } from '@/services/jellyfin.service';
 import type { JellyfinBaseItem } from '@/types/jellyfin';
 
@@ -14,6 +15,9 @@ export default function LibraryPage() {
   const { t } = useTranslation();
   const { isConnected, isInitialized, jellyfinConfig } = useServerConfig();
   const { activeVideo, playMovie, closeVideo } = usePlayer();
+  const hasBookmarks = useBookmarks().length > 0;
+  // Only the bare connect prompt is centered; with bookmarks the page flows from the top
+  const centerConnectPrompt = isInitialized && !isConnected && !hasBookmarks;
 
   const handlePlayResumeItem = (item: JellyfinBaseItem) => {
     const isEpisode = item.Type === 'Episode';
@@ -36,10 +40,13 @@ export default function LibraryPage() {
   };
 
   return (
-    <main className={`min-h-screen w-full pb-16 pt-28 ${!isConnected && isInitialized ? 'flex items-center justify-center' : ''}`}>
+    <main className={`min-h-screen w-full pb-16 pt-28 ${centerConnectPrompt ? 'flex items-center justify-center' : ''}`}>
       <div className="w-full space-y-8">
+        {/* Bookmarks live in localStorage, so they show with or without a server */}
+        <BookmarksCarousel />
+
         {!isInitialized ? null : !isConnected ? (
-          <div className="w-full px-6 py-8 rounded-2xl text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-6">
+          <div className={`w-full px-6 py-8 rounded-2xl text-center max-w-2xl mx-auto flex flex-col items-center justify-center space-y-6 ${hasBookmarks ? 'pt-12' : ''}`}>
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-foreground">
                 {t('library.connectPromptTitle', 'Connect Your Jellyfin Server')}

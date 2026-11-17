@@ -13,4 +13,4 @@ export * from './carousel-header';
 export * from './carousel-wrapper';
 export * from './carousel-skeleton';
 export * from './numbered-carousel-skeleton';
-
+export * from './bookmarks-carousel';

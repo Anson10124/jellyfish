@@ -42,10 +42,11 @@ function ToastViewport({ className, ...props }: ToastPrimitive.Viewport.Props) {
   )
 }
 
-function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
+function Toast({ className, children, ...props }: ToastPrimitive.Root.Props) {
   return (
     <LiquidGlass
-      // Glass props (className, style, ref, children) go onto the Base UI root along with its own props
+      // Glass props (className, style, ref, children) go onto the Base UI root along with its own props.
+      // The toast's content is passed to LiquidGlass as children, since glassProps.children replaces any on the root.
       render={(glassProps) => <ToastPrimitive.Root {...props} {...glassProps} />}
       data-slot="toast"
       fallbackClassName="border-foreground/15 bg-background/60 backdrop-blur-2xl"
@@ -69,7 +70,9 @@ function Toast({ className, ...props }: ToastPrimitive.Root.Props) {
         "data-expanded:data-ending-style:data-[swipe-direction=up]:[transform:translateY(calc(var(--toast-swipe-movement-y)-150%))]",
         className
       )}
-    />
+    >
+      {children}
+    </LiquidGlass>
   )
 }
 

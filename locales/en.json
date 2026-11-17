@@ -21,7 +21,10 @@
     "searching": "Searching",
     "noResults": "No results found",
     "movies": "Movies",
-    "addToWatchlist": "Add to watchlist"
+    "addToWatchlist": "Add to watchlist",
+    "removeFromWatchlist": "Remove from watchlist",
+    "addedToWatchlist": "Added to watchlist",
+    "removedFromWatchlist": "Removed from watchlist"
   },
   "nav": {
     "home": "Home",
@@ -215,6 +218,9 @@
     "noItems": "No media items found in this library.",
     "libraryCount": "library",
     "librariesCount": "libraries",
+    "watchlist": "Watchlist",
+    "watchlistCount": "title",
+    "watchlistCountPlural": "titles",
     "connectPromptTitle": "Connect Your Jellyfin Server",
     "connectPromptDesc": "Connect your Jellyfin server to access your personal movies, TV shows, and music libraries directly."
   },
