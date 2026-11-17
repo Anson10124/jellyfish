@@ -1,6 +1,6 @@
 'use client';
 
-import { Banner, Carousel, Top10Carousel } from '@/components/media';
+import { Banner, Carousel, NetworkCarousel, Top10Carousel } from '@/components/media';
 import { useTranslation } from '@/hooks/ui/use-translation';
 
 export default function HomePage() {
@@ -29,6 +29,8 @@ export default function HomePage() {
         type="top_rated"
         mediaType="tv"
       />
+
+      <NetworkCarousel />
 
       <Carousel
         title={t('home.actionTitle', 'Big-Time Action')}

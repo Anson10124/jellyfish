@@ -126,6 +126,17 @@
     "tvShowNotFound": "TV Show not found",
     "backToTv": "Back to TV Shows"
   },
+  "network": {
+    "networks": "Networks",
+    "showCount": "{count} shows",
+    "website": "Website",
+    "sortPopular": "Popular",
+    "sortTopRated": "Top Rated",
+    "sortNewest": "Newest",
+    "noShows": "No shows found for this network.",
+    "notFound": "Network not found",
+    "backToTv": "Back to TV Shows"
+  },
   "genres": {
     "28": "Action",
     "12": "Adventure",

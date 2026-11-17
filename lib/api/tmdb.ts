@@ -156,6 +156,24 @@ export const TmdbApi = {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/discover/${mediaType}?with_genres=${genreId}&page=${page}&language=${language}`);
   },
 
+  // Discover TV shows by network. `sortQuery` is the raw sort/filter part of the query,
+  // e.g. "sort_by=vote_average.desc&vote_count.gte=200".
+  getByNetwork: <T = Record<string, unknown>>(
+    networkId: number,
+    page = 1,
+    language = 'en-US',
+    sortQuery = 'sort_by=popularity.desc'
+  ) => {
+    return tmdbFetch<TmdbPaginatedResponse<T>>(
+      `/discover/tv?with_networks=${networkId}&${sortQuery}&page=${page}&language=${language}`
+    );
+  },
+
+  // Network Details (name, logo, country, homepage)
+  getNetworkDetails: <T = Record<string, unknown>>(id: number | string) => {
+    return tmdbFetch<T>(`/network/${id}`);
+  },
+
   // Search
   searchMulti: <T = Record<string, unknown>>(query: string, page = 1, language = 'en-US') => {
     return tmdbFetch<TmdbPaginatedResponse<T>>(`/search/multi?query=${encodeURIComponent(query)}&page=${page}&language=${language}`);

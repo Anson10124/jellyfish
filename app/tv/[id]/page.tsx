@@ -220,7 +220,19 @@ export default function TvDetailPage({ params }: TvDetailPageProps) {
   const countryOfOrigin = formatCountryOfOrigin(tvShow);
   const networks =
     tvShow.networks && tvShow.networks.length > 0
-      ? tvShow.networks.map((n) => n.name).join(', ')
+      ? tvShow.networks.map((n, i) => (
+          <React.Fragment key={n.id}>
+            {i > 0 && ', '}
+            <Link
+              href={`/network/${n.id}`}
+              prefetch={false}
+              data-focusable="true"
+              className="underline-offset-4 decoration-foreground/40 hover:underline hover:text-primary transition-colors"
+            >
+              {n.name}
+            </Link>
+          </React.Fragment>
+        ))
       : null;
 
   const voteAverage = tvShow.vote_average ? tvShow.vote_average.toFixed(1) : null;

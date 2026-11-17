@@ -11,6 +11,10 @@ export interface UseTmdbMediaOptions {
   timeWindow?: 'day' | 'week';
   mediaType?: 'movie' | 'tv' | 'all';
   genreId?: number;
+  /** TMDB network id; when set, lists that network's TV shows */
+  networkId?: number;
+  /** Raw TMDB sort/filter query used with networkId, e.g. "sort_by=popularity.desc" */
+  sortQuery?: string;
   infinite?: boolean;
   initialItems?: MediaItem[];
 }
@@ -20,6 +24,8 @@ export function useTmdbMedia({
   timeWindow = 'day',
   mediaType = 'movie',
   genreId,
+  networkId,
+  sortQuery,
   initialItems,
 }: UseTmdbMediaOptions) {
   const { tmdbLanguage } = useTranslation();
@@ -29,6 +35,7 @@ export function useTmdbMedia({
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
 
   const slides = initialItems && initialItems.length > 0 ? initialItems : fetchedSlides;
   const hasMore = page < totalPages;
@@ -37,7 +44,9 @@ export function useTmdbMedia({
     async (pageNumber: number) => {
       let res: TmdbPaginatedResponse<MediaItem>;
 
-      if (genreId) {
+      if (networkId) {
+        res = await TmdbApi.getByNetwork<MediaItem>(networkId, pageNumber, tmdbLanguage, sortQuery);
+      } else if (genreId) {
         if (mediaType === 'all') {
           const movieGenreId = TV_TO_MOVIE_GENRE_MAP[genreId] || genreId;
           const tvGenreId = MOVIE_TO_TV_GENRE_MAP[genreId] || genreId;
@@ -114,7 +123,7 @@ export function useTmdbMedia({
     },
     // showNsfw changes what TmdbApi returns, so refetch when it flips
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [type, mediaType, timeWindow, genreId, tmdbLanguage, showNsfw]
+    [type, mediaType, timeWindow, genreId, networkId, sortQuery, tmdbLanguage, showNsfw]
   );
 
   useEffect(() => {
@@ -128,6 +137,7 @@ export function useTmdbMedia({
         setLoading(true);
         setPage(1);
         setTotalPages(1);
+        setTotalResults(0);
       }
     });
 
@@ -140,6 +150,7 @@ export function useTmdbMedia({
           if (res.total_pages) {
             setTotalPages(res.total_pages);
           }
+          setTotalResults(res.total_results || 0);
         }
       } catch (err) {
         console.error('Failed to fetch media items:', err);
@@ -187,6 +198,7 @@ export function useTmdbMedia({
     loadingMore,
     hasMore,
     loadMore,
+    totalResults,
   };
 }
 

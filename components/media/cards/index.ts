@@ -6,4 +6,5 @@ export * from './season-card';
 export * from './episode-card';
 export * from './library-card';
 export * from './landscape-media-card';
+export * from './network-card';
 

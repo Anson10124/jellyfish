@@ -126,6 +126,17 @@
     "tvShowNotFound": "找不到此影集",
     "backToTv": "返回影集列表"
   },
+  "network": {
+    "networks": "播出平台",
+    "showCount": "{count} 部影集",
+    "website": "官方網站",
+    "sortPopular": "熱門",
+    "sortTopRated": "高分",
+    "sortNewest": "最新",
+    "noShows": "此平台暫無影集。",
+    "notFound": "找不到此播出平台",
+    "backToTv": "返回影集列表"
+  },
   "genres": {
     "28": "動作",
     "12": "冒險",
