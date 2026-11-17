@@ -60,6 +60,15 @@ export interface ProductionCompany {
   origin_country?: string;
 }
 
+export interface NetworkDetails {
+  id: number;
+  name: string;
+  logo_path?: string | null;
+  origin_country?: string;
+  headquarters?: string;
+  homepage?: string;
+}
+
 export interface ProductionCountry {
   iso_3166_1: string;
   name: string;

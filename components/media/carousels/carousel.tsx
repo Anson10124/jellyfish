@@ -30,6 +30,8 @@ export function Carousel({
   timeWindow = 'day',
   mediaType = 'movie',
   genreId,
+  networkId,
+  sortQuery,
   items: initialItems,
   renderItem,
 }: CarouselProps) {
@@ -39,6 +41,8 @@ export function Carousel({
     timeWindow,
     mediaType,
     genreId,
+    networkId,
+    sortQuery,
     initialItems,
   });
 

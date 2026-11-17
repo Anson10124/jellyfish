@@ -8,6 +8,7 @@ export * from './media-browse-view';
 export * from './genre-browse-view';
 export * from './library-browse-view';
 export * from './poster-grid';
+export * from './network-logo';
 export * from './play-button';
 export * from './jellyfin-media-info';
 export * from './media-detail-hero';
